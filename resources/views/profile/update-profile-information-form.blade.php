@@ -62,7 +62,7 @@
         <!-- Email -->
         <div class="col-span-6 sm:col-span-4">
             <x-label for="email" value="{{ __('Email') }}" />
-            <x-input id="email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="username" />
+            <x-input id="email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="email" />
             <x-input-error for="email" class="mt-2" />
 
             @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) && ! $this->user->hasVerifiedEmail())
@@ -80,6 +80,36 @@
                     </p>
                 @endif
             @endif
+        </div>
+
+        <!-- Username -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="username" value="{{ __('Username') }}" />
+            <x-input id="username" type="text" class="mt-1 block w-full" wire:model="state.username" autocomplete="username" />
+            <p class="mt-1 text-sm text-gray-500">{{ __('Your unique username. Only letters, numbers, and underscores allowed.') }}</p>
+            <x-input-error for="username" class="mt-2" />
+        </div>
+
+        <!-- Bio -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="bio" value="{{ __('Bio') }}" />
+            <textarea id="bio" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-gray-900" 
+                      wire:model="state.bio" rows="3" placeholder="{{ __('Tell us about yourself...') }}"></textarea>
+            <x-input-error for="bio" class="mt-2" />
+        </div>
+
+        <!-- Location -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="location" value="{{ __('Location') }}" />
+            <x-input id="location" type="text" class="mt-1 block w-full" wire:model="state.location" placeholder="{{ __('City, Country') }}" />
+            <x-input-error for="location" class="mt-2" />
+        </div>
+
+        <!-- Website -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="website" value="{{ __('Website') }}" />
+            <x-input id="website" type="url" class="mt-1 block w-full" wire:model="state.website" placeholder="https://example.com" />
+            <x-input-error for="website" class="mt-2" />
         </div>
     </x-slot>
 

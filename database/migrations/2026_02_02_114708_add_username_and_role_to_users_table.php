@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('username')->unique()->after('email');
+            $table->string('username')->unique()->nullable()->after('email');
             $table->string('role')->default('seeker')->after('password');
             $table->boolean('is_admin')->default(false)->after('role');
         });
@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['username', 'role']);
+            $table->dropColumn(['username', 'role', 'is_admin']);
         });
     }
 };

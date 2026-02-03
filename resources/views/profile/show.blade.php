@@ -1,14 +1,124 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight">
             {{ __('Profile') }}
         </h2>
     </x-slot>
 
-    <div>
+    <div class="bg-gray-900 text-white min-h-screen">
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+            <!-- Profile Information Display -->
+            <div class="bg-gray-900 border border-gray-800 overflow-hidden shadow-xl sm:rounded-lg mb-10">
+                <div class="p-6 sm:p-8">
+                    <h3 class="text-2xl font-bold text-white mb-6">{{ __('Profile Information') }}</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Profile Photo & Basic Info -->
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <img src="{{ auth()->user()->profile_photo_url }}" alt="{{ auth()->user()->name }}" 
+                                     class="h-24 w-24 rounded-full object-cover border-4 border-gray-700">
+                                <div>
+                                    <h4 class="text-xl font-semibold text-white">{{ auth()->user()->name }}</h4>
+                                    <p class="text-sm text-gray-300">{{ auth()->user()->username }}</p>
+                                    @if(auth()->user()->role)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                            {{ auth()->user()->role === 'seeker' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
+                                            {{ ucfirst(auth()->user()->role) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Details -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400">{{ __('Email Address') }}</label>
+                                <p class="mt-1 text-sm text-white">{{ auth()->user()->email }}</p>
+                                @if(auth()->user()->email_verified_at)
+                                    <span class="inline-flex items-center mt-1 text-xs text-green-400">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        {{ __('Verified') }}
+                                    </span>
+                                @else
+                                    <div class="mt-2">
+                                        @livewire('profile.send-email-verification')
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400">{{ __('Username') }}</label>
+                                <p class="mt-1 text-sm text-white">{{ auth()->user()->username }}</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400">{{ __('Account Created') }}</label>
+                                <p class="mt-1 text-sm text-white">{{ auth()->user()->created_at->format('F d, Y') }}</p>
+                                <p class="text-xs text-gray-400">{{ auth()->user()->created_at->diffForHumans() }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details (if exists) -->
+                    @if(auth()->user()->profile)
+                        <div class="mt-8 pt-6 border-t border-gray-800">
+                            <h4 class="text-lg font-semibold text-white mb-4">{{ __('Additional Information') }}</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                @if(auth()->user()->profile->bio)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">{{ __('Bio') }}</label>
+                                        <p class="mt-1 text-sm text-white">{{ auth()->user()->profile->bio }}</p>
+                                    </div>
+                                @endif
+
+                                @if(auth()->user()->profile->location)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">{{ __('Location') }}</label>
+                                        <p class="mt-1 text-sm text-white">
+                                            <svg class="inline-block w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            {{ auth()->user()->profile->location }}
+                                        </p>
+                                    </div>
+                                @endif
+
+                                @if(auth()->user()->profile->website)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">{{ __('Website') }}</label>
+                                        <p class="mt-1 text-sm">
+                                            <a href="{{ auth()->user()->profile->website }}" target="_blank" 
+                                               class="text-gray-200 hover:text-white underline">
+                                                {{ auth()->user()->profile->website }}
+                                            </a>
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Admin Badge -->
+                    @if(auth()->user()->is_admin ?? false)
+                        <div class="mt-6 pt-6 border-t border-gray-800">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-900/30 text-red-300">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ __('Administrator') }}
+                            </span>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             @if (Laravel\Fortify\Features::canUpdateProfileInformation())
-                @livewire('profile.update-profile-information-form')
+                @livewire('profile.update-profile-information-form', ['key' => 'update-profile-information-form'])
 
                 <x-section-border />
             @endif

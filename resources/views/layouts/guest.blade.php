@@ -16,9 +16,33 @@
 
         <!-- Styles -->
         @livewireStyles
+
+        <!-- Custom Styles for Auth Forms -->
+        <style>
+            select option {
+                background-color: #111827; /* gray-900 */
+                color: white;
+            }
+            
+            select:focus option:checked {
+                background-color: #374151; /* gray-700 */
+            }
+
+            input::placeholder {
+                color: rgba(156, 163, 175, 0.6);
+            }
+
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus {
+                -webkit-text-fill-color: white;
+                -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset;
+                transition: background-color 5000s ease-in-out 0s;
+            }
+        </style>
     </head>
     <body>
-        <div class="font-sans text-gray-900 antialiased">
+        <div class="font-sans antialiased bg-gray-900 text-gray-100 min-h-screen">
             {{ $slot }}
         </div>
 
