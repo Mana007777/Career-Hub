@@ -1,4 +1,5 @@
 <div class="min-h-screen bg-gray-950 text-white pb-24">
+    @livewire('search')
     <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Header -->
         <div class="mb-8">
@@ -7,27 +8,8 @@
 
         <!-- Create Post Form (Inline) -->
         <div 
-            x-data="{ 
-                show: @entangle('showCreateForm'),
-                isVisible: true,
-                lastScroll: 0,
-                init() {
-                    this.lastScroll = window.pageYOffset || window.scrollY;
-                    window.addEventListener('scroll', () => {
-                        const currentScroll = window.pageYOffset || window.scrollY;
-                        if (this.show) {
-                            // Hide when scrolling down, show when scrolling up or at top
-                            if (currentScroll > this.lastScroll && currentScroll > 50) {
-                                this.isVisible = false;
-                            } else if (currentScroll < this.lastScroll || currentScroll <= 50) {
-                                this.isVisible = true;
-                            }
-                        }
-                        this.lastScroll = currentScroll;
-                    });
-                }
-            }"
-            x-show="show && isVisible"
+            x-data="{ show: @entangle('showCreateForm') }"
+            x-show="show"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 transform translate-y-4"
             x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -49,6 +31,98 @@
                         @error('content') 
                             <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> 
                         @enderror
+                    </div>
+
+                    <!-- Specialty Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Add Specialty & Sub-Specialty *</label>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <input 
+                                    type="text"
+                                    wire:model="specialtyName"
+                                    placeholder="Enter Specialty (e.g., Web Development)"
+                                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <input 
+                                    type="text"
+                                    wire:model="subSpecialtyName"
+                                    placeholder="Enter Sub-Specialty (e.g., Frontend Developer)"
+                                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+                        <button 
+                            type="button"
+                            wire:click="addSpecialty"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                            @if(!trim($specialtyName) || !trim($subSpecialtyName)) disabled @endif>
+                            Add Specialty
+                        </button>
+                        @error('specialties') 
+                            <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> 
+                        @enderror
+                        
+                        <!-- Selected Specialties -->
+                        @if(count($specialties) > 0)
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                @foreach($specialties as $index => $spec)
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-600/20 border border-blue-600/50 rounded-lg text-blue-300 text-sm">
+                                        <span>{{ $spec['specialty_name'] }} - {{ $spec['sub_specialty_name'] }}</span>
+                                        <button 
+                                            type="button"
+                                            wire:click="removeSpecialty({{ $index }})"
+                                            class="hover:text-red-400 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Tags Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Add Tags (Optional)</label>
+                        <div class="flex gap-3 mb-3">
+                            <input 
+                                type="text"
+                                wire:model="tagName"
+                                wire:keydown.enter.prevent="addTag"
+                                placeholder="Enter tag (e.g., #laravel, #php, #webdev)"
+                                class="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button 
+                                type="button"
+                                wire:click="addTag"
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                                @if(!trim($tagName)) disabled @endif>
+                                Add Tag
+                            </button>
+                        </div>
+                        @error('tags') 
+                            <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> 
+                        @enderror
+                        
+                        <!-- Selected Tags -->
+                        @if(count($tags) > 0)
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($tags as $index => $tag)
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 bg-purple-600/20 border border-purple-600/50 rounded-lg text-purple-300 text-sm">
+                                        <span>#{{ $tag['name'] }}</span>
+                                        <button 
+                                            type="button"
+                                            wire:click="removeTag({{ $index }})"
+                                            class="hover:text-red-400 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
 
                     <div class="flex items-center justify-between gap-4">
@@ -169,6 +243,38 @@
                         </div>
                     @endif
 
+                    <!-- Post Specialties -->
+                    @if($post->specialties && $post->specialties->count() > 0)
+                        <div class="mb-4 pt-4 border-t border-gray-800">
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($post->specialties as $specialty)
+                                    @php
+                                        $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
+                                        $subSpecialty = $subSpecialtyId ? \App\Models\SubSpecialty::find($subSpecialtyId) : null;
+                                    @endphp
+                                    @if($subSpecialty)
+                                        <span class="px-3 py-1 bg-blue-600/20 border border-blue-600/50 rounded-lg text-blue-300 text-xs">
+                                            {{ $specialty->name }} - {{ $subSpecialty->name }}
+                                        </span>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Post Tags -->
+                    @if($post->tags && $post->tags->count() > 0)
+                        <div class="mb-4 pt-4 border-t border-gray-800">
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($post->tags as $tag)
+                                    <span class="px-3 py-1 bg-purple-600/20 border border-purple-600/50 rounded-lg text-purple-300 text-xs">
+                                        #{{ $tag->name }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Post Stats -->
                     <div class="flex items-center gap-6 pt-4 border-t border-gray-800">
                         <button class="flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors">
@@ -240,6 +346,98 @@
                                     <p class="mt-2 text-sm text-gray-400">New file: {{ $editMedia->getClientOriginalName() }}</p>
                                 @else
                                     <p class="mt-2 text-sm text-gray-400">Leave empty to keep current media</p>
+                                @endif
+                            </div>
+
+                            <!-- Edit Specialty Selection -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Add Specialty & Sub-Specialty *</label>
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <input 
+                                            type="text"
+                                            wire:model="editSpecialtyName"
+                                            placeholder="Enter Specialty"
+                                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    </div>
+                                    <div>
+                                        <input 
+                                            type="text"
+                                            wire:model="editSubSpecialtyName"
+                                            placeholder="Enter Sub-Specialty"
+                                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    </div>
+                                </div>
+                                <button 
+                                    type="button"
+                                    wire:click="addEditSpecialty"
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                                    @if(!trim($editSpecialtyName) || !trim($editSubSpecialtyName)) disabled @endif>
+                                    Add Specialty
+                                </button>
+                                @error('editSpecialties') 
+                                    <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> 
+                                @enderror
+                                
+                                <!-- Selected Edit Specialties -->
+                                @if(count($editSpecialties) > 0)
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        @foreach($editSpecialties as $index => $spec)
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-600/20 border border-blue-600/50 rounded-lg text-blue-300 text-sm">
+                                                <span>{{ $spec['specialty_name'] }} - {{ $spec['sub_specialty_name'] }}</span>
+                                                <button 
+                                                    type="button"
+                                                    wire:click="removeEditSpecialty({{ $index }})"
+                                                    class="hover:text-red-400 transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Edit Tags Selection -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Add Tags (Optional)</label>
+                                <div class="flex gap-3 mb-3">
+                                    <input 
+                                        type="text"
+                                        wire:model="editTagName"
+                                        wire:keydown.enter.prevent="addEditTag"
+                                        placeholder="Enter tag"
+                                        class="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <button 
+                                        type="button"
+                                        wire:click="addEditTag"
+                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                                        @if(!trim($editTagName)) disabled @endif>
+                                        Add Tag
+                                    </button>
+                                </div>
+                                @error('editTags') 
+                                    <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> 
+                                @enderror
+                                
+                                <!-- Selected Edit Tags -->
+                                @if(count($editTags) > 0)
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach($editTags as $index => $tag)
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-purple-600/20 border border-purple-600/50 rounded-lg text-purple-300 text-sm">
+                                                <span>#{{ $tag['name'] }}</span>
+                                                <button 
+                                                    type="button"
+                                                    wire:click="removeEditTag({{ $index }})"
+                                                    class="hover:text-red-400 transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        @endforeach
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -385,7 +583,10 @@
                 New post
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-            <button data-tooltip-target="tooltip-search" type="button"
+            <button 
+                wire:click="$dispatch('openSearch')"
+                data-tooltip-target="tooltip-search" 
+                type="button"
                 class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
                 <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

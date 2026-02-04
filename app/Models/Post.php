@@ -46,4 +46,39 @@ class Post extends Model
     {
         return $this->hasMany(UserNotification::class);
     }
+
+    public function specialties()
+    {
+        return $this->belongsToMany(Specialty::class, 'post_specialties')
+            ->withPivot('sub_specialty_id')
+            ->withTimestamps();
+    }
+
+    public function subSpecialties()
+    {
+        return $this->belongsToMany(SubSpecialty::class, 'post_specialties', 'post_id', 'sub_specialty_id')
+            ->withPivot('specialty_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the slug for the post.
+     *
+     * @return string
+     */
+    public function getSlugAttribute(): string
+    {
+        // Generate a slug from the first few words of content + ID
+        $content = substr(strip_tags($this->content), 0, 50);
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $content)));
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = trim($slug, '-');
+        
+        // If slug is empty, use a default
+        if (empty($slug)) {
+            $slug = 'post';
+        }
+        
+        return $slug . '-' . $this->id;
+    }
 }

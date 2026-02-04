@@ -11,7 +11,11 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/posts', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/posts/{slug}', function ($slug) {
+        return view('dashboard', ['postSlug' => $slug]);
+    })->name('posts.show');
 });

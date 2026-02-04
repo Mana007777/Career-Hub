@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Post;
+use App\Models\SubSpecialty;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PostService
@@ -17,7 +19,15 @@ class PostService
      */
     public function getAllPosts(int $perPage = 10): LengthAwarePaginator
     {
-        return Post::with(['user', 'likes', 'comments'])
+        return Post::with([
+            'user', 
+            'likes', 
+            'comments', 
+            'specialties' => function($query) {
+                $query->with('subSpecialties');
+            },
+            'tags'
+        ])
             ->latest()
             ->paginate($perPage);
     }
@@ -46,6 +56,43 @@ class PostService
     {
         return Post::with(['user', 'likes', 'comments'])
             ->find($id);
+    }
+
+    /**
+     * Search posts by content.
+     *
+     * @param  string  $query
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function searchPosts(string $query, int $perPage = 10): LengthAwarePaginator
+    {
+        $searchTerm = '%' . $query . '%';
+        
+        // Get sub-specialty IDs that match the search
+        $matchingSubSpecialtyIds = SubSpecialty::where('name', 'like', $searchTerm)->pluck('id');
+        
+        // Get post IDs that have matching sub-specialties in pivot
+        $postIdsWithMatchingSubSpecialties = \DB::table('post_specialties')
+            ->whereIn('sub_specialty_id', $matchingSubSpecialtyIds)
+            ->pluck('post_id');
+        
+        return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
+            ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties) {
+                $q->where('content', 'like', $searchTerm)
+                  // Search by specialty name
+                  ->orWhereHas('specialties', function($sq) use ($searchTerm) {
+                      $sq->where('name', 'like', $searchTerm);
+                  })
+                  // Search by sub-specialty name (through pivot)
+                  ->orWhereIn('id', $postIdsWithMatchingSubSpecialties)
+                  // Search by tag name
+                  ->orWhereHas('tags', function($tq) use ($searchTerm) {
+                      $tq->where('name', 'like', $searchTerm);
+                  });
+            })
+            ->latest()
+            ->paginate($perPage);
     }
 
     /**
