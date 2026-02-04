@@ -3,14 +3,19 @@
 namespace App\Services;
 
 use App\Models\Post;
-use App\Models\SubSpecialty;
+use App\Repositories\PostRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PostService
 {
+    protected PostRepository $repository;
+
+    public function __construct(PostRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * Get all posts with user relationship, ordered by latest.
      *
@@ -19,17 +24,7 @@ class PostService
      */
     public function getAllPosts(int $perPage = 10): LengthAwarePaginator
     {
-        return Post::with([
-            'user', 
-            'likes', 
-            'comments', 
-            'specialties' => function($query) {
-                $query->with('subSpecialties');
-            },
-            'tags'
-        ])
-            ->latest()
-            ->paginate($perPage);
+        return $this->repository->getAll($perPage);
     }
 
     /**
@@ -40,10 +35,7 @@ class PostService
      */
     public function getUserPosts(int $perPage = 10): LengthAwarePaginator
     {
-        return Post::where('user_id', auth()->id())
-            ->with(['user', 'likes', 'comments'])
-            ->latest()
-            ->paginate($perPage);
+        return $this->repository->getByUserId(auth()->id(), $perPage);
     }
 
     /**
@@ -54,12 +46,11 @@ class PostService
      */
     public function getPostById(int $id): ?Post
     {
-        return Post::with(['user', 'likes', 'comments'])
-            ->find($id);
+        return $this->repository->findById($id);
     }
 
     /**
-     * Search posts by content.
+     * Search posts by content, specialty, sub-specialty, or tags.
      *
      * @param  string  $query
      * @param  int  $perPage
@@ -67,32 +58,7 @@ class PostService
      */
     public function searchPosts(string $query, int $perPage = 10): LengthAwarePaginator
     {
-        $searchTerm = '%' . $query . '%';
-        
-        // Get sub-specialty IDs that match the search
-        $matchingSubSpecialtyIds = SubSpecialty::where('name', 'like', $searchTerm)->pluck('id');
-        
-        // Get post IDs that have matching sub-specialties in pivot
-        $postIdsWithMatchingSubSpecialties = \DB::table('post_specialties')
-            ->whereIn('sub_specialty_id', $matchingSubSpecialtyIds)
-            ->pluck('post_id');
-        
-        return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
-            ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties) {
-                $q->where('content', 'like', $searchTerm)
-                  // Search by specialty name
-                  ->orWhereHas('specialties', function($sq) use ($searchTerm) {
-                      $sq->where('name', 'like', $searchTerm);
-                  })
-                  // Search by sub-specialty name (through pivot)
-                  ->orWhereIn('id', $postIdsWithMatchingSubSpecialties)
-                  // Search by tag name
-                  ->orWhereHas('tags', function($tq) use ($searchTerm) {
-                      $tq->where('name', 'like', $searchTerm);
-                  });
-            })
-            ->latest()
-            ->paginate($perPage);
+        return $this->repository->search($query, $perPage);
     }
 
     /**
@@ -107,6 +73,6 @@ class PostService
             return null;
         }
 
-        return Storage::disk('public')->url($post->media);
+        return Storage::url($post->media);
     }
 }

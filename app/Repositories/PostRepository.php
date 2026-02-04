@@ -1,0 +1,142 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\Post;
+use App\Models\SubSpecialty;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
+
+class PostRepository
+{
+    /**
+     * Get all posts with relationships, ordered by latest.
+     *
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getAll(int $perPage = 10): LengthAwarePaginator
+    {
+        return Post::with([
+            'user', 
+            'likes', 
+            'comments', 
+            'specialties' => function($query) {
+                $query->with('subSpecialties');
+            },
+            'tags'
+        ])
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
+     * Get posts for a specific user.
+     *
+     * @param  int  $userId
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getByUserId(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        return Post::where('user_id', $userId)
+            ->with(['user', 'likes', 'comments', 'specialties', 'tags'])
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
+     * Get a single post by ID with relationships.
+     *
+     * @param  int  $id
+     * @return Post|null
+     */
+    public function findById(int $id): ?Post
+    {
+        return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
+            ->find($id);
+    }
+
+    /**
+     * Search posts by content, specialty, sub-specialty, or tags.
+     *
+     * @param  string  $query
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function search(string $query, int $perPage = 10): LengthAwarePaginator
+    {
+        $searchTerm = '%' . $query . '%';
+        
+        // Get sub-specialty IDs that match the search
+        $matchingSubSpecialtyIds = SubSpecialty::where('name', 'like', $searchTerm)->pluck('id');
+        
+        // Get post IDs that have matching sub-specialties in pivot
+        $postIdsWithMatchingSubSpecialties = DB::table('post_specialties')
+            ->whereIn('sub_specialty_id', $matchingSubSpecialtyIds)
+            ->pluck('post_id');
+        
+        return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
+            ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties) {
+                $q->where('content', 'like', $searchTerm)
+                  // Search by specialty name
+                  ->orWhereHas('specialties', function($sq) use ($searchTerm) {
+                      $sq->where('name', 'like', $searchTerm);
+                  })
+                  // Search by sub-specialty name (through pivot)
+                  ->orWhereIn('id', $postIdsWithMatchingSubSpecialties)
+                  // Search by tag name
+                  ->orWhereHas('tags', function($tq) use ($searchTerm) {
+                      $tq->where('name', 'like', $searchTerm);
+                  });
+            })
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
+     * Create a new post.
+     *
+     * @param  array<string, mixed>  $data
+     * @return Post
+     */
+    public function create(array $data): Post
+    {
+        return Post::create($data);
+    }
+
+    /**
+     * Update an existing post.
+     *
+     * @param  Post  $post
+     * @param  array<string, mixed>  $data
+     * @return bool
+     */
+    public function update(Post $post, array $data): bool
+    {
+        return $post->update($data);
+    }
+
+    /**
+     * Delete a post.
+     *
+     * @param  Post  $post
+     * @return bool
+     */
+    public function delete(Post $post): bool
+    {
+        return $post->delete();
+    }
+
+    /**
+     * Get post with relationships for editing.
+     *
+     * @param  int  $id
+     * @return Post|null
+     */
+    public function findForEdit(int $id): ?Post
+    {
+        return Post::with(['specialties', 'tags'])->find($id);
+    }
+}

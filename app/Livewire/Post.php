@@ -60,9 +60,10 @@ class Post extends Component
 
     public function openEditModal($postId)
     {
-        $post = PostModel::with(['specialties', 'tags'])->findOrFail($postId);
+        $postService = new PostService(new \App\Repositories\PostRepository());
+        $post = $postService->getPostById($postId);
         
-        if ($post->user_id !== Auth::id()) {
+        if (!$post || $post->user_id !== Auth::id()) {
             session()->flash('error', 'You are not authorized to edit this post.');
             return;
         }
@@ -287,7 +288,7 @@ class Post extends Component
 
     public function getMediaUrl($post)
     {
-        $postService = new PostService();
+        $postService = new PostService(new \App\Repositories\PostRepository());
         return $postService->getMediaUrl($post);
     }
 
@@ -304,7 +305,7 @@ class Post extends Component
 
     public function render()
     {
-        $postService = new PostService();
+        $postService = new PostService(new \App\Repositories\PostRepository());
         $posts = $postService->getAllPosts(10);
 
         return view('livewire.post', [
