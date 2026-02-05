@@ -22,48 +22,79 @@
                 </div>
 
                 <!-- User Info -->
-                <div class="flex-1">
-                    <div class="flex items-center gap-3 mb-2">
-                        <h1 class="text-2xl font-bold text-white">{{ $user->username }}</h1>
-                    </div>
-                    
-                    @if($user->profile && $user->profile->bio)
-                        <p class="text-gray-300 mb-4">{{ $user->profile->bio }}</p>
-                    @endif
-
-                    <!-- Stats -->
-                    <div class="flex gap-6 mb-4">
+                <div class="flex-1 w-full">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                         <div>
-                            <span class="text-gray-400 text-sm">Posts</span>
-                            <p class="text-white font-semibold">{{ $postsCount }}</p>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 text-sm">Followers</span>
-                            <p class="text-white font-semibold">{{ $followersCount }}</p>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 text-sm">Following</span>
-                            <p class="text-white font-semibold">{{ $followingCount }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Follow/Unfollow Button -->
-                    @if(Auth::check() && Auth::id() !== $user->id)
-                        <button 
-                            wire:click="toggleFollow"
-                            class="px-6 py-2 rounded-lg font-medium transition-colors
-                                @if($isFollowing)
-                                    bg-gray-800 hover:bg-gray-700 text-white border border-gray-700
-                                @else
-                                    bg-blue-600 hover:bg-blue-700 text-white
-                                @endif">
-                            @if($isFollowing)
-                                Unfollow
-                            @else
-                                Follow
+                            <div class="flex items-center gap-3 mb-2">
+                                <h1 class="text-2xl font-bold text-white">{{ $user->username }}</h1>
+                            </div>
+                            
+                            @if($user->profile && $user->profile->bio)
+                                <p class="text-gray-300 mb-4 max-w-xl">{{ $user->profile->bio }}</p>
                             @endif
-                        </button>
-                    @endif
+
+                            <!-- Stats -->
+                            <div class="flex gap-6 mb-2">
+                                <div>
+                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Posts</span>
+                                    <p class="text-white font-semibold">{{ $postsCount }}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Followers</span>
+                                    <p class="text-white font-semibold">{{ $followersCount }}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Following</span>
+                                    <p class="text-white font-semibold">{{ $followingCount }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <!-- Follow/Unfollow Button for other users -->
+                            @if(Auth::check() && Auth::id() !== $user->id)
+                                <button 
+                                    wire:click="toggleFollow"
+                                    class="px-6 py-2 rounded-lg font-medium transition-colors
+                                        @if($isFollowing)
+                                            bg-gray-800 hover:bg-gray-700 text-white border border-gray-700
+                                        @else
+                                            bg-blue-600 hover:bg-blue-700 text-white
+                                        @endif">
+                                    @if($isFollowing)
+                                        Unfollow
+                                    @else
+                                        Follow
+                                    @endif
+                                </button>
+                            @endif
+
+                            <!-- Self profile actions -->
+                            @if(Auth::check() && Auth::id() === $user->id)
+                                <a 
+                                    href="{{ route('profile.show') }}"
+                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-100 transition-colors"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a3 3 0 014.243 4.243L9 19.95 4 21l1.05-5 10.182-10.768z" />
+                                    </svg>
+                                    <span>Edit Profile</span>
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button 
+                                        type="submit"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-red-700 bg-red-700/20 hover:bg-red-700/40 text-red-200 transition-colors"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3-3m0 0l3 3m-3-3v12" />
+                                        </svg>
+                                        <span>Logout</span>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -177,6 +208,142 @@
             <div class="mt-6">
                 {{ $posts->links() }}
             </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div 
+    x-data="{ 
+        isVisible: true,
+        lastScroll: 0,
+        init() {
+            this.lastScroll = window.pageYOffset || window.scrollY;
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset || window.scrollY;
+                if (currentScroll > this.lastScroll && currentScroll > 100) {
+                    this.isVisible = false;
+                } else if (currentScroll < this.lastScroll || currentScroll <= 100) {
+                    this.isVisible = true;
+                }
+                this.lastScroll = currentScroll;
+            });
+        }
+    }"
+    x-show="isVisible"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 transform translate-y-full"
+    x-transition:enter-end="opacity-100 transform translate-y-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 transform translate-y-0"
+    x-transition:leave-end="opacity-0 transform translate-y-full"
+    class="fixed bottom-0 z-50 max-w-md w-full -translate-x-1/2 bg-gray-600/60 backdrop-blur-sm rounded-2xl left-1/2 shadow-lg mb-2 mx-auto px-4 py-2"
+>
+    <div class="w-full">
+        <div class="grid max-w-xs grid-cols-3 gap-1 p-1 mx-auto my-1 bg-gray-700/80 rounded-lg" role="group">
+            <button type="button"
+                class="px-5 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 hover:text-white rounded">
+                New
+            </button>
+            <button type="button" class="px-5 py-1.5 text-xs font-medium text-white bg-gray-800 rounded">
+                Popular
+            </button>
+            <button type="button"
+                class="px-5 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 hover:text-white rounded">
+                Following
+            </button>
+        </div>
+    </div>
+    <div class="grid h-full max-w-md grid-cols-5 mx-auto">
+        <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
+            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
+            </svg>
+            <span class="sr-only">Home</span>
+        </a>
+        <div id="tooltip-home" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            Home
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        @php
+            $unreadNotifications = auth()->check()
+                ? auth()->user()->notificationsCustom()->where('is_read', false)->count()
+                : 0;
+        @endphp
+        <button 
+            wire:click="$dispatch('openNotifications')"
+            data-tooltip-target="tooltip-notifications" 
+            type="button"
+            class="relative inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m2 0v1a3 3 0 11-6 0v-1h6z" />
+            </svg>
+            @if($unreadNotifications > 0)
+                <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500 text-white border border-gray-900">
+                    {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
+                </span>
+            @endif
+            <span class="sr-only">Notifications</span>
+        </button>
+        <div id="tooltip-notifications" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            Notifications
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <button 
+            wire:click="$dispatch('openCreatePost')"
+            data-tooltip-target="tooltip-post" 
+            type="button"
+            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 12h14m-7 7V5" />
+            </svg>
+            <span class="sr-only">New post</span>
+        </button>
+        <div id="tooltip-post" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            New post
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <button 
+            wire:click="$dispatch('openSearch')"
+            data-tooltip-target="tooltip-search" 
+            type="button"
+            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                    d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
+            <span class="sr-only">Search</span>
+        </button>
+        <div id="tooltip-search" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            Search
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <a 
+            href="{{ auth()->check() ? route('user.profile', auth()->user()->username ?? 'unknown') : route('profile.show') }}"
+            data-tooltip-target="tooltip-profile"
+            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors"
+        >
+            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                    d="M15.75 7.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 19.5a7.5 7.5 0 0 1 15 0v.75H4.5v-.75Z" />
+            </svg>
+            <span class="sr-only">Profile</span>
+        </a>
+        <div id="tooltip-profile" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            Profile
+            <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
     </div>
 </div>

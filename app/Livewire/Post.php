@@ -7,6 +7,7 @@ use App\Actions\Post\DeletePost;
 use App\Actions\Post\UpdatePost;
 use App\Actions\User\FollowUser;
 use App\Livewire\Concerns\ValidatesPost;
+use App\Jobs\SendUserNotification;
 use App\Models\Post as PostModel;
 use App\Services\PostService;
 use Illuminate\Support\Facades\Auth;
@@ -39,15 +40,27 @@ class Post extends Component
     public $showEditModal = false;
     public $showDeleteModal = false;
     public $postToDelete = null;
+    public $feedMode = 'new'; // new, popular, following
 
     protected $listeners = [
         'refreshPosts' => '$refresh',
         'notificationsUpdated' => '$refresh',
+        'openCreatePost' => 'toggleCreateForm',
     ];
 
     public function mount()
     {
         $this->resetForm();
+    }
+
+    public function setFeedMode(string $mode): void
+    {
+        if (!in_array($mode, ['new', 'popular', 'following'], true)) {
+            return;
+        }
+
+        $this->feedMode = $mode;
+        $this->resetPage();
     }
 
     public function toggleCreateForm()
@@ -348,6 +361,42 @@ class Post extends Component
         }
     }
 
+    public function togglePostLike(int $postId): void
+    {
+        if (!Auth::check()) {
+            session()->flash('error', 'You must be logged in to like posts.');
+            return;
+        }
+
+        $post = PostModel::with('likes')->find($postId);
+
+        if (!$post) {
+            return;
+        }
+
+        $userId = Auth::id();
+        $existing = $post->likes()->where('user_id', $userId)->first();
+
+        if ($existing) {
+            $existing->delete();
+        } else {
+            $post->likes()->create(['user_id' => $userId]);
+
+            // Notify post owner when someone likes their post
+            if ($post->user_id !== $userId) {
+                SendUserNotification::dispatch([
+                    'user_id'        => $post->user_id,
+                    'source_user_id' => $userId,
+                    'type'           => 'post_liked',
+                    'post_id'        => $post->id,
+                    'message'        => Auth::user()->name . ' liked your post.',
+                ])->onConnection('sync');
+            }
+        }
+
+        $this->dispatch('$refresh');
+    }
+
     public function resetForm()
     {
         $this->title = '';
@@ -363,7 +412,14 @@ class Post extends Component
     public function render()
     {
         $postService = new PostService(new \App\Repositories\PostRepository());
-        $posts = $postService->getAllPosts(10);
+
+        if ($this->feedMode === 'popular') {
+            $posts = $postService->getPopularPosts(10);
+        } elseif ($this->feedMode === 'following') {
+            $posts = $postService->getFollowingPosts(10);
+        } else {
+            $posts = $postService->getAllPosts(10);
+        }
 
         return view('livewire.post', [
             'posts' => $posts,

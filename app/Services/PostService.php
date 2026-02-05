@@ -28,6 +28,17 @@ class PostService
     }
 
     /**
+     * Get popular posts ordered by like count.
+     *
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getPopularPosts(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->repository->getPopular($perPage);
+    }
+
+    /**
      * Get posts for the authenticated user.
      *
      * @param  int  $perPage
@@ -36,6 +47,24 @@ class PostService
     public function getUserPosts(int $perPage = 10): LengthAwarePaginator
     {
         return $this->repository->getByUserId(auth()->id(), $perPage);
+    }
+
+    /**
+     * Get posts only from users that the authenticated user follows.
+     *
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getFollowingPosts(int $perPage = 10): LengthAwarePaginator
+    {
+        $userId = auth()->id();
+
+        if (!$userId) {
+            // If not authenticated, just show the general feed
+            return $this->getAllPosts($perPage);
+        }
+
+        return $this->repository->getFollowingForUser($userId, $perPage);
     }
 
     /**

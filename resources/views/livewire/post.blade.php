@@ -1,7 +1,5 @@
 <div class="min-h-screen bg-gray-950 text-white pb-24">
-    @livewire('search')
-    @livewire('notifications')
-    <div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="w-full px-0 sm:px-2 lg:px-0 py-4">
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-white">Posts</h1>
@@ -189,9 +187,10 @@
         @endif
 
         <!-- Posts List -->
-        <div class="space-y-6">
+        <div class="space-y-5">
             @forelse ($posts as $post)
-                <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors">
+                <!-- Post Card -->
+                <article class="group rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/95 via-gray-900 to-gray-900/80 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:border-gray-600 transition-all duration-200">
                     <!-- Post Header -->
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex items-center gap-3 flex-1">
@@ -243,9 +242,13 @@
                     <!-- Post Title & Content -->
                     <div class="mb-4">
                         @if(!empty($post->title))
-                            <h2 class="text-lg font-semibold text-white mb-1">{{ $post->title }}</h2>
+                            <h2 class="text-lg font-semibold text-white mb-1 group-hover:text-blue-400 transition-colors">
+                                {{ $post->title }}
+                            </h2>
                         @endif
-                        <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">{{ $post->content }}</p>
+                        <p class="text-gray-200 leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
+                            {{ $post->content }}
+                        </p>
                     </div>
 
                     <!-- Post Media -->
@@ -304,21 +307,29 @@
                     @endif
 
                     <!-- Post Stats -->
+                    @php
+                        $hasLikedPost = auth()->check() && $post->likes->contains('user_id', auth()->id());
+                    @endphp
                     <div class="flex items-center gap-6 pt-4 border-t border-gray-800">
-                        <button class="flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button
+                            type="button"
+                            wire:click="togglePostLike({{ $post->id }})"
+                            class="flex items-center gap-2 text-sm {{ $hasLikedPost ? 'text-red-400' : 'text-gray-400 hover:text-red-400' }} transition-colors">
+                            <svg class="w-5 h-5" fill="{{ $hasLikedPost ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                             </svg>
                             <span>{{ $post->likes->count() }}</span>
                         </button>
-                        <button class="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors">
+                        <a
+                            href="{{ route('posts.show', $post->slug) }}"
+                            class="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors text-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>
                             <span>{{ $post->comments->count() }}</span>
-                        </button>
+                        </a>
                     </div>
-                </div>
+                </article>
             @empty
                 <div class="text-center py-12">
                     <svg class="mx-auto h-12 w-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -561,21 +572,28 @@
     >
         <div class="w-full">
             <div class="grid max-w-xs grid-cols-3 gap-1 p-1 mx-auto my-1 bg-gray-700/80 rounded-lg" role="group">
-                <button type="button"
-                    class="px-5 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 hover:text-white rounded">
+                <button
+                    type="button"
+                    wire:click="setFeedMode('new')"
+                    class="px-5 py-1.5 text-xs font-medium rounded {{ $feedMode === 'new' ? 'text-white bg-gray-800' : 'text-gray-200 hover:bg-gray-800 hover:text-white' }}">
                     New
                 </button>
-                <button type="button" class="px-5 py-1.5 text-xs font-medium text-white bg-gray-800 rounded">
+                <button
+                    type="button"
+                    wire:click="setFeedMode('popular')"
+                    class="px-5 py-1.5 text-xs font-medium rounded {{ $feedMode === 'popular' ? 'text-white bg-gray-800' : 'text-gray-200 hover:bg-gray-800 hover:text-white' }}">
                     Popular
                 </button>
-                <button type="button"
-                    class="px-5 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 hover:text-white rounded">
+                <button
+                    type="button"
+                    wire:click="setFeedMode('following')"
+                    class="px-5 py-1.5 text-xs font-medium rounded {{ $feedMode === 'following' ? 'text-white bg-gray-800' : 'text-gray-200 hover:bg-gray-800 hover:text-white' }}">
                     Following
                 </button>
             </div>
         </div>
         <div class="grid h-full max-w-md grid-cols-5 mx-auto">
-            <button data-tooltip-target="tooltip-home" type="button"
+            <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
                 class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
                 <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -583,7 +601,7 @@
                         d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
                 </svg>
                 <span class="sr-only">Home</span>
-            </button>
+            </a>
             <div id="tooltip-home" role="tooltip"
                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
                 Home
@@ -617,7 +635,7 @@
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
             <button 
-                wire:click="toggleCreateForm"
+                wire:click="$dispatch('openCreatePost')"
                 data-tooltip-target="tooltip-post" 
                 type="button"
                 class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
@@ -650,18 +668,21 @@
                 Search
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-            <button data-tooltip-target="tooltip-settings" type="button"
-                class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
+            <a 
+                href="{{ auth()->check() ? route('user.profile', auth()->user()->username ?? 'unknown') : route('profile.show') }}"
+                data-tooltip-target="tooltip-profile"
+                class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors"
+            >
                 <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
-                        d="M6 4v10m0 0a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m0 0v2m6-16v2m0 0a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m0 0v10m6-16v10m0 0a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m0 0v2" />
+                        d="M15.75 7.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 19.5a7.5 7.5 0 0 1 15 0v.75H4.5v-.75Z" />
                 </svg>
-                <span class="sr-only">Settings</span>
-            </button>
-            <div id="tooltip-settings" role="tooltip"
+                <span class="sr-only">Profile</span>
+            </a>
+            <div id="tooltip-profile" role="tooltip"
                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
-                Settings
+                Profile
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
         </div>

@@ -18,22 +18,9 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased bg-gray-950 text-white">
-        <x-banner />
-
-        <div class="min-h-screen bg-gray-900">
-            @livewire('navigation-menu')
-
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-gray-900 border-b border-gray-800 shadow-sm">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-white">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
-
+        <div class="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
             <!-- Page Content -->
-            <main>
+            <main class="pt-4 pb-10">
                 {{ $slot }}
             </main>
         </div>

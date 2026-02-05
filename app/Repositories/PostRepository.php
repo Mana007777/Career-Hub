@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\Post;
 use App\Models\SubSpecialty;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -21,8 +20,8 @@ class PostRepository
     {
         return Post::with([
             'user', 
-            'likes', 
-            'comments', 
+            'likes',
+            'comments',
             'specialties' => function($query) {
                 $query->with('subSpecialties');
             },
@@ -43,9 +42,9 @@ class PostRepository
     {
         return Post::where('user_id', $userId)
             ->with([
-                'user', 
-                'likes', 
-                'comments', 
+                'user',
+                'likes',
+                'comments',
                 'specialties' => function($query) {
                     $query->with('subSpecialties');
                 },
@@ -63,7 +62,24 @@ class PostRepository
      */
     public function findById(int $id): ?Post
     {
-        return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
+        return Post::with([
+                'user',
+                'likes.user',
+                'likedBy',
+                'comments' => function ($query) {
+                    $query->with([
+                        'user',
+                        'likes.user',
+                        'replies' => function ($replyQuery) {
+                            $replyQuery->with(['user', 'likes.user']);
+                        },
+                    ])->orderBy('created_at', 'asc');
+                },
+                'specialties' => function ($query) {
+                    $query->with('subSpecialties');
+                },
+                'tags',
+            ])
             ->find($id);
     }
 
@@ -78,15 +94,15 @@ class PostRepository
     {
         $searchTerm = '%' . $query . '%';
         $hasTitleColumn = Schema::hasColumn('posts', 'title');
-        
+
         // Get sub-specialty IDs that match the search
         $matchingSubSpecialtyIds = SubSpecialty::where('name', 'like', $searchTerm)->pluck('id');
-        
+
         // Get post IDs that have matching sub-specialties in pivot
         $postIdsWithMatchingSubSpecialties = DB::table('post_specialties')
             ->whereIn('sub_specialty_id', $matchingSubSpecialtyIds)
             ->pluck('post_id');
-        
+
         return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
             ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties, $hasTitleColumn) {
                 // Prefer searching by title when the column exists; fall back to content otherwise
@@ -108,6 +124,55 @@ class PostRepository
                 });
             })
             ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
+     * Get posts from users that the given user is following.
+     *
+     * @param  int  $userId
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getFollowingForUser(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        $followingIds = DB::table('follows')
+            ->where('follower_id', $userId)
+            ->pluck('following_id');
+
+        return Post::whereIn('user_id', $followingIds)
+            ->with([
+                'user',
+                'likes',
+                'comments',
+                'specialties' => function($query) {
+                    $query->with('subSpecialties');
+                },
+                'tags'
+            ])
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
+     * Get popular posts ordered by like count.
+     *
+     * @param  int  $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getPopular(int $perPage = 10): LengthAwarePaginator
+    {
+        return Post::with([
+                'user',
+                'likes',
+                'comments',
+                'specialties' => function($query) {
+                    $query->with('subSpecialties');
+                },
+                'tags'
+            ])
+            ->withCount('likes')
+            ->orderByDesc('likes_count')
             ->paginate($perPage);
     }
 
