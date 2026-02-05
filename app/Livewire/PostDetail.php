@@ -30,7 +30,7 @@ class PostDetail extends Component
         $id = end($parts);
 
         if (is_numeric($id)) {
-            $postService = new PostService(new \App\Repositories\PostRepository());
+            $postService = app(PostService::class);
             $this->post = $postService->getPostById((int) $id);
             
             if (!$this->post) {
@@ -43,7 +43,7 @@ class PostDetail extends Component
 
     public function getMediaUrl($post)
     {
-        $postService = new PostService(new \App\Repositories\PostRepository());
+        $postService = app(PostService::class);
         return $postService->getMediaUrl($post);
     }
 

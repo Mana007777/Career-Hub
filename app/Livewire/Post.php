@@ -79,7 +79,7 @@ class Post extends Component
 
     public function openEditModal($postId)
     {
-        $postService = new PostService(new \App\Repositories\PostRepository());
+        $postService = app(PostService::class);
         $post = $postService->getPostById($postId);
         
         if (!$post || $post->user_id !== Auth::id()) {
@@ -316,7 +316,7 @@ class Post extends Component
 
     public function getMediaUrl($post)
     {
-        $postService = new PostService(new \App\Repositories\PostRepository());
+        $postService = app(PostService::class);
         return $postService->getMediaUrl($post);
     }
 
@@ -411,7 +411,7 @@ class Post extends Component
 
     public function render()
     {
-        $postService = new PostService(new \App\Repositories\PostRepository());
+        $postService = app(PostService::class);
 
         if ($this->feedMode === 'popular') {
             $posts = $postService->getPopularPosts(10);

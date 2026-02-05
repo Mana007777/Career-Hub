@@ -48,7 +48,7 @@ class Search extends Component
 
     public function render()
     {
-        $postService = new PostService(new \App\Repositories\PostRepository());
+        $postService = app(PostService::class);
         
         if ($this->query) {
             $posts = $postService->searchPosts($this->query, 10);

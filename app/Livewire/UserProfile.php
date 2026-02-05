@@ -76,7 +76,7 @@ class UserProfile extends Component
 
     public function getMediaUrl($post)
     {
-        $postService = new PostService(new PostRepository());
+        $postService = app(PostService::class);
         return $postService->getMediaUrl($post);
     }
 
