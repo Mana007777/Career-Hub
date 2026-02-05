@@ -57,25 +57,57 @@
                                         href="{{ route('posts.show', $post->slug) }}"
                                         wire:click="closeSearch"
                                         class="block bg-gray-900 border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-colors cursor-pointer">
-                                        <!-- Post Header -->
-                                        <div class="flex items-center gap-3 mb-3">
-                                            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
-                                                <span class="text-gray-300 font-semibold text-sm">
-                                                    {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <h3 class="font-semibold text-white text-sm">{{ $post->user->name ?? 'Unknown User' }}</h3>
-                                                <p class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
-                                            </div>
-                                        </div>
-
-                                        <!-- Post Content (Highlighted) -->
-                                        <div class="mb-2">
-                                            <p class="text-gray-200 text-sm leading-relaxed">
-                                                {!! str_ireplace($query, '<mark class="bg-yellow-500/30 text-yellow-200">' . $query . '</mark>', e($post->content)) !!}
+                                        
+                                        <!-- Post Meta (no user profile card) -->
+                                        <div class="flex items-center justify-between mb-2">
+                                            <p class="text-xs text-gray-400">
+                                                Posted by {{ $post->user->name ?? 'Unknown User' }} · {{ $post->created_at->diffForHumans() }}
                                             </p>
                                         </div>
+
+                                        <!-- Post Title & Content (Highlighted) -->
+                                        <div class="mb-2">
+                                            @if(!empty($post->title))
+                                                <h3 class="text-sm font-semibold text-white mb-1">
+                                                    {!! str_ireplace($query, '<mark class="bg-yellow-500/30 text-yellow-200">' . $query . '</mark>', e($post->title)) !!}
+                                                </h3>
+                                            @endif
+                                            <p class="text-gray-200 text-sm leading-relaxed line-clamp-3">
+                                                {{ \Illuminate\Support\Str::limit($post->content, 140) }}
+                                            </p>
+                                        </div>
+
+                                        <!-- Post Specialties -->
+                                        @if($post->specialties && $post->specialties->count() > 0)
+                                            <div class="mb-2">
+                                                <div class="flex flex-wrap gap-2">
+                                                    @foreach($post->specialties as $specialty)
+                                                        @php
+                                                            $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
+                                                            $subSpecialty = $subSpecialtyId ? \App\Models\SubSpecialty::find($subSpecialtyId) : null;
+                                                        @endphp
+                                                        @if($subSpecialty)
+                                                            <span class="px-2 py-0.5 bg-blue-600/20 border border-blue-600/40 rounded-lg text-blue-300 text-xs">
+                                                                {{ $specialty->name }} - {{ $subSpecialty->name }}
+                                                            </span>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <!-- Post Tags -->
+                                        @if($post->tags && $post->tags->count() > 0)
+                                            <div class="mb-2">
+                                                <div class="flex flex-wrap gap-2">
+                                                    @foreach($post->tags as $tag)
+                                                        <span class="px-2 py-0.5 bg-purple-600/20 border border-purple-600/40 rounded-lg text-purple-300 text-xs">
+                                                            #{{ $tag->name }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
 
                                         <!-- Post Stats -->
                                         <div class="flex items-center gap-4 pt-2 border-t border-gray-700">
@@ -92,7 +124,7 @@
                                                 <span>{{ $post->comments->count() }}</span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 @endforeach
                             </div>
 

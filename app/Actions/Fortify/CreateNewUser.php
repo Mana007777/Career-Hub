@@ -2,6 +2,9 @@
 
 namespace App\Actions\Fortify;
 
+use App\Http\Requests\RegisterUserRequest;
+use App\Jobs\SendUserNotification;
+use App\Models\NotificationSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -19,27 +22,40 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'username' => ['nullable', 'string', 'max:255', 'unique:users', 'regex:/^[a-z0-9_]+$/i'],
-            'role' => ['required', 'string', 'in:seeker,company'],
-            'password' => $this->passwordRules(),
-            'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-        ])->validate();
+        $request = app(RegisterUserRequest::class);
+
+        Validator::make(
+            $input,
+            $request->rules()
+        )->validate();
 
         // Use provided username or generate a unique one from email
         $username = !empty($input['username']) 
             ? strtolower($input['username'])
             : $this->generateUniqueUsername($input['email'], $input['name']);
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'username' => $username,
             'password' => Hash::make($input['password']),
             'role' => $input['role'], // Use selected role from form
         ]);
+
+        // Create default notification settings
+        NotificationSetting::create([
+            'user_id' => $user->id,
+        ]);
+
+        // Queue a welcome notification for the new user (run on sync connection so it executes immediately)
+        SendUserNotification::dispatch([
+            'user_id' => $user->id,
+            'source_user_id' => $user->id,
+            'type' => 'welcome',
+            'message' => 'Welcome to CareerOp! Your account has been successfully registered.',
+        ])->onConnection('sync');
+
+        return $user;
     }
 
     /**

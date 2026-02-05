@@ -12,6 +12,7 @@ trait ValidatesPost
     protected function getCreatePostRules(): array
     {
         return [
+            'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string', 'max:5000'],
             'media' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,mp4,avi,mov', 'max:10240'],
             'specialties' => ['required', 'array', 'min:1'],
@@ -30,6 +31,7 @@ trait ValidatesPost
     protected function getUpdatePostRules(): array
     {
         return [
+            'editTitle' => ['required', 'string', 'max:255'],
             'editContent' => ['required', 'string', 'max:5000'],
             'editMedia' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,mp4,avi,mov', 'max:10240'],
             'editSpecialties' => ['required', 'array', 'min:1'],
@@ -48,6 +50,10 @@ trait ValidatesPost
     protected function getPostValidationMessages(): array
     {
         return [
+            'title.required' => 'The title field is required.',
+            'title.max' => 'The title may not be greater than 255 characters.',
+            'editTitle.required' => 'The title field is required.',
+            'editTitle.max' => 'The title may not be greater than 255 characters.',
             'content.required' => 'The content field is required.',
             'content.max' => 'The content may not be greater than 5000 characters.',
             'editContent.required' => 'The content field is required.',

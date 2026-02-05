@@ -1,5 +1,6 @@
 <div class="min-h-screen bg-gray-950 text-white pb-24">
     @livewire('search')
+    @livewire('notifications')
     <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Header -->
         <div class="mb-8">
@@ -22,6 +23,19 @@
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-lg">
                 <form wire:submit.prevent="create">
                     <div class="mb-4">
+                        <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                        <input
+                            type="text"
+                            wire:model="title"
+                            id="title"
+                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Give your post a clear title">
+                        @error('title')
+                            <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
                         <textarea 
                             wire:model="content"
                             id="content"
@@ -32,7 +46,6 @@
                             <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> 
                         @enderror
                     </div>
-
                     <!-- Specialty Selection -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-300 mb-2">Add Specialty & Sub-Specialty *</label>
@@ -55,8 +68,7 @@
                         <button 
                             type="button"
                             wire:click="addSpecialty"
-                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-                            @if(!trim($specialtyName) || !trim($subSpecialtyName)) disabled @endif>
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
                             Add Specialty
                         </button>
                         @error('specialties') 
@@ -96,8 +108,7 @@
                             <button 
                                 type="button"
                                 wire:click="addTag"
-                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-                                @if(!trim($tagName)) disabled @endif>
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
                                 Add Tag
                             </button>
                         </div>
@@ -183,16 +194,30 @@
                 <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors">
                     <!-- Post Header -->
                     <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-                                <span class="text-gray-300 font-semibold">
-                                    {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
-                                </span>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-white">{{ $post->user->name ?? 'Unknown User' }}</h3>
-                                <p class="text-sm text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
-                            </div>
+                        <div class="flex items-center gap-3 flex-1">
+                            <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                                    <span class="text-gray-300 font-semibold">
+                                        {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white">{{ $post->user->name ?? 'Unknown User' }}</h3>
+                                    <p class="text-sm text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
+                                </div>
+                            </a>
+                            
+                            <!-- Follow Button (only for other users) -->
+                            @if(auth()->check() && $post->user_id !== auth()->id())
+                                @php
+                                    $isFollowing = $this->isFollowing($post->user_id);
+                                @endphp
+                                <button 
+                                    wire:click="toggleFollow({{ $post->user_id }})"
+                                    class="ml-auto px-4 py-1.5 text-sm rounded-lg font-medium transition-colors {{ $isFollowing ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700' : 'bg-blue-600 hover:bg-blue-700 text-white' }}">
+                                    {{ $isFollowing ? 'Following' : 'Follow' }}
+                                </button>
+                            @endif
                         </div>
                         
                         @if ($post->user_id === auth()->id())
@@ -215,8 +240,11 @@
                         @endif
                     </div>
 
-                    <!-- Post Content -->
+                    <!-- Post Title & Content -->
                     <div class="mb-4">
+                        @if(!empty($post->title))
+                            <h2 class="text-lg font-semibold text-white mb-1">{{ $post->title }}</h2>
+                        @endif
                         <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">{{ $post->content }}</p>
                     </div>
 
@@ -323,6 +351,17 @@
                         
                         <div class="bg-gray-900 px-6 py-4">
                             <div class="mb-4">
+                                <label for="editTitle" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                                <input
+                                    type="text"
+                                    wire:model="editTitle"
+                                    id="editTitle"
+                                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Update title">
+                                @error('editTitle') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="mb-4">
                                 <label for="editContent" class="block text-sm font-medium text-gray-300 mb-2">Content</label>
                                 <textarea 
                                     wire:model="editContent"
@@ -371,8 +410,7 @@
                                 <button 
                                     type="button"
                                     wire:click="addEditSpecialty"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-                                    @if(!trim($editSpecialtyName) || !trim($editSubSpecialtyName)) disabled @endif>
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
                                     Add Specialty
                                 </button>
                                 @error('editSpecialties') 
@@ -412,8 +450,7 @@
                                     <button 
                                         type="button"
                                         wire:click="addEditTag"
-                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-                                        @if(!trim($editTagName)) disabled @endif>
+                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
                                         Add Tag
                                     </button>
                                 </div>
@@ -552,18 +589,31 @@
                 Home
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-            <button data-tooltip-target="tooltip-bookmark" type="button"
-                class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
+            @php
+                $unreadNotifications = auth()->check()
+                    ? auth()->user()->notificationsCustom()->where('is_read', false)->count()
+                    : 0;
+            @endphp
+            <button 
+                wire:click="$dispatch('openNotifications')"
+                data-tooltip-target="tooltip-notifications" 
+                type="button"
+                class="relative inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
                 <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m17 21-5-4-5 4V3.889a.92.92 0 0 1 .244-.629.808.808 0 0 1 .59-.26h8.333a.81.81 0 0 1 .589.26.92.92 0 0 1 .244.63V21Z" />
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m2 0v1a3 3 0 11-6 0v-1h6z" />
                 </svg>
-                <span class="sr-only">Bookmark</span>
+                @if($unreadNotifications > 0)
+                    <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500 text-white border border-gray-900">
+                        {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
+                    </span>
+                @endif
+                <span class="sr-only">Notifications</span>
             </button>
-            <div id="tooltip-bookmark" role="tooltip"
+            <div id="tooltip-notifications" role="tooltip"
                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
-                Bookmark
+                Notifications
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
             <button 

@@ -18,4 +18,10 @@ Route::middleware([
     Route::get('/posts/{slug}', function ($slug) {
         return view('dashboard', ['postSlug' => $slug]);
     })->name('posts.show');
+
+    Route::get('/user/{username}', function ($username) {
+        // Remove @ if present
+        $username = ltrim($username);
+        return view('dashboard', ['profileUsername' => $username]);
+    })->name('user.profile');
 });

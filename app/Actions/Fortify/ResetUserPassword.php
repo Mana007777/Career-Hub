@@ -2,6 +2,7 @@
 
 namespace App\Actions\Fortify;
 
+use App\Http\Requests\ResetUserPasswordRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -18,9 +19,12 @@ class ResetUserPassword implements ResetsUserPasswords
      */
     public function reset(User $user, array $input): void
     {
-        Validator::make($input, [
-            'password' => $this->passwordRules(),
-        ])->validate();
+        $request = app(ResetUserPasswordRequest::class);
+
+        Validator::make(
+            $input,
+            $request->rules()
+        )->validate();
 
         $user->forceFill([
             'password' => Hash::make($input['password']),

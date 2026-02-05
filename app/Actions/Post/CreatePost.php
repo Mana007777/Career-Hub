@@ -2,42 +2,45 @@
 
 namespace App\Actions\Post;
 
+use App\DTO\PostData;
+use App\Jobs\SendUserNotification;
 use App\Models\Post;
 use App\Models\Specialty;
 use App\Models\SubSpecialty;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
+/**
+ * Use case: create a new post.
+ */
 class CreatePost
 {
     /**
      * Create a new post.
      *
-     * @param  array<string, mixed>  $input
+     * @param  PostData  $data
      * @return Post
-     * @throws ValidationException
      */
-    public function create(array $input): Post
+    public function create(PostData $data): Post
     {
-        $validated = $this->validate($input);
-
         $mediaPath = null;
-        if (isset($validated['media']) && $validated['media']) {
-            $mediaPath = $this->storeMedia($validated['media']);
+        if ($data->media) {
+            $mediaPath = $this->storeMedia($data->media);
         }
 
+        $userId = Auth::id();
+
         $post = Post::create([
-            'user_id' => Auth::id(),
-            'content' => $validated['content'],
-            'media' => $mediaPath,
+            'user_id' => $userId,
+            'title'   => $data->title,
+            'content' => $data->content,
+            'media'   => $mediaPath,
         ]);
 
         // Attach specialties to the post (find or create)
-        if (isset($validated['specialties']) && is_array($validated['specialties'])) {
-            foreach ($validated['specialties'] as $specialtyData) {
+        if (!empty($data->specialties)) {
+            foreach ($data->specialties as $specialtyData) {
                 // Find or create specialty
                 $specialty = Specialty::firstOrCreate(
                     ['name' => trim($specialtyData['specialty_name'])]
@@ -62,45 +65,32 @@ class CreatePost
         }
 
         // Attach tags to the post (find or create)
-        if (isset($validated['tags']) && is_array($validated['tags'])) {
+        if (!empty($data->tags)) {
             $tagIds = [];
-            foreach ($validated['tags'] as $tagData) {
+            foreach ($data->tags as $tagData) {
                 $tag = Tag::firstOrCreate(['name' => trim($tagData['name'])]);
                 $tagIds[] = $tag->id;
             }
             $post->tags()->sync($tagIds);
         }
 
-        return $post->load(['specialties', 'subSpecialties', 'tags']);
-    }
+        $post->load(['specialties', 'subSpecialties', 'tags', 'user.followers']);
 
-    /**
-     * Validate the input data.
-     *
-     * @param  array<string, mixed>  $input
-     * @return array<string, mixed>
-     * @throws ValidationException
-     */
-    protected function validate(array $input): array
-    {
-        return Validator::make($input, [
-            'content' => ['required', 'string', 'max:5000'],
-            'media' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,mp4,avi,mov', 'max:10240'], // 10MB max
-            'specialties' => ['required', 'array', 'min:1'],
-            'specialties.*.specialty_name' => ['required', 'string', 'max:255'],
-            'specialties.*.sub_specialty_name' => ['required', 'string', 'max:255'],
-            'tags' => ['nullable', 'array'],
-            'tags.*.name' => ['required', 'string', 'max:255'],
-        ], [
-            'specialties.required' => 'Please add at least one specialty and sub-specialty.',
-            'specialties.min' => 'Please add at least one specialty and sub-specialty.',
-            'specialties.*.specialty_name.required' => 'Specialty name is required.',
-            'specialties.*.specialty_name.max' => 'Specialty name may not be greater than 255 characters.',
-            'specialties.*.sub_specialty_name.required' => 'Sub-specialty name is required.',
-            'specialties.*.sub_specialty_name.max' => 'Sub-specialty name may not be greater than 255 characters.',
-            'tags.*.name.required' => 'Tag name is required.',
-            'tags.*.name.max' => 'Tag name may not be greater than 255 characters.',
-        ])->validate();
+        // Notify followers that this user has shared a new post
+        $author = $post->user;
+        if ($author && $author->followers && $author->followers->isNotEmpty()) {
+            foreach ($author->followers as $follower) {
+                SendUserNotification::dispatch([
+                    'user_id' => $follower->id,
+                    'source_user_id' => $author->id,
+                    'type' => 'new_post_from_following',
+                    'post_id' => $post->id,
+                    'message' => "{$author->name} shared a new post.",
+                ])->onConnection('sync');
+            }
+        }
+
+        return $post;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Actions\Post\CreatePost;
 use App\Actions\Post\DeletePost;
 use App\Actions\Post\UpdatePost;
+use App\Actions\User\FollowUser;
 use App\Livewire\Concerns\ValidatesPost;
 use App\Models\Post as PostModel;
 use App\Services\PostService;
@@ -17,6 +18,7 @@ class Post extends Component
 {
     use WithPagination, WithFileUploads, ValidatesPost;
 
+    public $title = '';
     public $content = '';
     public $media;
     public $specialties = [];
@@ -25,6 +27,7 @@ class Post extends Component
     public $tags = [];
     public $tagName = '';
     public $editingPostId = null;
+    public $editTitle = '';
     public $editContent = '';
     public $editMedia;
     public $editSpecialties = [];
@@ -37,7 +40,10 @@ class Post extends Component
     public $showDeleteModal = false;
     public $postToDelete = null;
 
-    protected $listeners = ['refreshPosts' => '$refresh'];
+    protected $listeners = [
+        'refreshPosts' => '$refresh',
+        'notificationsUpdated' => '$refresh',
+    ];
 
     public function mount()
     {
@@ -69,6 +75,7 @@ class Post extends Component
         }
 
         $this->editingPostId = $postId;
+        $this->editTitle = $post->title;
         $this->editContent = $post->content;
         $this->editMedia = null;
         
@@ -98,6 +105,7 @@ class Post extends Component
     {
         $this->showEditModal = false;
         $this->editingPostId = null;
+        $this->editTitle = '';
         $this->editContent = '';
         $this->editMedia = null;
         $this->editSpecialties = [];
@@ -232,12 +240,15 @@ class Post extends Component
 
         try {
             $createPost = new CreatePost();
-            $createPost->create([
-                'content' => $this->content,
-                'media' => $this->media,
-                'specialties' => $this->specialties,
-                'tags' => $this->tags,
-            ]);
+            $createPost->create(
+                new \App\DTO\PostData(
+                    title: $this->title,
+                    content: $this->content,
+                    media: $this->media,
+                    specialties: $this->specialties,
+                    tags: $this->tags,
+                )
+            );
 
             session()->flash('success', 'Post created successfully!');
             $this->closeCreateForm();
@@ -257,12 +268,16 @@ class Post extends Component
         try {
             $post = PostModel::findOrFail($this->editingPostId);
             $updatePost = new UpdatePost();
-            $updatePost->update($post, [
-                'content' => $this->editContent,
-                'media' => $this->editMedia,
-                'specialties' => $this->editSpecialties,
-                'tags' => $this->editTags,
-            ]);
+            $updatePost->update(
+                $post,
+                new \App\DTO\PostData(
+                    title: $this->editTitle,
+                    content: $this->editContent,
+                    media: $this->editMedia,
+                    specialties: $this->editSpecialties,
+                    tags: $this->editTags,
+                )
+            );
 
             session()->flash('success', 'Post updated successfully!');
             $this->closeEditModal();
@@ -292,8 +307,50 @@ class Post extends Component
         return $postService->getMediaUrl($post);
     }
 
+    public function isFollowing($userId)
+    {
+        if (!Auth::check() || Auth::id() === $userId) {
+            return false;
+        }
+        
+        $followAction = new FollowUser();
+        $user = \App\Models\User::find($userId);
+        return $user ? $followAction->isFollowing($user) : false;
+    }
+
+    public function toggleFollow($userId)
+    {
+        if (!Auth::check()) {
+            session()->flash('error', 'You must be logged in to follow users.');
+            return;
+        }
+
+        if (Auth::id() === $userId) {
+            session()->flash('error', 'You cannot follow yourself.');
+            return;
+        }
+
+        try {
+            $user = \App\Models\User::findOrFail($userId);
+            $followAction = new FollowUser();
+            
+            if ($followAction->isFollowing($user)) {
+                $followAction->unfollow($user);
+                session()->flash('success', 'You have unfollowed ' . $user->name);
+            } else {
+                $followAction->follow($user);
+                session()->flash('success', 'You are now following ' . $user->name);
+            }
+            
+            $this->dispatch('$refresh');
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
+    }
+
     public function resetForm()
     {
+        $this->title = '';
         $this->content = '';
         $this->media = null;
         $this->specialties = [];

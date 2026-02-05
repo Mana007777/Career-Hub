@@ -8,6 +8,7 @@ class Post extends Model
 {
     protected $fillable = [
         'user_id',
+        'title',
         'content',
         'media',
     ];
@@ -68,9 +69,11 @@ class Post extends Model
      */
     public function getSlugAttribute(): string
     {
-        // Generate a slug from the first few words of content + ID
-        $content = substr(strip_tags($this->content), 0, 50);
-        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $content)));
+        // Prefer title for slug; fall back to content
+        $base = $this->title ?: $this->content;
+
+        $snippet = substr(strip_tags($base), 0, 50);
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $snippet)));
         $slug = preg_replace('/-+/', '-', $slug);
         $slug = trim($slug, '-');
         

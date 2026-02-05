@@ -2,52 +2,55 @@
 
 namespace App\Actions\Post;
 
+use App\DTO\PostData;
 use App\Models\Post;
 use App\Models\Specialty;
 use App\Models\SubSpecialty;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
+/**
+ * Use case: update an existing post.
+ */
 class UpdatePost
 {
     /**
      * Update an existing post.
      *
      * @param  Post  $post
-     * @param  array<string, mixed>  $input
+     * @param  PostData  $data
      * @return Post
-     * @throws ValidationException
      */
-    public function update(Post $post, array $input): Post
+    public function update(Post $post, PostData $data): Post
     {
         $this->authorize($post);
 
-        $validated = $this->validate($input);
-
         // Handle media update
-        if (isset($validated['media']) && $validated['media']) {
+        if ($data->media) {
             // Delete old media if exists
             if ($post->media) {
                 Storage::disk('public')->delete($post->media);
             }
-            $validated['media'] = $this->storeMedia($validated['media']);
+            $mediaPath = $this->storeMedia($data->media);
         } else {
             // If media is not being updated, keep the existing one
-            unset($validated['media']);
+            $mediaPath = $post->media;
         }
 
-        $post->update($validated);
+        $post->update([
+            'title'   => $data->title,
+            'content' => $data->content,
+            'media'   => $mediaPath,
+        ]);
 
         // Update specialties
-        if (isset($validated['specialties']) && is_array($validated['specialties'])) {
+        if (!empty($data->specialties)) {
             // Detach all existing specialties
             $post->specialties()->detach();
             
             // Attach new specialties
-            foreach ($validated['specialties'] as $specialtyData) {
+            foreach ($data->specialties as $specialtyData) {
                 $specialty = Specialty::firstOrCreate(
                     ['name' => trim($specialtyData['specialty_name'])]
                 );
@@ -66,9 +69,9 @@ class UpdatePost
         }
 
         // Update tags
-        if (isset($validated['tags']) && is_array($validated['tags'])) {
+        if (!empty($data->tags)) {
             $tagIds = [];
-            foreach ($validated['tags'] as $tagData) {
+            foreach ($data->tags as $tagData) {
                 $tag = Tag::firstOrCreate(['name' => trim($tagData['name'])]);
                 $tagIds[] = $tag->id;
             }
@@ -76,35 +79,6 @@ class UpdatePost
         }
 
         return $post->fresh()->load(['specialties', 'subSpecialties', 'tags']);
-    }
-
-    /**
-     * Validate the input data.
-     *
-     * @param  array<string, mixed>  $input
-     * @return array<string, mixed>
-     * @throws ValidationException
-     */
-    protected function validate(array $input): array
-    {
-        return Validator::make($input, [
-            'content' => ['required', 'string', 'max:5000'],
-            'media' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,mp4,avi,mov', 'max:10240'], // 10MB max
-            'specialties' => ['required', 'array', 'min:1'],
-            'specialties.*.specialty_name' => ['required', 'string', 'max:255'],
-            'specialties.*.sub_specialty_name' => ['required', 'string', 'max:255'],
-            'tags' => ['nullable', 'array'],
-            'tags.*.name' => ['required', 'string', 'max:255'],
-        ], [
-            'specialties.required' => 'Please add at least one specialty and sub-specialty.',
-            'specialties.min' => 'Please add at least one specialty and sub-specialty.',
-            'specialties.*.specialty_name.required' => 'Specialty name is required.',
-            'specialties.*.specialty_name.max' => 'Specialty name may not be greater than 255 characters.',
-            'specialties.*.sub_specialty_name.required' => 'Sub-specialty name is required.',
-            'specialties.*.sub_specialty_name.max' => 'Sub-specialty name may not be greater than 255 characters.',
-            'tags.*.name.required' => 'Tag name is required.',
-            'tags.*.name.max' => 'Tag name may not be greater than 255 characters.',
-        ])->validate();
     }
 
     /**

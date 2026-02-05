@@ -7,6 +7,7 @@ use App\Models\SubSpecialty;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PostRepository
 {
@@ -41,7 +42,15 @@ class PostRepository
     public function getByUserId(int $userId, int $perPage = 10): LengthAwarePaginator
     {
         return Post::where('user_id', $userId)
-            ->with(['user', 'likes', 'comments', 'specialties', 'tags'])
+            ->with([
+                'user', 
+                'likes', 
+                'comments', 
+                'specialties' => function($query) {
+                    $query->with('subSpecialties');
+                },
+                'tags'
+            ])
             ->latest()
             ->paginate($perPage);
     }
@@ -59,7 +68,7 @@ class PostRepository
     }
 
     /**
-     * Search posts by content, specialty, sub-specialty, or tags.
+     * Search posts by title (if available), specialty, sub-specialty, or tags.
      *
      * @param  string  $query
      * @param  int  $perPage
@@ -68,6 +77,7 @@ class PostRepository
     public function search(string $query, int $perPage = 10): LengthAwarePaginator
     {
         $searchTerm = '%' . $query . '%';
+        $hasTitleColumn = Schema::hasColumn('posts', 'title');
         
         // Get sub-specialty IDs that match the search
         $matchingSubSpecialtyIds = SubSpecialty::where('name', 'like', $searchTerm)->pluck('id');
@@ -78,18 +88,24 @@ class PostRepository
             ->pluck('post_id');
         
         return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
-            ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties) {
-                $q->where('content', 'like', $searchTerm)
-                  // Search by specialty name
-                  ->orWhereHas('specialties', function($sq) use ($searchTerm) {
-                      $sq->where('name', 'like', $searchTerm);
-                  })
-                  // Search by sub-specialty name (through pivot)
-                  ->orWhereIn('id', $postIdsWithMatchingSubSpecialties)
-                  // Search by tag name
-                  ->orWhereHas('tags', function($tq) use ($searchTerm) {
-                      $tq->where('name', 'like', $searchTerm);
-                  });
+            ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties, $hasTitleColumn) {
+                // Prefer searching by title when the column exists; fall back to content otherwise
+                if ($hasTitleColumn) {
+                    $q->where('title', 'like', $searchTerm);
+                } else {
+                    $q->where('content', 'like', $searchTerm);
+                }
+
+                // Search by specialty name
+                $q->orWhereHas('specialties', function($sq) use ($searchTerm) {
+                    $sq->where('name', 'like', $searchTerm);
+                })
+                // Search by sub-specialty name (through pivot)
+                ->orWhereIn('id', $postIdsWithMatchingSubSpecialties)
+                // Search by tag name
+                ->orWhereHas('tags', function($tq) use ($searchTerm) {
+                    $tq->where('name', 'like', $searchTerm);
+                });
             })
             ->latest()
             ->paginate($perPage);

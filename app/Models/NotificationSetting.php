@@ -8,6 +8,13 @@ class NotificationSetting extends Model
 {
     protected $table = 'notification_settings';
 
+    /**
+     * The model does not have created_at/updated_at columns.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
     protected $fillable = [
         'user_id',
         'follow',

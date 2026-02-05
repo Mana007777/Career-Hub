@@ -16,7 +16,7 @@
             <div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
                 <!-- Post Header -->
                 <div class="flex items-start justify-between mb-4">
-                    <div class="flex items-center gap-3">
+                    <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                         <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center">
                             <span class="text-gray-300 font-semibold">
                                 {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
@@ -26,7 +26,7 @@
                             <h3 class="font-semibold text-white">{{ $post->user->name ?? 'Unknown User' }}</h3>
                             <p class="text-sm text-gray-400">{{ $post->created_at->format('F j, Y \a\t g:i A') }}</p>
                         </div>
-                    </div>
+                    </a>
                     
                     @if ($post->user_id === auth()->id())
                         <div class="flex items-center gap-2">
@@ -41,8 +41,11 @@
                     @endif
                 </div>
 
-                <!-- Post Content -->
+                <!-- Post Title & Content -->
                 <div class="mb-4">
+                    @if(!empty($post->title))
+                        <h1 class="text-2xl font-bold text-white mb-2">{{ $post->title }}</h1>
+                    @endif
                     <p class="text-gray-200 leading-relaxed whitespace-pre-wrap text-lg">{{ $post->content }}</p>
                 </div>
 
