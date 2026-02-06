@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 use Laravel\Jetstream\Jetstream;
 
 class RegisterUserRequest extends FormRequest
@@ -19,7 +20,7 @@ class RegisterUserRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'username' => ['nullable', 'string', 'max:255', 'unique:users', 'regex:/^[a-z0-9_]+$/i'],
             'role' => ['required', 'string', 'in:seeker,company'],
-            'password' => app(\App\Actions\Fortify\CreateNewUser::class)->passwordRules(),
+            'password' => ['required', 'string', Password::default(), 'confirmed'],
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ];
     }

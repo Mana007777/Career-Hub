@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Profile;
 
+use App\Actions\User\SendEmailVerification as SendEmailVerificationAction;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Livewire\Component;
 
 class SendEmailVerification extends Component
@@ -11,22 +12,15 @@ class SendEmailVerification extends Component
     public $verificationLinkSent = false;
     public $user;
 
-    public function mount()
+    public function mount(): void
     {
         $this->user = Auth::user();
     }
 
-    public function sendEmailVerification()
+    public function sendEmailVerification(SendEmailVerificationAction $sendEmailVerificationAction): void
     {
-        $user = Auth::user();
-
-        if ($user->email_verified_at) {
-            return;
-        }
-
         try {
-            // Send email verification notification
-            $user->sendEmailVerificationNotification();
+            $sendEmailVerificationAction->send();
 
             $this->verificationLinkSent = true;
             
@@ -34,16 +28,13 @@ class SendEmailVerification extends Component
             
             $this->dispatch('verification-sent');
         } catch (\Exception $e) {
-            // Log the error for debugging
-            \Log::error('Email verification failed: ' . $e->getMessage());
-            
-            session()->flash('verification-error', 'Failed to send verification email. Please check your mail configuration.');
+            session()->flash('verification-error', 'Failed to send verification email. Please try again.');
             
             $this->dispatch('verification-error');
         }
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.profile.send-email-verification');
     }

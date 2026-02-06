@@ -46,6 +46,16 @@
                     @if(!empty($post->title))
                         <h1 class="text-2xl font-bold text-white mb-2">{{ $post->title }}</h1>
                     @endif
+                    @if($post->job_type)
+                        <div class="mb-3">
+                            <span class="inline-flex items-center px-3 py-1 bg-blue-600/20 text-blue-300 text-sm font-medium rounded-lg border border-blue-600/50">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                {{ ucfirst(str_replace('-', ' ', $post->job_type)) }}
+                            </span>
+                        </div>
+                    @endif
                     <p class="text-gray-200 leading-relaxed whitespace-pre-wrap text-lg">{{ $post->content }}</p>
                 </div>
 
@@ -101,6 +111,71 @@
                         <span>{{ $post->comments->count() }} comments</span>
                     </div>
                 </div>
+
+                <!-- CV Upload Section (only show if user is not the post owner and post has job_type) -->
+                @auth
+                    @if($post->user_id !== auth()->id() && $post->job_type)
+                        <div class="mt-8 pt-6 border-t border-gray-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-lg font-semibold text-white">Apply for this Job</h2>
+                                @if($hasUploadedCv)
+                                    <button
+                                        type="button"
+                                        disabled
+                                        class="px-4 py-2 bg-green-600/80 text-white text-sm font-medium rounded-lg cursor-not-allowed">
+                                        CV Uploaded ✓
+                                    </button>
+                                @endif
+                            </div>
+
+                            @if(!$hasUploadedCv)
+                                <form wire:submit.prevent="uploadCv" class="bg-gray-900/60 border border-gray-800 rounded-lg p-4">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label for="cvFile" class="block text-sm font-medium text-gray-300 mb-2">CV File *</label>
+                                            <input
+                                                type="file"
+                                                wire:model="cvFile"
+                                                id="cvFile"
+                                                accept=".pdf,.doc,.docx"
+                                                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            @error('cvFile')
+                                                <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                                            @enderror
+                                            @if($cvFile)
+                                                <p class="text-xs text-gray-400 mt-1">Selected: {{ $cvFile->getClientOriginalName() }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div>
+                                            <label for="cvMessage" class="block text-sm font-medium text-gray-300 mb-2">Message (Optional)</label>
+                                            <textarea
+                                                wire:model="cvMessage"
+                                                id="cvMessage"
+                                                rows="3"
+                                                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                                placeholder="Add a message to your application..."></textarea>
+                                            @error('cvMessage')
+                                                <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+
+                                        <div class="flex justify-end">
+                                            <button
+                                                type="submit"
+                                                wire:loading.attr="disabled"
+                                                wire:target="uploadCv"
+                                                class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50">
+                                                <span wire:loading.remove wire:target="uploadCv">Submit CV</span>
+                                                <span wire:loading wire:target="uploadCv">Uploading...</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+                @endauth
 
                 <!-- Comments Section -->
                 <div class="mt-8 pt-6 border-t border-gray-800">

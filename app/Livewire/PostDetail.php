@@ -2,173 +2,183 @@
 
 namespace App\Livewire;
 
+use App\Actions\Comment\AddComment;
+use App\Actions\Comment\AddReply;
+use App\Actions\Comment\LikeComment;
+use App\Actions\Post\LikePost;
+use App\Actions\Post\UploadPostCv;
+use App\Livewire\Validations\AddCommentValidation;
+use App\Livewire\Validations\AddReplyValidation;
 use App\Models\Comment;
 use App\Models\Post as PostModel;
-use App\Jobs\SendUserNotification;
 use App\Services\PostService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class PostDetail extends Component
 {
+    use WithFileUploads;
+
     public $slug;
     public $post;
     public $content = '';
     public $replyContent = [];
     public $showLikersModal = false;
+    public $cvFile;
+    public $cvMessage = '';
+    public $showCvUpload = false;
+    public $hasUploadedCv = false;
 
-    public function mount($slug)
+    public function mount(string $slug, PostService $postService): void
     {
         $this->slug = $slug;
-        $this->loadPost();
+        $this->loadPost($postService);
     }
 
-    protected function loadPost()
+    public function hydrate(): void
+    {
+        // Re-check CV upload status on re-hydration
+        if ($this->post && Auth::check() && $this->post->job_type) {
+            $this->hasUploadedCv = \App\Models\PostCv::where('post_id', $this->post->id)
+                ->where('user_id', Auth::id())
+                ->exists();
+        }
+    }
+
+    protected function loadPost(PostService $postService): void
     {
         // Extract ID from slug (format: slug-text-123)
         $parts = explode('-', $this->slug);
         $id = end($parts);
 
-        if (is_numeric($id)) {
-            $postService = app(PostService::class);
-            $this->post = $postService->getPostById((int) $id);
-            
-            if (!$this->post) {
-                abort(404, 'Post not found');
-            }
-        } else {
+        if (!is_numeric($id)) {
             abort(404, 'Invalid post slug');
         }
-    }
 
-    public function getMediaUrl($post)
-    {
-        $postService = app(PostService::class);
-        return $postService->getMediaUrl($post);
-    }
-
-    public function togglePostLike(): void
-    {
-        if (!Auth::check() || !$this->post) {
-            session()->flash('error', 'You must be logged in to like posts.');
-            return;
+        $this->post = $postService->getPostById((int) $id);
+        
+        if (!$this->post) {
+            abort(404, 'Post not found');
         }
 
-        $userId = Auth::id();
-        $existing = $this->post->likes()->where('user_id', $userId)->first();
+        // Check if current user has already uploaded a CV for this post
+        if (Auth::check() && $this->post->job_type) {
+            $this->hasUploadedCv = \App\Models\PostCv::where('post_id', $this->post->id)
+                ->where('user_id', Auth::id())
+                ->exists();
+        }
+    }
 
-        if ($existing) {
-            $existing->delete();
-            // no notification on unlike
-        } else {
-            $this->post->likes()->create(['user_id' => $userId]);
+    public function getMediaUrl(PostModel $post): ?string
+    {
+        return app(PostService::class)->getMediaUrl($post);
+    }
 
-            // Notify post owner when someone likes their post
-            if ($this->post->user_id !== $userId) {
-                SendUserNotification::dispatch([
-                    'user_id'        => $this->post->user_id,
-                    'source_user_id' => $userId,
-                    'type'           => 'post_liked',
-                    'post_id'        => $this->post->id,
-                    'message'        => Auth::user()->name . ' liked your post.',
-                ])->onConnection('sync');
+    public function togglePostLike(LikePost $likePostAction): void
+    {
+        try {
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
             }
-        }
 
-        $this->post->refresh()->loadMissing('likes.user', 'likedBy');
+            $likePostAction->toggle($this->post);
+            $this->post->refresh()->loadMissing(['likes.user', 'likedBy']);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to like post. Please try again.');
+        }
     }
 
     public function addComment(): void
     {
-        if (!Auth::check() || !$this->post) {
-            session()->flash('error', 'You must be logged in to comment.');
-            return;
-        }
+        $addCommentAction = app(AddComment::class);
+        
+        try {
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
 
-        $text = trim($this->content);
-        if ($text === '') {
-            return;
-        }
+            // Ensure property is initialized
+            $this->content = $this->content ?? '';
 
-        Comment::create([
-            'post_id'  => $this->post->id,
-            'user_id'  => Auth::id(),
-            'parent_id'=> null,
-            'content'  => $text,
-        ]);
+            // Validate using Livewire validation class
+            $this->validate(AddCommentValidation::rules(), AddCommentValidation::messages());
 
-        $this->content = '';
-        $this->post->refresh()->loadMissing('comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes');
+            $addCommentAction->create($this->post, $this->content);
 
-        // Notify post owner about a new comment
-        if ($this->post->user_id !== Auth::id()) {
-            SendUserNotification::dispatch([
-                'user_id'        => $this->post->user_id,
-                'source_user_id' => Auth::id(),
-                'type'           => 'post_commented',
-                'post_id'        => $this->post->id,
-                'message'        => Auth::user()->name . ' commented on your post.',
-            ])->onConnection('sync');
+            $this->content = '';
+            $this->post->refresh()->loadMissing([
+                'comments.user',
+                'comments.likes',
+                'comments.replies.user',
+                'comments.replies.likes'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to add comment. Please try again.');
         }
     }
 
     public function addReply(int $parentId): void
     {
-        if (!Auth::check() || !$this->post) {
-            session()->flash('error', 'You must be logged in to reply.');
-            return;
-        }
+        $addReplyAction = app(AddReply::class);
+        
+        try {
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
 
-        $text = trim($this->replyContent[$parentId] ?? '');
-        if ($text === '') {
-            return;
-        }
+            // Ensure replyContent array is initialized
+            if (!is_array($this->replyContent)) {
+                $this->replyContent = [];
+            }
 
-        $reply = Comment::create([
-            'post_id'   => $this->post->id,
-            'user_id'   => Auth::id(),
-            'parent_id' => $parentId,
-            'content'   => $text,
-        ]);
+            $content = trim($this->replyContent[$parentId] ?? '');
+            if (empty($content)) {
+                return;
+            }
 
-        $this->replyContent[$parentId] = '';
-        $this->post->refresh()->loadMissing('comments.user', 'comments.likes', 'comments.replies.user', 'comments.replies.likes');
+            // Validate using Livewire validation class
+            // For nested array properties, we need to validate the specific key
+            $rules = AddReplyValidation::rules();
+            $messages = AddReplyValidation::messages();
+            $this->validate([
+                "replyContent.{$parentId}" => $rules['content']
+            ], [
+                "replyContent.{$parentId}.required" => $messages['content.required'],
+                "replyContent.{$parentId}.max" => $messages['content.max'],
+            ]);
 
-        // Notify parent comment owner about a reply
-        $parent = Comment::find($parentId);
-        if ($parent && $parent->user_id && $parent->user_id !== Auth::id()) {
-            SendUserNotification::dispatch([
-                'user_id'        => $parent->user_id,
-                'source_user_id' => Auth::id(),
-                'type'           => 'comment_replied',
-                'post_id'        => $this->post->id,
-                'message'        => Auth::user()->name . ' replied to your comment.',
-            ])->onConnection('sync');
+            $addReplyAction->create($this->post, $parentId, $content);
+
+            $this->replyContent[$parentId] = '';
+            $this->post->refresh()->loadMissing([
+                'comments.user',
+                'comments.likes',
+                'comments.replies.user',
+                'comments.replies.likes'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to add reply. Please try again.');
         }
     }
 
-    public function toggleCommentLike(int $commentId): void
+    public function toggleCommentLike(int $commentId, LikeComment $likeCommentAction): void
     {
-        if (!Auth::check()) {
-            session()->flash('error', 'You must be logged in to like comments.');
-            return;
+        try {
+            $comment = Comment::findOrFail($commentId);
+            $likeCommentAction->toggle($comment);
+            $this->post->refresh()->loadMissing(['comments.likes', 'comments.replies.likes']);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to like comment. Please try again.');
         }
-
-        $comment = Comment::find($commentId);
-        if (!$comment) {
-            return;
-        }
-
-        $userId = Auth::id();
-        $existing = $comment->likes()->where('user_id', $userId)->first();
-
-        if ($existing) {
-            $existing->delete();
-        } else {
-            $comment->likes()->create(['user_id' => $userId]);
-        }
-
-        $this->post->refresh()->loadMissing('comments.likes', 'comments.replies.likes');
     }
 
     public function toggleLikersModal(): void
@@ -176,7 +186,52 @@ class PostDetail extends Component
         $this->showLikersModal = !$this->showLikersModal;
     }
 
-    public function render()
+    public function toggleCvUpload(): void
+    {
+        $this->showCvUpload = !$this->showCvUpload;
+        if (!$this->showCvUpload) {
+            $this->cvFile = null;
+            $this->cvMessage = '';
+        }
+    }
+
+    public function uploadCv(): void
+    {
+        $uploadCvAction = app(UploadPostCv::class);
+        
+        try {
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
+
+            // Validate CV file
+            $this->validate([
+                'cvFile' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'], // 5MB max
+                'cvMessage' => ['nullable', 'string', 'max:1000'],
+            ], [
+                'cvFile.required' => 'Please select a CV file to upload.',
+                'cvFile.file' => 'The CV must be a valid file.',
+                'cvFile.mimes' => 'The CV must be a PDF, DOC, or DOCX file.',
+                'cvFile.max' => 'The CV file size must not exceed 5MB.',
+                'cvMessage.max' => 'The message may not be greater than 1000 characters.',
+            ]);
+
+            $uploadCvAction->upload($this->post, $this->cvFile, $this->cvMessage);
+
+            session()->flash('success', 'CV uploaded successfully!');
+            $this->cvFile = null;
+            $this->cvMessage = '';
+            $this->showCvUpload = false;
+            $this->hasUploadedCv = true; // Update the flag after successful upload
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to upload CV. Please try again.');
+        }
+    }
+
+    public function render(): View
     {
         return view('livewire.post-detail');
     }

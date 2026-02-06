@@ -24,4 +24,8 @@ Route::middleware([
         $username = ltrim($username);
         return view('dashboard', ['profileUsername' => $username]);
     })->name('user.profile');
+
+    Route::get('/cvs', function () {
+        return view('dashboard', ['showCvs' => true]);
+    })->name('cvs');
 });

@@ -36,6 +36,7 @@ class CreatePost
             'title'   => $data->title,
             'content' => $data->content,
             'media'   => $mediaPath,
+            'job_type' => $data->jobType,
         ]);
 
         // Attach specialties to the post (find or create)

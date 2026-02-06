@@ -2,14 +2,20 @@
 
 namespace App\Livewire;
 
+use App\Actions\Post\AuthorizePostAction;
 use App\Actions\Post\CreatePost;
 use App\Actions\Post\DeletePost;
+use App\Actions\Post\LikePost;
 use App\Actions\Post\UpdatePost;
 use App\Actions\User\FollowUser;
-use App\Livewire\Concerns\ValidatesPost;
-use App\Jobs\SendUserNotification;
+use App\Livewire\Validations\StorePostValidation;
+use App\Livewire\Validations\UpdatePostValidation;
+use App\Livewire\Listeners\NotificationsUpdatedListener;
+use App\Livewire\Listeners\OpenCreatePostListener;
+use App\Livewire\Listeners\RefreshPostsListener;
 use App\Models\Post as PostModel;
 use App\Services\PostService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -17,11 +23,12 @@ use Livewire\WithPagination;
 
 class Post extends Component
 {
-    use WithPagination, WithFileUploads, ValidatesPost;
+    use WithPagination, WithFileUploads;
 
     public $title = '';
     public $content = '';
     public $media;
+    public $jobType = '';
     public $specialties = [];
     public $specialtyName = '';
     public $subSpecialtyName = '';
@@ -31,6 +38,7 @@ class Post extends Component
     public $editTitle = '';
     public $editContent = '';
     public $editMedia;
+    public $editJobType = '';
     public $editSpecialties = [];
     public $editSpecialtyName = '';
     public $editSubSpecialtyName = '';
@@ -43,14 +51,33 @@ class Post extends Component
     public $feedMode = 'new'; // new, popular, following
 
     protected $listeners = [
-        'refreshPosts' => '$refresh',
-        'notificationsUpdated' => '$refresh',
-        'openCreatePost' => 'toggleCreateForm',
+        'refreshPosts' => 'handleRefreshPosts',
+        'notificationsUpdated' => 'handleNotificationsUpdated',
+        'openCreatePost' => 'handleOpenCreatePost',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->resetForm();
+    }
+
+    /**
+     * CRITICAL FIX: Ensure all properties are properly initialized
+     * This method is called when the component is hydrated/re-hydrated
+     * Arrays can become null during re-hydration, causing validation to fail
+     */
+    public function hydrate(): void
+    {
+        // Ensure arrays are never null - they must be arrays
+        if (!is_array($this->specialties)) {
+            $this->specialties = [];
+        }
+        if (!is_array($this->tags)) {
+            $this->tags = [];
+        }
+        // Ensure strings are never null
+        $this->title = $this->title ?? '';
+        $this->content = $this->content ?? '';
     }
 
     public function setFeedMode(string $mode): void
@@ -77,41 +104,55 @@ class Post extends Component
         $this->resetForm();
     }
 
-    public function openEditModal($postId)
+    public function openEditModal(int $postId, PostService $postService, AuthorizePostAction $authorizePostAction): void
     {
-        $postService = app(PostService::class);
-        $post = $postService->getPostById($postId);
-        
-        if (!$post || $post->user_id !== Auth::id()) {
-            session()->flash('error', 'You are not authorized to edit this post.');
-            return;
-        }
+        try {
+            $post = $postService->getPostById($postId);
+            
+            if (!$post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
 
-        $this->editingPostId = $postId;
+            if (!$authorizePostAction->canEdit($post)) {
+                session()->flash('error', 'You are not authorized to edit this post.');
+                return;
+            }
+
+            $this->loadPostDataForEditing($post);
+            $this->showEditModal = true;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to load post. Please try again.');
+        }
+    }
+
+    protected function loadPostDataForEditing(PostModel $post): void
+    {
+        $this->editingPostId = $post->id;
         $this->editTitle = $post->title;
         $this->editContent = $post->content;
         $this->editMedia = null;
+        $this->editJobType = $post->job_type ?? '';
         
-        // Load existing specialties
+        // Load existing specialties with eager loading
+        $post->loadMissing(['specialties', 'tags']);
+        
         $this->editSpecialties = [];
         foreach ($post->specialties as $specialty) {
             $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
-            $subSpecialty = $subSpecialtyId ? \App\Models\SubSpecialty::find($subSpecialtyId) : null;
-            if ($subSpecialty) {
-                $this->editSpecialties[] = [
-                    'specialty_name' => $specialty->name,
-                    'sub_specialty_name' => $subSpecialty->name,
-                ];
+            if ($subSpecialtyId) {
+                $subSpecialty = \App\Models\SubSpecialty::find($subSpecialtyId);
+                if ($subSpecialty) {
+                    $this->editSpecialties[] = [
+                        'specialty_name' => $specialty->name,
+                        'sub_specialty_name' => $subSpecialty->name,
+                    ];
+                }
             }
         }
         
         // Load existing tags
-        $this->editTags = [];
-        foreach ($post->tags as $tag) {
-            $this->editTags[] = ['name' => $tag->name];
-        }
-        
-        $this->showEditModal = true;
+        $this->editTags = $post->tags->map(fn($tag) => ['name' => $tag->name])->toArray();
     }
 
     public function closeEditModal()
@@ -128,17 +169,21 @@ class Post extends Component
         $this->editTagName = '';
     }
 
-    public function openDeleteModal($postId)
+    public function openDeleteModal(int $postId, AuthorizePostAction $authorizePostAction): void
     {
-        $post = PostModel::findOrFail($postId);
-        
-        if ($post->user_id !== Auth::id()) {
-            session()->flash('error', 'You are not authorized to delete this post.');
-            return;
-        }
+        try {
+            $post = PostModel::findOrFail($postId);
+            
+            if (!$authorizePostAction->canDelete($post)) {
+                session()->flash('error', 'You are not authorized to delete this post.');
+                return;
+            }
 
-        $this->postToDelete = $postId;
-        $this->showDeleteModal = true;
+            $this->postToDelete = $postId;
+            $this->showDeleteModal = true;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to load post. Please try again.');
+        }
     }
 
     public function closeDeleteModal()
@@ -147,119 +192,167 @@ class Post extends Component
         $this->postToDelete = null;
     }
 
-    public function addSpecialty()
+    public function addSpecialty(): void
     {
-        if (trim($this->specialtyName) && trim($this->subSpecialtyName)) {
-            // Check if this combination already exists
-            $exists = collect($this->specialties)->contains(function ($spec) {
-                return strtolower(trim($spec['specialty_name'])) == strtolower(trim($this->specialtyName))
-                    && strtolower(trim($spec['sub_specialty_name'])) == strtolower(trim($this->subSpecialtyName));
-            });
+        $specialtyName = trim($this->specialtyName);
+        $subSpecialtyName = trim($this->subSpecialtyName);
 
-            if (!$exists) {
-                $this->specialties[] = [
-                    'specialty_name' => trim($this->specialtyName),
-                    'sub_specialty_name' => trim($this->subSpecialtyName),
-                ];
-            }
-
-            $this->specialtyName = '';
-            $this->subSpecialtyName = '';
+        if (empty($specialtyName) || empty($subSpecialtyName)) {
+            return;
         }
+
+        $exists = $this->specialtyExists($specialtyName, $subSpecialtyName, $this->specialties);
+
+        if (!$exists) {
+            $this->specialties[] = [
+                'specialty_name' => $specialtyName,
+                'sub_specialty_name' => $subSpecialtyName,
+            ];
+        }
+
+        $this->specialtyName = '';
+        $this->subSpecialtyName = '';
     }
 
-    public function addEditSpecialty()
+    protected function specialtyExists(string $specialtyName, string $subSpecialtyName, array $specialties): bool
     {
-        if (trim($this->editSpecialtyName) && trim($this->editSubSpecialtyName)) {
-            $exists = collect($this->editSpecialties)->contains(function ($spec) {
-                return strtolower(trim($spec['specialty_name'])) == strtolower(trim($this->editSpecialtyName))
-                    && strtolower(trim($spec['sub_specialty_name'])) == strtolower(trim($this->editSubSpecialtyName));
-            });
-
-            if (!$exists) {
-                $this->editSpecialties[] = [
-                    'specialty_name' => trim($this->editSpecialtyName),
-                    'sub_specialty_name' => trim($this->editSubSpecialtyName),
-                ];
-            }
-
-            $this->editSpecialtyName = '';
-            $this->editSubSpecialtyName = '';
-        }
+        return collect($specialties)->contains(function ($spec) use ($specialtyName, $subSpecialtyName) {
+            return strtolower(trim($spec['specialty_name'])) === strtolower($specialtyName)
+                && strtolower(trim($spec['sub_specialty_name'])) === strtolower($subSpecialtyName);
+        });
     }
 
-    public function addTag()
+    public function addEditSpecialty(): void
     {
-        if (trim($this->tagName)) {
-            $tagName = trim($this->tagName);
-            $exists = collect($this->tags)->contains(function ($tag) use ($tagName) {
-                return strtolower(trim($tag['name'])) == strtolower($tagName);
-            });
+        $specialtyName = trim($this->editSpecialtyName);
+        $subSpecialtyName = trim($this->editSubSpecialtyName);
 
-            if (!$exists) {
-                $this->tags[] = ['name' => $tagName];
-            }
-
-            $this->tagName = '';
+        if (empty($specialtyName) || empty($subSpecialtyName)) {
+            return;
         }
+
+        $exists = $this->specialtyExists($specialtyName, $subSpecialtyName, $this->editSpecialties);
+
+        if (!$exists) {
+            $this->editSpecialties[] = [
+                'specialty_name' => $specialtyName,
+                'sub_specialty_name' => $subSpecialtyName,
+            ];
+        }
+
+        $this->editSpecialtyName = '';
+        $this->editSubSpecialtyName = '';
     }
 
-    public function addEditTag()
+    public function addTag(): void
     {
-        if (trim($this->editTagName)) {
-            $tagName = trim($this->editTagName);
-            $exists = collect($this->editTags)->contains(function ($tag) use ($tagName) {
-                return strtolower(trim($tag['name'])) == strtolower($tagName);
-            });
+        $tagName = trim($this->tagName);
 
-            if (!$exists) {
-                $this->editTags[] = ['name' => $tagName];
-            }
-
-            $this->editTagName = '';
+        if (empty($tagName)) {
+            return;
         }
+
+        $exists = $this->tagExists($tagName, $this->tags);
+
+        if (!$exists) {
+            $this->tags[] = ['name' => $tagName];
+        }
+
+        $this->tagName = '';
     }
 
-    public function removeSpecialty($index)
+    protected function tagExists(string $tagName, array $tags): bool
+    {
+        return collect($tags)->contains(function ($tag) use ($tagName) {
+            return strtolower(trim($tag['name'])) === strtolower($tagName);
+        });
+    }
+
+    public function addEditTag(): void
+    {
+        $tagName = trim($this->editTagName);
+
+        if (empty($tagName)) {
+            return;
+        }
+
+        $exists = $this->tagExists($tagName, $this->editTags);
+
+        if (!$exists) {
+            $this->editTags[] = ['name' => $tagName];
+        }
+
+        $this->editTagName = '';
+    }
+
+    public function removeSpecialty(int $index): void
     {
         unset($this->specialties[$index]);
         $this->specialties = array_values($this->specialties);
     }
 
-    public function removeEditSpecialty($index)
+    public function removeEditSpecialty(int $index): void
     {
         unset($this->editSpecialties[$index]);
         $this->editSpecialties = array_values($this->editSpecialties);
     }
 
-    public function removeTag($index)
+    public function removeTag(int $index): void
     {
         unset($this->tags[$index]);
         $this->tags = array_values($this->tags);
     }
 
-    public function removeEditTag($index)
+    public function removeEditTag(int $index): void
     {
         unset($this->editTags[$index]);
         $this->editTags = array_values($this->editTags);
     }
 
-    public function create()
+    public function create(): void
     {
-        $this->validate(
-            $this->getCreatePostRules(),
-            $this->getPostValidationMessages()
-        );
+        $createPostAction = app(CreatePost::class);
+        
+        // Ensure properties are initialized
+        $this->title = $this->title ?? '';
+        $this->content = $this->content ?? '';
+        $this->specialties = is_array($this->specialties) ? $this->specialties : [];
+        $this->tags = is_array($this->tags) ? $this->tags : [];
+
+        // Validate using Livewire validation class
+        $this->validate(StorePostValidation::rules(), StorePostValidation::messages());
+
+        // Trim values after validation passes
+        $this->title = trim($this->title);
+        $this->content = trim($this->content);
+
+        // Trim specialty values
+        foreach ($this->specialties as $index => $specialty) {
+            if (isset($specialty['specialty_name'])) {
+                $this->specialties[$index]['specialty_name'] = trim($specialty['specialty_name']);
+            }
+            if (isset($specialty['sub_specialty_name'])) {
+                $this->specialties[$index]['sub_specialty_name'] = trim($specialty['sub_specialty_name']);
+            }
+        }
+
+        // Trim tag values and remove empty ones
+        foreach ($this->tags as $index => $tag) {
+            if (isset($tag['name'])) {
+                $this->tags[$index]['name'] = trim($tag['name']);
+            }
+        }
+        $this->tags = array_values(array_filter($this->tags, fn($tag) => !empty($tag['name'] ?? '')));
 
         try {
-            $createPost = new CreatePost();
-            $createPost->create(
+            $createPostAction->create(
                 new \App\DTO\PostData(
                     title: $this->title,
                     content: $this->content,
                     media: $this->media,
                     specialties: $this->specialties,
                     tags: $this->tags,
+                    jobType: $this->jobType ?: null,
                 )
             );
 
@@ -267,21 +360,55 @@ class Post extends Component
             $this->closeCreateForm();
             $this->resetPage();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to create post: ' . $e->getMessage());
+            session()->flash('error', 'Failed to create post. Please try again.');
         }
     }
 
-    public function update()
+    public function update(): void
     {
-        $this->validate(
-            $this->getUpdatePostRules(),
-            $this->getPostValidationMessages()
-        );
+        $updatePostAction = app(UpdatePost::class);
+        $authorizePostAction = app(AuthorizePostAction::class);
+        
+        // Ensure properties are initialized
+        $this->editTitle = $this->editTitle ?? '';
+        $this->editContent = $this->editContent ?? '';
+        $this->editSpecialties = is_array($this->editSpecialties) ? $this->editSpecialties : [];
+        $this->editTags = is_array($this->editTags) ? $this->editTags : [];
+
+        // Validate using Livewire validation class
+        $this->validate(UpdatePostValidation::rules(), UpdatePostValidation::messages());
+
+        // Trim values after validation passes
+        $this->editTitle = trim($this->editTitle);
+        $this->editContent = trim($this->editContent);
+
+        // Trim specialty values
+        foreach ($this->editSpecialties as $index => $specialty) {
+            if (isset($specialty['specialty_name'])) {
+                $this->editSpecialties[$index]['specialty_name'] = trim($specialty['specialty_name']);
+            }
+            if (isset($specialty['sub_specialty_name'])) {
+                $this->editSpecialties[$index]['sub_specialty_name'] = trim($specialty['sub_specialty_name']);
+            }
+        }
+
+        // Trim tag values and remove empty ones
+        foreach ($this->editTags as $index => $tag) {
+            if (isset($tag['name'])) {
+                $this->editTags[$index]['name'] = trim($tag['name']);
+            }
+        }
+        $this->editTags = array_values(array_filter($this->editTags, fn($tag) => !empty($tag['name'] ?? '')));
 
         try {
             $post = PostModel::findOrFail($this->editingPostId);
-            $updatePost = new UpdatePost();
-            $updatePost->update(
+            
+            if (!$authorizePostAction->canEdit($post)) {
+                session()->flash('error', 'You are not authorized to update this post.');
+                return;
+            }
+
+            $updatePostAction->update(
                 $post,
                 new \App\DTO\PostData(
                     title: $this->editTitle,
@@ -289,119 +416,104 @@ class Post extends Component
                     media: $this->editMedia,
                     specialties: $this->editSpecialties,
                     tags: $this->editTags,
+                    jobType: $this->editJobType ?: null,
                 )
             );
 
             session()->flash('success', 'Post updated successfully!');
             $this->closeEditModal();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update post: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update post. Please try again.');
+            \Log::error('Failed to update post: ' . $e->getMessage(), ['exception' => $e]);
         }
     }
 
-    public function delete()
+    public function delete(DeletePost $deletePostAction, AuthorizePostAction $authorizePostAction): void
     {
         try {
             $post = PostModel::findOrFail($this->postToDelete);
-            $deletePost = new DeletePost();
-            $deletePost->delete($post);
+            
+            if (!$authorizePostAction->canDelete($post)) {
+                session()->flash('error', 'You are not authorized to delete this post.');
+                return;
+            }
+
+            $deletePostAction->delete($post);
 
             session()->flash('success', 'Post deleted successfully!');
             $this->closeDeleteModal();
             $this->resetPage();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete post: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete post. Please try again.');
         }
     }
 
-    public function getMediaUrl($post)
+    public function getMediaUrl(PostModel $post): ?string
     {
-        $postService = app(PostService::class);
-        return $postService->getMediaUrl($post);
+        return app(PostService::class)->getMediaUrl($post);
     }
 
-    public function isFollowing($userId)
+    public function isFollowing(int $userId): bool
     {
         if (!Auth::check() || Auth::id() === $userId) {
             return false;
         }
         
-        $followAction = new FollowUser();
         $user = \App\Models\User::find($userId);
-        return $user ? $followAction->isFollowing($user) : false;
+        return $user ? app(FollowUser::class)->isFollowing($user) : false;
     }
 
-    public function toggleFollow($userId)
+    public function toggleFollow(int $userId, FollowUser $followUserAction): void
     {
-        if (!Auth::check()) {
-            session()->flash('error', 'You must be logged in to follow users.');
-            return;
-        }
-
-        if (Auth::id() === $userId) {
-            session()->flash('error', 'You cannot follow yourself.');
-            return;
-        }
-
         try {
             $user = \App\Models\User::findOrFail($userId);
-            $followAction = new FollowUser();
             
-            if ($followAction->isFollowing($user)) {
-                $followAction->unfollow($user);
+            if ($followUserAction->isFollowing($user)) {
+                $followUserAction->unfollow($user);
                 session()->flash('success', 'You have unfollowed ' . $user->name);
             } else {
-                $followAction->follow($user);
+                $followUserAction->follow($user);
                 session()->flash('success', 'You are now following ' . $user->name);
             }
             
             $this->dispatch('$refresh');
         } catch (\Exception $e) {
-            session()->flash('error', $e->getMessage());
+            session()->flash('error', 'Failed to update follow status. Please try again.');
         }
     }
 
-    public function togglePostLike(int $postId): void
+    public function togglePostLike(int $postId, LikePost $likePostAction): void
     {
-        if (!Auth::check()) {
-            session()->flash('error', 'You must be logged in to like posts.');
-            return;
+        try {
+            $post = PostModel::findOrFail($postId);
+            $likePostAction->toggle($post);
+            $this->dispatch('$refresh');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to like post. Please try again.');
         }
-
-        $post = PostModel::with('likes')->find($postId);
-
-        if (!$post) {
-            return;
-        }
-
-        $userId = Auth::id();
-        $existing = $post->likes()->where('user_id', $userId)->first();
-
-        if ($existing) {
-            $existing->delete();
-        } else {
-            $post->likes()->create(['user_id' => $userId]);
-
-            // Notify post owner when someone likes their post
-            if ($post->user_id !== $userId) {
-                SendUserNotification::dispatch([
-                    'user_id'        => $post->user_id,
-                    'source_user_id' => $userId,
-                    'type'           => 'post_liked',
-                    'post_id'        => $post->id,
-                    'message'        => Auth::user()->name . ' liked your post.',
-                ])->onConnection('sync');
-            }
-        }
-
-        $this->dispatch('$refresh');
     }
 
-    public function resetForm()
+    public function handleRefreshPosts(): void
+    {
+        app(RefreshPostsListener::class)->handle($this);
+    }
+
+    public function handleNotificationsUpdated(): void
+    {
+        app(NotificationsUpdatedListener::class)->handle($this);
+    }
+
+    public function handleOpenCreatePost(): void
+    {
+        app(OpenCreatePostListener::class)->handle($this);
+    }
+
+    public function resetForm(): void
     {
         $this->title = '';
         $this->content = '';
         $this->media = null;
+        $this->jobType = '';
         $this->specialties = [];
         $this->specialtyName = '';
         $this->subSpecialtyName = '';
@@ -409,17 +521,13 @@ class Post extends Component
         $this->tagName = '';
     }
 
-    public function render()
+    public function render(PostService $postService): View
     {
-        $postService = app(PostService::class);
-
-        if ($this->feedMode === 'popular') {
-            $posts = $postService->getPopularPosts(10);
-        } elseif ($this->feedMode === 'following') {
-            $posts = $postService->getFollowingPosts(10);
-        } else {
-            $posts = $postService->getAllPosts(10);
-        }
+        $posts = match ($this->feedMode) {
+            'popular' => $postService->getPopularPosts(10),
+            'following' => $postService->getFollowingPosts(10),
+            default => $postService->getAllPosts(10),
+        };
 
         return view('livewire.post', [
             'posts' => $posts,

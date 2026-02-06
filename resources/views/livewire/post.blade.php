@@ -1,30 +1,24 @@
-<div class="min-h-screen bg-gray-950 text-white pb-24">
+<div class="min-h-screen text-white pb-24">
     <div class="w-full px-0 sm:px-2 lg:px-0 py-4">
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-white">Posts</h1>
         </div>
 
-        <!-- Create Post Form (Inline) -->
+    
+        @if($showCreateForm)
         <div 
-            x-data="{ show: @entangle('showCreateForm') }"
-            x-show="show"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 transform translate-y-4"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform translate-y-4"
             class="mb-2 sticky top-4 z-40"
             id="create-post-form"
         >
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-lg">
-                <form wire:submit.prevent="create">
+                <form wire:submit.prevent="create" wire:key="create-post-form">
                     <div class="mb-4">
                         <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
                         <input
                             type="text"
                             wire:model="title"
+                            wire:key="title-input"
                             id="title"
                             class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Give your post a clear title">
@@ -36,6 +30,7 @@
                     <div class="mb-4">
                         <textarea 
                             wire:model="content"
+                            wire:key="content-input"
                             id="content"
                             rows="4"
                             class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
@@ -44,6 +39,25 @@
                             <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> 
                         @enderror
                     </div>
+
+                    <!-- Job Type Selection -->
+                    <div class="mb-4">
+                        <label for="jobType" class="block text-sm font-medium text-gray-300 mb-2">Job Type (Optional)</label>
+                        <select
+                            wire:model="jobType"
+                            wire:key="job-type-input"
+                            id="jobType"
+                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select job type...</option>
+                            <option value="remote">Remote</option>
+                            <option value="full-time">Full-time</option>
+                            <option value="part-time">Part-time</option>
+                        </select>
+                        @error('job_type')
+                            <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     <!-- Specialty Selection -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-300 mb-2">Add Specialty & Sub-Specialty *</label>
@@ -52,6 +66,7 @@
                                 <input 
                                     type="text"
                                     wire:model="specialtyName"
+                                    wire:key="specialty-name-input"
                                     placeholder="Enter Specialty (e.g., Web Development)"
                                     class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             </div>
@@ -59,6 +74,7 @@
                                 <input 
                                     type="text"
                                     wire:model="subSpecialtyName"
+                                    wire:key="sub-specialty-name-input"
                                     placeholder="Enter Sub-Specialty (e.g., Frontend Developer)"
                                     class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             </div>
@@ -100,6 +116,7 @@
                             <input 
                                 type="text"
                                 wire:model="tagName"
+                                wire:key="tag-name-input"
                                 wire:keydown.enter.prevent="addTag"
                                 placeholder="Enter tag (e.g., #laravel, #php, #webdev)"
                                 class="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -144,6 +161,7 @@
                                 <input 
                                     type="file"
                                     wire:model="media"
+                                    wire:key="media-input"
                                     id="media"
                                     accept="image/*,video/*"
                                     class="hidden">
@@ -162,16 +180,21 @@
                                 class="px-4 py-2 text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
                                 Cancel
                             </button>
+                            <!-- DEBUG: Test button to verify Livewire is working -->
                             <button 
                                 type="submit"
-                                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                                Post
+                                wire:loading.attr="disabled"
+                                wire:target="create"
+                                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50">
+                                <span wire:loading.remove wire:target="create">Post</span>
+                                <span wire:loading wire:target="create">Posting...</span>
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
+        @endif
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
@@ -245,6 +268,13 @@
                             <h2 class="text-lg font-semibold text-white mb-1 group-hover:text-blue-400 transition-colors">
                                 {{ $post->title }}
                             </h2>
+                        @endif
+                        @if($post->job_type)
+                            <div class="mb-2">
+                                <span class="inline-flex items-center px-2 py-1 bg-blue-600/20 text-blue-300 text-xs font-medium rounded border border-blue-600/50">
+                                    {{ ucfirst(str_replace('-', ' ', $post->job_type)) }}
+                                </span>
+                            </div>
                         @endif
                         <p class="text-gray-200 leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
                             {{ $post->content }}
@@ -328,6 +358,15 @@
                             </svg>
                             <span>{{ $post->comments->count() }}</span>
                         </a>
+                        <a
+                            href="{{ route('posts.show', $post->slug) }}"
+                            class="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors text-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span>View Post</span>
+                        </a>
                     </div>
                 </article>
             @empty
@@ -381,6 +420,23 @@
                                     class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="What's on your mind?"></textarea>
                                 @error('editContent') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="editJobType" class="block text-sm font-medium text-gray-300 mb-2">Job Type (Optional)</label>
+                                <select
+                                    wire:model="editJobType"
+                                    wire:key="edit-job-type-input"
+                                    id="editJobType"
+                                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select job type...</option>
+                                    <option value="remote">Remote</option>
+                                    <option value="full-time">Full-time</option>
+                                    <option value="part-time">Part-time</option>
+                                </select>
+                                @error('editJobType')
+                                    <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="mb-4">
@@ -592,7 +648,7 @@
                 </button>
             </div>
         </div>
-        <div class="grid h-full max-w-md grid-cols-5 mx-auto">
+        <div class="grid h-full max-w-md grid-cols-6 mx-auto">
             <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
                 class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
                 <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
@@ -666,6 +722,23 @@
             <div id="tooltip-search" role="tooltip"
                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
                 Search
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <a 
+                href="{{ route('cvs') }}"
+                data-tooltip-target="tooltip-cvs"
+                class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors"
+            >
+                <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="sr-only">CVs</span>
+            </a>
+            <div id="tooltip-cvs" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                CVs
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
             <a 

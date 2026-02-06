@@ -13,6 +13,7 @@ class PostData
      * @param  mixed|null  $media
      * @param  array<int, array<string, mixed>>  $specialties
      * @param  array<int, array<string, mixed>>  $tags
+     * @param  string|null  $jobType
      */
     public function __construct(
         public ?string $title,
@@ -20,6 +21,7 @@ class PostData
         public $media = null,
         public array $specialties = [],
         public array $tags = [],
+        public ?string $jobType = null,
     ) {
     }
 }

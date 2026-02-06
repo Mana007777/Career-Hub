@@ -2,7 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Actions\Notification\MarkNotificationRead;
+use App\Livewire\Listeners\OpenNotificationsListener;
 use App\Models\UserNotification;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -13,7 +16,7 @@ class Notifications extends Component
 
     public $showNotifications = false;
 
-    protected $listeners = ['openNotifications' => 'toggleNotifications'];
+    protected $listeners = ['openNotifications' => 'handleOpenNotifications'];
 
     public function toggleNotifications(): void
     {
@@ -25,37 +28,29 @@ class Notifications extends Component
         $this->showNotifications = false;
     }
 
-    public function markAsRead(int $notificationId): void
+    public function markAsRead(int $notificationId, MarkNotificationRead $markNotificationRead): void
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            return;
-        }
-
-        $notification = UserNotification::where('user_id', $user->id)
-            ->where('id', $notificationId)
-            ->first();
-
-        if ($notification) {
-            $notification->update(['is_read' => true]);
+        try {
+            $markNotificationRead->markAsRead($notificationId);
             $this->dispatch('notificationsUpdated');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to mark notification as read. Please try again.');
         }
     }
 
-    public function markAllAsRead(): void
+    public function markAllAsRead(MarkNotificationRead $markNotificationRead): void
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            return;
+        try {
+            $markNotificationRead->markAllAsRead();
+            $this->dispatch('notificationsUpdated');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to mark all notifications as read. Please try again.');
         }
+    }
 
-        UserNotification::where('user_id', $user->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
-
-        $this->dispatch('notificationsUpdated');
+    public function handleOpenNotifications(): void
+    {
+        app(OpenNotificationsListener::class)->handle($this);
     }
 
     public function getUnreadCountProperty(): int
@@ -71,7 +66,7 @@ class Notifications extends Component
             ->count();
     }
 
-    public function render()
+    public function render(): View
     {
         $user = Auth::user();
 

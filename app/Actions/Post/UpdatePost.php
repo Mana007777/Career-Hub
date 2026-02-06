@@ -42,6 +42,7 @@ class UpdatePost
             'title'   => $data->title,
             'content' => $data->content,
             'media'   => $mediaPath,
+            'job_type' => $data->jobType,
         ]);
 
         // Update specialties

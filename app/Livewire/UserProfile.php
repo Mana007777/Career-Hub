@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Actions\User\FollowUser;
+use App\Models\Post as PostModel;
 use App\Models\User;
 use App\Repositories\PostRepository;
 use App\Services\PostService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -21,72 +23,60 @@ class UserProfile extends Component
     public $followingCount = 0;
     public $postsCount = 0;
 
-    public function mount($username)
+    public function mount(string $username, FollowUser $followUserAction): void
     {
         // Remove @ if present
         $this->username = ltrim($username, '@');
-        $this->loadUser();
+        $this->loadUser($followUserAction);
     }
 
-    protected function loadUser()
+    protected function loadUser(FollowUser $followUserAction): void
     {
-        $this->user = User::where('username', $this->username)->firstOrFail();
+        $this->user = User::withCount(['followers', 'following', 'posts'])
+            ->where('username', $this->username)
+            ->firstOrFail();
         
-        $this->followersCount = $this->user->followers()->count();
-        $this->followingCount = $this->user->following()->count();
-        $this->postsCount = $this->user->posts()->count();
+        $this->followersCount = $this->user->followers_count;
+        $this->followingCount = $this->user->following_count;
+        $this->postsCount = $this->user->posts_count;
 
         if (Auth::check()) {
-            $followAction = new FollowUser();
-            $this->isFollowing = $followAction->isFollowing($this->user);
+            $this->isFollowing = $followUserAction->isFollowing($this->user);
         }
     }
 
-    public function toggleFollow()
+    public function toggleFollow(FollowUser $followUserAction): void
     {
-        if (!Auth::check()) {
-            session()->flash('error', 'You must be logged in to follow users.');
-            return;
-        }
-
-        if (Auth::id() === $this->user->id) {
-            session()->flash('error', 'You cannot follow yourself.');
-            return;
-        }
-
         try {
-            $followAction = new FollowUser();
-            
             if ($this->isFollowing) {
-                $followAction->unfollow($this->user);
+                $followUserAction->unfollow($this->user);
                 $this->isFollowing = false;
                 session()->flash('success', 'You have unfollowed ' . $this->user->name);
             } else {
-                $followAction->follow($this->user);
+                $followUserAction->follow($this->user);
                 $this->isFollowing = true;
                 session()->flash('success', 'You are now following ' . $this->user->name);
             }
 
-            // Refresh counts
-            $this->followersCount = $this->user->followers()->count();
+            // Refresh counts using withCount
+            $this->user->loadCount('followers');
+            $this->followersCount = $this->user->followers_count;
         } catch (\Exception $e) {
-            session()->flash('error', $e->getMessage());
+            session()->flash('error', 'Failed to update follow status. Please try again.');
         }
     }
 
-    public function getMediaUrl($post)
+    public function getMediaUrl(PostModel $post): ?string
     {
-        $postService = app(PostService::class);
-        return $postService->getMediaUrl($post);
+        return app(PostService::class)->getMediaUrl($post);
     }
 
-    public function render()
+    public function render(PostRepository $postRepository): View
     {
         if (!$this->user) {
             abort(404, 'User not found');
         }
 
-        $postRepository = new PostRepository();
         $posts = $postRepository->getByUserId($this->user->id, 10);
 
         return view('livewire.user-profile', [

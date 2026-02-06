@@ -11,6 +11,7 @@ class Post extends Model
         'title',
         'content',
         'media',
+        'job_type',
     ];
 
     public function user()
@@ -46,6 +47,11 @@ class Post extends Model
     public function notifications()
     {
         return $this->hasMany(UserNotification::class);
+    }
+
+    public function cvs()
+    {
+        return $this->hasMany(PostCv::class);
     }
 
     public function specialties()
