@@ -87,6 +87,21 @@ class PostDetail extends Component
             session()->flash('error', 'Failed to like post. Please try again.');
         }
     }
+    
+    public function togglePostStar(\App\Actions\Post\StarPost $starPostAction): void
+    {
+        try {
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
+
+            $starPostAction->toggle($this->post);
+            $this->post->refresh()->loadMissing(['stars.user', 'starredBy']);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to star post. Please try again.');
+        }
+    }
 
     public function addComment(): void
     {

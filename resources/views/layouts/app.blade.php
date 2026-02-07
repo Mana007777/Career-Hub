@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-preference" content="{{ auth()->check() ? (auth()->user()->theme_preference ?? 'system') : 'system' }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -17,8 +18,16 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-gray-950 text-white" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
-        <div class="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
+    <body class="font-sans antialiased dark:bg-gray-950 dark:text-white bg-gray-50 text-gray-900" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
+        <div class="min-h-screen dark:bg-gradient-to-b dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+            @if(isset($header))
+                <header class="dark:bg-gray-900 bg-white border-b-2 dark:border-gray-800 border-gray-200 shadow-sm">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endif
+            
             <!-- Page Content -->
             <main 
                 class="pt-4 pb-10"

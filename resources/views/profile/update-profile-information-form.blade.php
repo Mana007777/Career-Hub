@@ -69,7 +69,7 @@
                 <p class="text-sm mt-2">
                     {{ __('Your email address is unverified.') }}
 
-                    <button type="button" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" wire:click.prevent="sendEmailVerification">
+                    <button type="button" class="underline text-sm dark:text-gray-600 text-gray-700 hover:text-blue-600 dark:hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" wire:click.prevent="sendEmailVerification">
                         {{ __('Click here to re-send the verification email.') }}
                     </button>
                 </p>
@@ -86,14 +86,14 @@
         <div class="col-span-6 sm:col-span-4">
             <x-label for="username" value="{{ __('Username') }}" />
             <x-input id="username" type="text" class="mt-1 block w-full" wire:model="state.username" autocomplete="username" />
-            <p class="mt-1 text-sm text-gray-500">{{ __('Your unique username. Only letters, numbers, and underscores allowed.') }}</p>
+            <p class="mt-1 text-sm dark:text-gray-500 text-gray-600">{{ __('Your unique username. Only letters, numbers, and underscores allowed.') }}</p>
             <x-input-error for="username" class="mt-2" />
         </div>
 
         <!-- Bio -->
         <div class="col-span-6 sm:col-span-4">
             <x-label for="bio" value="{{ __('Bio') }}" />
-            <textarea id="bio" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-gray-900" 
+            <textarea id="bio" class="mt-1 block w-full dark:border-gray-300 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm dark:text-gray-900 text-gray-900 dark:bg-gray-100 bg-gray-50" 
                       wire:model="state.bio" rows="3" placeholder="{{ __('Tell us about yourself...') }}"></textarea>
             <x-input-error for="bio" class="mt-2" />
         </div>

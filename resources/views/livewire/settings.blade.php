@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-black text-white pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
+<div class="min-h-screen dark:bg-black bg-white dark:text-white text-gray-900 pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
     <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Back Button -->
         <div 
@@ -10,7 +10,7 @@
         >
             <a 
                 href="{{ route('dashboard') }}"
-                class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 group">
+                class="inline-flex items-center gap-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 transition-all duration-300 transform hover:translate-x-1 group">
                 <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -20,27 +20,27 @@
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
-            <div class="mb-6 p-4 bg-green-900/50 border border-green-700 rounded-lg text-green-200">
+            <div class="mb-6 p-4 dark:bg-green-900/50 bg-green-50 border dark:border-green-700 border-green-200 rounded-lg dark:text-green-200 text-green-800">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session()->has('error'))
-            <div class="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-200">
+            <div class="mb-6 p-4 dark:bg-red-900/50 bg-red-50 border dark:border-red-700 border-red-200 rounded-lg dark:text-red-200 text-red-800">
                 {{ session('error') }}
             </div>
         @endif
 
         <!-- Settings Header -->
         <div 
-            class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6 shadow-2xl"
+            class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 mb-6 shadow-2xl"
             x-show="loaded"
             x-transition:enter="transition ease-out duration-700"
             x-transition:enter-start="opacity-0 translate-y-8 scale-95"
             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
         >
-            <h1 class="text-3xl font-bold text-white mb-2">Settings</h1>
-            <p class="text-gray-400">Manage your account settings and preferences</p>
+            <h1 class="text-3xl font-bold dark:text-white text-gray-900 mb-2">Settings</h1>
+            <p class="dark:text-gray-400 text-gray-600">Manage your account settings and preferences</p>
         </div>
 
         <!-- Settings Options -->
@@ -52,46 +52,124 @@
             x-transition:enter-end="opacity-100 translate-y-0"
         >
             <!-- Profile Edit Card -->
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors">
+            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-blue-600/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-12 h-12 rounded-full dark:bg-blue-600/20 bg-blue-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 dark:text-blue-400 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-white">Profile Information</h3>
-                            <p class="text-sm text-gray-400">Edit your profile details and information</p>
+                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Profile Information</h3>
+                            <p class="text-sm dark:text-gray-400 text-gray-600">Edit your profile details and information</p>
                         </div>
                     </div>
                     <button 
                         wire:click="openProfileModal"
-                        class="px-6 py-2 rounded-lg font-medium transition-colors bg-blue-600 hover:bg-blue-700 text-white">
+                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
                         Edit Profile
                     </button>
                 </div>
             </div>
 
             <!-- Blocked Users Card -->
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors">
+            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-full bg-red-600/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 dark:text-red-400 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-white">Blocked Users</h3>
-                            <p class="text-sm text-gray-400">Manage users you have blocked</p>
+                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Blocked Users</h3>
+                            <p class="text-sm dark:text-gray-400 text-gray-600">Manage users you have blocked</p>
                         </div>
                     </div>
                     <button 
                         wire:click="openBlocksModal"
-                        class="px-6 py-2 rounded-lg font-medium transition-colors bg-blue-600 hover:bg-blue-700 text-white">
+                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
                         View Blocked Users
                     </button>
+                </div>
+            </div>
+
+            <!-- Theme Preference Card -->
+            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors" x-data="{ isOpen: false }">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" @click="isOpen = !isOpen">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-purple-600/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 dark:text-purple-400 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Theme Preference</h3>
+                            <p class="text-sm dark:text-gray-400 text-gray-600">Choose your preferred color theme</p>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 dark:text-gray-400 text-gray-600 transition-transform duration-200" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div class="space-y-3" 
+                     x-show="isOpen"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-2"
+                     style="display: none;">
+                    <label class="flex items-center gap-3 p-4 dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 rounded-lg cursor-pointer dark:hover:border-gray-600 hover:border-gray-400 transition-colors">
+                        <input type="radio" 
+                               wire:model="themePreference" 
+                               wire:change="updateThemePreference"
+                               value="light" 
+                               class="w-4 h-4 text-blue-600 dark:bg-gray-700 bg-gray-200 dark:border-gray-600 border-gray-400 focus:ring-blue-500 focus:ring-2">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                <span class="dark:text-white text-gray-900 font-medium">Light Mode</span>
+                            </div>
+                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Use light theme</p>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-4 dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 rounded-lg cursor-pointer dark:hover:border-gray-600 hover:border-gray-400 transition-colors">
+                        <input type="radio" 
+                               wire:model="themePreference" 
+                               wire:change="updateThemePreference"
+                               value="dark" 
+                               class="w-4 h-4 text-blue-600 dark:bg-gray-700 bg-gray-200 dark:border-gray-600 border-gray-400 focus:ring-blue-500 focus:ring-2">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                </svg>
+                                <span class="dark:text-white text-gray-900 font-medium">Dark Mode</span>
+                            </div>
+                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Use dark theme</p>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-4 dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 rounded-lg cursor-pointer dark:hover:border-gray-600 hover:border-gray-400 transition-colors">
+                        <input type="radio" 
+                               wire:model="themePreference" 
+                               wire:change="updateThemePreference"
+                               value="system" 
+                               class="w-4 h-4 text-blue-600 dark:bg-gray-700 bg-gray-200 dark:border-gray-600 border-gray-400 focus:ring-blue-500 focus:ring-2">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 dark:text-blue-400 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="dark:text-white text-gray-900 font-medium">System Default</span>
+                            </div>
+                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Follow your system preference</p>
+                        </div>
+                    </label>
                 </div>
             </div>
         </div>
@@ -100,7 +178,7 @@
     <!-- Blocked Users Modal -->
     @if($showBlocksModal)
     <div 
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm"
         wire:click="closeBlocksModal"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
@@ -110,7 +188,7 @@
         x-transition:leave-end="opacity-0"
     >
         <div 
-            class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col mx-4"
+            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col mx-4"
             wire:click.stop
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 scale-95"
@@ -120,11 +198,11 @@
             x-transition:leave-end="opacity-0 scale-95"
         >
             <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-800">
-                <h2 class="text-2xl font-bold text-white">Blocked Users</h2>
+            <div class="flex items-center justify-between p-6 border-b dark:border-gray-800 border-gray-200">
+                <h2 class="text-2xl font-bold dark:text-white text-gray-900">Blocked Users</h2>
                 <button 
                     wire:click="closeBlocksModal"
-                    class="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
+                    class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -136,35 +214,35 @@
                 @if($blockedUsers && count($blockedUsers) > 0)
                     <div class="space-y-3">
                         @foreach($blockedUsers as $blockedUser)
-                            <div class="flex items-center justify-between p-4 bg-gray-800 border border-gray-700 rounded-lg hover:border-gray-600 transition-colors">
+                            <div class="flex items-center justify-between p-4 dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg dark:hover:border-gray-600 hover:border-gray-300 transition-colors">
                                 <div class="flex items-center gap-4 flex-1 min-w-0">
                                     <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px] flex-shrink-0">
-                                        <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-lg font-semibold text-gray-100">
+                                        <div class="w-full h-full rounded-full dark:bg-gray-900 bg-gray-200 flex items-center justify-center text-lg font-semibold dark:text-gray-100 text-gray-900">
                                             {{ strtoupper(substr($blockedUser->name ?? 'U', 0, 1)) }}
                                         </div>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-white font-medium truncate">{{ $blockedUser->name ?? 'Unknown User' }}</p>
+                                        <p class="dark:text-white text-gray-900 font-medium truncate">{{ $blockedUser->name ?? 'Unknown User' }}</p>
                                         @if(!empty($blockedUser->username))
-                                            <p class="text-gray-400 text-sm truncate">{{ '@' . $blockedUser->username }}</p>
+                                            <p class="dark:text-gray-400 text-gray-600 text-sm truncate">{{ '@' . $blockedUser->username }}</p>
                                         @endif
                                     </div>
                                 </div>
                                 <button 
                                     wire:click="unblockUser({{ $blockedUser->id }})"
                                     wire:confirm="Are you sure you want to unblock this user?"
-                                    class="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0">
+                                    class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white flex-shrink-0">
                                     Unblock
                                 </button>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="p-8 text-center bg-gray-800 border border-gray-700 rounded-lg">
-                        <svg class="w-12 h-12 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-8 text-center dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg">
+                        <svg class="w-12 h-12 mx-auto dark:text-gray-600 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
                         </svg>
-                        <p class="text-gray-400">No blocked users</p>
+                        <p class="dark:text-gray-400 text-gray-600">No blocked users</p>
                     </div>
                 @endif
             </div>
@@ -175,7 +253,7 @@
     <!-- Profile Edit Modal -->
     @if($showProfileModal)
     <div 
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm"
         wire:click="closeProfileModal"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
@@ -185,7 +263,7 @@
         x-transition:leave-end="opacity-0"
     >
         <div 
-            class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col mx-4"
+            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col mx-4"
             wire:click.stop
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 scale-95"
@@ -195,11 +273,11 @@
             x-transition:leave-end="opacity-0 scale-95"
         >
             <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-800">
-                <h2 class="text-2xl font-bold text-white">Edit Profile</h2>
+            <div class="flex items-center justify-between p-6 border-b dark:border-gray-800 border-gray-200">
+                <h2 class="text-2xl font-bold dark:text-white text-gray-900">Edit Profile</h2>
                 <button 
                     wire:click="closeProfileModal"
-                    class="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
+                    class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -212,16 +290,16 @@
                     <!-- Profile Photo -->
                     @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                         <div x-data="{photoName: null, photoPreview: null}" class="mb-6">
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Profile Photo</label>
+                            <label class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Profile Photo</label>
                             
                             <!-- Current Profile Photo -->
                             <div class="mb-4" x-show="! photoPreview">
-                                <img src="{{ auth()->user()->profile_photo_url }}" alt="{{ auth()->user()->name }}" class="rounded-full size-24 object-cover border-2 border-gray-700">
+                                <img src="{{ auth()->user()->profile_photo_url }}" alt="{{ auth()->user()->name }}" class="rounded-full size-24 object-cover border-2 dark:border-gray-700 border-gray-300">
                             </div>
 
                             <!-- New Profile Photo Preview -->
                             <div class="mb-4" x-show="photoPreview" style="display: none;">
-                                <span class="block rounded-full size-24 bg-cover bg-no-repeat bg-center border-2 border-gray-700"
+                                <span class="block rounded-full size-24 bg-cover bg-no-repeat bg-center border-2 dark:border-gray-700 border-gray-300"
                                       x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
                                 </span>
                             </div>
@@ -243,34 +321,34 @@
 
                             <button type="button" 
                                     x-on:click.prevent="$refs.photo.click()"
-                                    class="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-800 hover:bg-gray-700 text-white border border-gray-700">
+                                    class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700">
                                 Select New Photo
                             </button>
 
                             @if (auth()->user()->profile_photo_path)
                                 <button type="button" 
                                         wire:click="deleteProfilePhoto"
-                                        class="ml-2 px-4 py-2 rounded-lg font-medium transition-colors bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-700/50">
+                                        class="ml-2 px-4 py-2 rounded-lg font-medium transition-colors dark:bg-red-600/20 bg-red-100 dark:hover:bg-red-600/30 hover:bg-red-200 dark:text-red-400 text-red-700 dark:border-red-700/50 border-red-300">
                                     Remove Photo
                                 </button>
                             @endif
 
                             @error('photo')
-                                <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                                <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
                     @endif
 
                     <!-- Name -->
                     <div class="mb-6">
-                        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                        <label for="name" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Name</label>
                         <input type="text" 
                                id="name" 
                                wire:model="name" 
                                required
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                               class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         @error('name')
-                            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -281,9 +359,9 @@
                                id="email" 
                                wire:model="email" 
                                required
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                               class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         @error('email')
-                            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -297,7 +375,7 @@
                                placeholder="username">
                         <p class="mt-1 text-xs text-gray-500">Only letters, numbers, and underscores allowed</p>
                         @error('username')
-                            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -310,7 +388,7 @@
                                   class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                   placeholder="Tell us about yourself..."></textarea>
                         @error('bio')
-                            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -323,7 +401,7 @@
                                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="City, Country">
                         @error('location')
-                            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -336,7 +414,7 @@
                                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="https://example.com">
                         @error('website')
-                            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -344,13 +422,13 @@
                     <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-800">
                         <button type="button" 
                                 wire:click="closeProfileModal"
-                                class="px-6 py-2 rounded-lg font-medium transition-colors bg-gray-800 hover:bg-gray-700 text-white border border-gray-700">
+                                class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700">
                             Cancel
                         </button>
                         <button type="submit" 
                                 wire:loading.attr="disabled"
                                 wire:target="photo,updateProfile"
-                                class="px-6 py-2 rounded-lg font-medium transition-colors bg-blue-600 hover:bg-blue-700 text-white">
+                                class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
                             <span wire:loading.remove wire:target="updateProfile">Save Changes</span>
                             <span wire:loading wire:target="updateProfile">Saving...</span>
                         </button>

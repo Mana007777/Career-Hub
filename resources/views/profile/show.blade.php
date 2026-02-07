@@ -1,29 +1,29 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight">
+        <h2 class="font-semibold text-xl dark:text-white text-gray-900 leading-tight">
             {{ __('Profile') }}
         </h2>
     </x-slot>
 
-    <div class="bg-gray-900 text-white min-h-screen">
+    <div class="dark:bg-gray-900 bg-white dark:text-white text-gray-900 min-h-screen">
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
             <!-- Profile Information Display -->
-            <div class="bg-gray-900 border border-gray-800 overflow-hidden shadow-xl sm:rounded-lg mb-10">
+            <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 overflow-hidden shadow-xl sm:rounded-lg mb-10">
                 <div class="p-6 sm:p-8">
-                    <h3 class="text-2xl font-bold text-white mb-6">{{ __('Profile Information') }}</h3>
+                    <h3 class="text-2xl font-bold dark:text-white text-gray-900 mb-6">{{ __('Profile Information') }}</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Profile Photo & Basic Info -->
                         <div class="space-y-4">
                             <div class="flex items-center space-x-4">
                                 <img src="{{ auth()->user()->profile_photo_url }}" alt="{{ auth()->user()->name }}" 
-                                     class="h-24 w-24 rounded-full object-cover border-4 border-gray-700">
+                                     class="h-24 w-24 rounded-full object-cover border-4 dark:border-gray-700 border-gray-300">
                                 <div>
-                                    <h4 class="text-xl font-semibold text-white">{{ auth()->user()->name }}</h4>
-                                    <p class="text-sm text-gray-300">{{ auth()->user()->username }}</p>
+                                    <h4 class="text-xl font-semibold dark:text-white text-gray-900">{{ auth()->user()->name }}</h4>
+                                    <p class="text-sm dark:text-gray-300 text-gray-700">{{ auth()->user()->username }}</p>
                                     @if(auth()->user()->role)
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                            {{ auth()->user()->role === 'seeker' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
+                                            {{ auth()->user()->role === 'seeker' ? 'dark:bg-blue-600/20 bg-blue-100 dark:text-blue-300 text-blue-700 dark:border-blue-600/50 border-blue-300 border' : 'dark:bg-purple-600/20 bg-purple-100 dark:text-purple-300 text-purple-700 dark:border-purple-600/50 border-purple-300 border' }}">
                                             {{ ucfirst(auth()->user()->role) }}
                                         </span>
                                     @endif
@@ -34,8 +34,8 @@
                         <!-- Account Details -->
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-400">{{ __('Email Address') }}</label>
-                                <p class="mt-1 text-sm text-white">{{ auth()->user()->email }}</p>
+                                <label class="block text-sm font-medium dark:text-gray-400 text-gray-600">{{ __('Email Address') }}</label>
+                                <p class="mt-1 text-sm dark:text-white text-gray-900">{{ auth()->user()->email }}</p>
                                 @if(auth()->user()->email_verified_at)
                                     <span class="inline-flex items-center mt-1 text-xs text-green-400">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -65,13 +65,13 @@
 
                     <!-- Profile Details (if exists) -->
                     @if(auth()->user()->profile)
-                        <div class="mt-8 pt-6 border-t border-gray-800">
-                            <h4 class="text-lg font-semibold text-white mb-4">{{ __('Additional Information') }}</h4>
+                        <div class="mt-8 pt-6 border-t dark:border-gray-800 border-gray-200">
+                            <h4 class="text-lg font-semibold dark:text-white text-gray-900 mb-4">{{ __('Additional Information') }}</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 @if(auth()->user()->profile->bio)
                                     <div>
                                         <label class="block text-sm font-medium text-gray-400">{{ __('Bio') }}</label>
-                                        <p class="mt-1 text-sm text-white">{{ auth()->user()->profile->bio }}</p>
+                                        <p class="mt-1 text-sm dark:text-white text-gray-900">{{ auth()->user()->profile->bio }}</p>
                                     </div>
                                 @endif
 
@@ -79,7 +79,7 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-400">{{ __('Location') }}</label>
                                         <p class="mt-1 text-sm text-white">
-                                            <svg class="inline-block w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="inline-block w-4 h-4 mr-1 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             </svg>
@@ -93,7 +93,7 @@
                                         <label class="block text-sm font-medium text-gray-400">{{ __('Website') }}</label>
                                         <p class="mt-1 text-sm">
                                             <a href="{{ auth()->user()->profile->website }}" target="_blank" 
-                                               class="text-gray-200 hover:text-white underline">
+                                               class="dark:text-gray-200 text-gray-700 hover:text-blue-600 dark:hover:text-white underline">
                                                 {{ auth()->user()->profile->website }}
                                             </a>
                                         </p>
@@ -105,8 +105,8 @@
 
                     <!-- Admin Badge -->
                     @if(auth()->user()->is_admin ?? false)
-                        <div class="mt-6 pt-6 border-t border-gray-800">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-900/30 text-red-300">
+                        <div class="mt-6 pt-6 border-t dark:border-gray-800 border-gray-200">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium dark:bg-red-900/30 bg-red-100 dark:text-red-300 text-red-700 dark:border-red-700/50 border-red-300 border">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                 </svg>

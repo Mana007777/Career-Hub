@@ -1,5 +1,4 @@
-<div class="min-h-screen text-white overflow-x-hidden relative flex flex-col sm:justify-center items-center pt-6 sm:pt-0"
-    style="background: linear-gradient(135deg, #111827 0%, #1F2937 50%, #374151 100%);">
+<div class="min-h-screen dark:text-white text-gray-900 overflow-x-hidden relative flex flex-col sm:justify-center items-center pt-6 sm:pt-0 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-br from-gray-50 via-white to-gray-100">
 
     <!-- ANIMATED BACKGROUND EFFECTS -->
     <div class="fixed inset-0 -z-10 overflow-hidden">
@@ -30,22 +29,34 @@
     </div>
 
     <!-- Form Card with Glassmorphism -->
-    <div class="w-full sm:max-w-md mt-6 px-8 py-8 relative z-10 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl auth-form-wrapper">
+    <div class="w-full sm:max-w-md mt-6 px-8 py-8 relative z-10 backdrop-blur-xl dark:bg-white/10 bg-white/90 dark:border-white/20 border-gray-200 rounded-2xl shadow-2xl auth-form-wrapper">
         {{ $slot }}
     </div>
 </div>
 
 <style>
-    /* Override labels and inputs for auth forms with dark background */
+    /* Override labels and inputs for auth forms */
     .auth-form-wrapper label {
+        color: rgb(17, 24, 39) !important;
+    }
+    
+    .dark .auth-form-wrapper label {
         color: white !important;
     }
     
     .auth-form-wrapper input,
     .auth-form-wrapper select,
     .auth-form-wrapper textarea {
-        background-color: rgba(255, 255, 255, 0.1) !important;
+        background-color: rgb(249, 250, 251) !important;
         backdrop-filter: blur(4px);
+        border-color: rgb(209, 213, 219) !important;
+        color: rgb(17, 24, 39) !important;
+    }
+    
+    .dark .auth-form-wrapper input,
+    .dark .auth-form-wrapper select,
+    .dark .auth-form-wrapper textarea {
+        background-color: rgba(255, 255, 255, 0.1) !important;
         border-color: rgba(255, 255, 255, 0.2) !important;
         color: white !important;
     }
@@ -53,6 +64,12 @@
     .auth-form-wrapper input::placeholder,
     .auth-form-wrapper textarea::placeholder,
     .auth-form-wrapper select option {
+        color: rgb(107, 114, 128) !important;
+    }
+    
+    .dark .auth-form-wrapper input::placeholder,
+    .dark .auth-form-wrapper textarea::placeholder,
+    .dark .auth-form-wrapper select option {
         color: rgba(156, 163, 175, 0.8) !important;
     }
     
@@ -67,8 +84,15 @@
     .auth-form-wrapper input:-webkit-autofill,
     .auth-form-wrapper input:-webkit-autofill:hover,
     .auth-form-wrapper input:-webkit-autofill:focus {
+        -webkit-text-fill-color: rgb(17, 24, 39) !important;
+        -webkit-box-shadow: 0 0 0px 1000px rgb(249, 250, 251) inset !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    
+    .dark .auth-form-wrapper input:-webkit-autofill,
+    .dark .auth-form-wrapper input:-webkit-autofill:hover,
+    .dark .auth-form-wrapper input:-webkit-autofill:focus {
         -webkit-text-fill-color: white !important;
         -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset !important;
-        transition: background-color 5000s ease-in-out 0s;
     }
 </style>

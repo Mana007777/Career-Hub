@@ -5,8 +5,8 @@
         </x-slot>
 
         <div class="text-center mb-6">
-            <h2 class="text-3xl font-bold text-white mb-2">{{ __('Create Account') }}</h2>
-            <p class="text-gray-300 text-sm">{{ __('Join us and start your journey') }}</p>
+            <h2 class="text-3xl font-bold dark:text-white text-gray-900 mb-2">{{ __('Create Account') }}</h2>
+            <p class="dark:text-gray-300 text-gray-700 text-sm">{{ __('Join us and start your journey') }}</p>
         </div>
 
         <x-validation-errors class="mb-4" />
@@ -30,19 +30,19 @@
                 <x-label for="username" value="{{ __('Username') }}" />
                 <x-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')"
                     autocomplete="username" placeholder="{{ __('Choose a username (optional)') }}" />
-                <p class="mt-1 text-xs text-gray-400">{{ __('Leave blank to auto-generate from your email') }}</p>
+                <p class="mt-1 text-xs dark:text-gray-400 text-gray-600">{{ __('Leave blank to auto-generate from your email') }}</p>
             </div>
 
             <div class="mt-4">
                 <x-label for="role" value="{{ __('I am a') }}" />
                 <select id="role" name="role"
-                    class="block mt-1 w-full bg-gray-800/70 backdrop-blur-sm border border-gray-700 text-white placeholder-gray-400 focus:border-gray-700 focus:ring-gray-700 focus:ring-2 rounded-xl shadow-lg px-4 py-3 transition-all duration-300"
+                    class="block mt-1 w-full dark:bg-gray-800/70 bg-gray-100 backdrop-blur-sm border dark:border-gray-700 border-gray-300 dark:text-white text-gray-900 dark:placeholder-gray-400 placeholder-gray-500 focus:border-blue-500 dark:focus:ring-gray-700 focus:ring-blue-500 focus:ring-2 rounded-xl shadow-lg px-4 py-3 transition-all duration-300"
                     required>
-                    <option value="" class="bg-gray-900 text-white">{{ __('Select your role') }}</option>
-                    <option value="seeker" {{ old('role') == 'seeker' ? 'selected' : '' }} class="bg-gray-900 text-white">{{ __('Seeker') }} - Looking for jobs</option>
-                    <option value="company" {{ old('role') == 'company' ? 'selected' : '' }} class="bg-gray-900 text-white">{{ __('Company') }} - Posting jobs</option>
+                    <option value="" class="dark:bg-gray-900 bg-white dark:text-white text-gray-900">{{ __('Select your role') }}</option>
+                    <option value="seeker" {{ old('role') == 'seeker' ? 'selected' : '' }} class="dark:bg-gray-900 bg-white dark:text-white text-gray-900">{{ __('Seeker') }} - Looking for jobs</option>
+                    <option value="company" {{ old('role') == 'company' ? 'selected' : '' }} class="dark:bg-gray-900 bg-white dark:text-white text-gray-900">{{ __('Company') }} - Posting jobs</option>
                 </select>
-                <p class="mt-1 text-xs text-gray-400">{{ __('Are you looking for jobs or posting jobs?') }}</p>
+                <p class="mt-1 text-xs dark:text-gray-400 text-gray-600">{{ __('Are you looking for jobs or posting jobs?') }}</p>
             </div>
 
             <div class="mt-4">
@@ -63,10 +63,10 @@
                         <div class="flex items-start">
                             <x-checkbox name="terms" id="terms" required class="mt-1" />
 
-                            <div class="ms-2 text-sm text-gray-300">
+                            <div class="ms-2 text-sm dark:text-gray-300 text-gray-700">
                                 {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                    'terms_of_service' => '<a target=\"_blank\" href=\"'.route('terms.show').'\" class=\"text-gray-300 hover:text-white underline\">'.__('Terms of Service').'</a>',
-                                    'privacy_policy' => '<a target=\"_blank\" href=\"'.route('policy.show').'\" class=\"text-gray-300 hover:text-white underline\">'.__('Privacy Policy').'</a>',
+                                    'terms_of_service' => '<a target=\"_blank\" href=\"'.route('terms.show').'\" class=\"dark:text-gray-300 text-gray-700 dark:hover:text-white hover:text-blue-600 underline\">'.__('Terms of Service').'</a>',
+                                    'privacy_policy' => '<a target=\"_blank\" href=\"'.route('policy.show').'\" class=\"dark:text-gray-300 text-gray-700 dark:hover:text-white hover:text-blue-600 underline\">'.__('Privacy Policy').'</a>',
                                 ]) !!}
                             </div>
                         </div>
@@ -84,9 +84,9 @@
             </div>
 
             <div class="mt-6 text-center">
-                <p class="text-sm text-gray-300">
+                <p class="text-sm dark:text-gray-300 text-gray-700">
                     {{ __('Already have an account?') }}
-                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white font-semibold underline transition-colors">
+                    <a href="{{ route('login') }}" class="dark:text-gray-300 text-gray-700 dark:hover:text-white hover:text-blue-600 font-semibold underline transition-colors">
                         {{ __('Sign in') }}
                     </a>
                 </p>

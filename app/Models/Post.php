@@ -29,6 +29,16 @@ class Post extends Model
         return $this->belongsToMany(User::class, 'post_likes');
     }
 
+    public function stars()
+    {
+        return $this->hasMany(PostStar::class);
+    }
+
+    public function starredBy()
+    {
+        return $this->belongsToMany(User::class, 'post_stars');
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);

@@ -13,13 +13,15 @@ class PostRepository
      *
      * @param  int  $perPage
      * @param  int|null  $userId  Current user ID to filter blocked users
+     * @param  array  $filters  Filter parameters (sortOrder, tags, specialties, jobType)
      * @return LengthAwarePaginator
      */
-    public function getAll(int $perPage = 10, ?int $userId = null): LengthAwarePaginator
+    public function getAll(int $perPage = 10, ?int $userId = null, array $filters = []): LengthAwarePaginator
     {
         $query = Post::with([
             'user', 
             'likes',
+            'stars',
             'comments',
             'specialties' => function($query) {
                 $query->with('subSpecialties');
@@ -49,8 +51,35 @@ class PostRepository
             }
         }
         
-        return $query->latest()
-            ->paginate($perPage);
+        // Apply filters
+        // Filter by tags
+        if (!empty($filters['tags']) && is_array($filters['tags'])) {
+            $query->whereHas('tags', function($q) use ($filters) {
+                $q->whereIn('tags.id', $filters['tags']);
+            });
+        }
+        
+        // Filter by specialties
+        if (!empty($filters['specialties']) && is_array($filters['specialties'])) {
+            $query->whereHas('specialties', function($q) use ($filters) {
+                $q->whereIn('specialties.id', $filters['specialties']);
+            });
+        }
+        
+        // Filter by job type
+        if (!empty($filters['jobType'])) {
+            $query->where('job_type', $filters['jobType']);
+        }
+        
+        // Apply sort order
+        $sortOrder = $filters['sortOrder'] ?? 'desc';
+        if ($sortOrder === 'asc') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+        
+        return $query->paginate($perPage);
     }
 
     /**
@@ -67,6 +96,7 @@ class PostRepository
             ->with([
                 'user',
                 'likes',
+                'stars',
                 'comments',
                 'specialties' => function($query) {
                     $query->with('subSpecialties');

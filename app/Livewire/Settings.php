@@ -26,11 +26,15 @@ class Settings extends Component
     public $location;
     public $website;
     public $photo;
+    
+    // Theme preference
+    public $themePreference = 'system';
 
     public function mount(): void
     {
         $this->loadBlockedUsers();
         $this->loadProfileData();
+        $this->loadThemePreference();
     }
 
     protected function loadProfileData(): void
@@ -49,6 +53,16 @@ class Settings extends Component
             $this->location = $user->profile->location;
             $this->website = $user->profile->website;
         }
+    }
+
+    protected function loadThemePreference(): void
+    {
+        if (!Auth::check()) {
+            return;
+        }
+
+        $user = Auth::user();
+        $this->themePreference = $user->theme_preference ?? 'system';
     }
 
     public function openBlocksModal(): void
@@ -135,6 +149,25 @@ class Settings extends Component
         $user->deleteProfilePhoto();
         $this->loadProfileData();
         session()->flash('success', 'Profile photo removed successfully!');
+    }
+
+    public function updateThemePreference(): void
+    {
+        try {
+            $user = Auth::user();
+            $user->theme_preference = $this->themePreference;
+            $user->save();
+            
+            session()->flash('success', 'Theme preference updated successfully!');
+            
+            // Dispatch browser event to update theme immediately
+            $this->dispatch('theme-updated', theme: $this->themePreference);
+            
+            // Also dispatch a JavaScript event for immediate update
+            $this->js("window.dispatchEvent(new CustomEvent('theme-updated', { detail: { theme: '{$this->themePreference}' } }))");
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to update theme preference: ' . $e->getMessage());
+        }
     }
 
     public function render(): View

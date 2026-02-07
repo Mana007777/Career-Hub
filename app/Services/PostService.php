@@ -23,12 +23,13 @@ class PostService
      * Get all posts with user relationship, ordered by latest.
      *
      * @param  int  $perPage
+     * @param  array  $filters
      * @return LengthAwarePaginator
      */
-    public function getAllPosts(int $perPage = 10): LengthAwarePaginator
+    public function getAllPosts(int $perPage = 10, array $filters = []): LengthAwarePaginator
     {
         $userId = auth()->id();
-        return $this->repository->getAll($perPage, $userId);
+        return $this->repository->getAll($perPage, $userId, $filters);
     }
 
     /**
@@ -36,12 +37,13 @@ class PostService
      * Uses PostQueries for heavy aggregation query.
      *
      * @param  int  $perPage
+     * @param  array  $filters
      * @return LengthAwarePaginator
      */
-    public function getPopularPosts(int $perPage = 10): LengthAwarePaginator
+    public function getPopularPosts(int $perPage = 10, array $filters = []): LengthAwarePaginator
     {
         $userId = auth()->id();
-        return $this->queries->getPopular($perPage, $userId);
+        return $this->queries->getPopular($perPage, $userId, $filters);
     }
 
     /**
@@ -60,18 +62,19 @@ class PostService
      * Uses PostQueries for heavy query with joins.
      *
      * @param  int  $perPage
+     * @param  array  $filters
      * @return LengthAwarePaginator
      */
-    public function getFollowingPosts(int $perPage = 10): LengthAwarePaginator
+    public function getFollowingPosts(int $perPage = 10, array $filters = []): LengthAwarePaginator
     {
         $userId = auth()->id();
 
         if (!$userId) {
             // If not authenticated, just show the general feed
-            return $this->getAllPosts($perPage);
+            return $this->getAllPosts($perPage, $filters);
         }
 
-        return $this->queries->getFollowingForUser($userId, $perPage);
+        return $this->queries->getFollowingForUser($userId, $perPage, $filters);
     }
 
     /**

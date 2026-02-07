@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-black text-white pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
+<div class="min-h-screen dark:bg-black bg-white dark:text-white text-gray-900 pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
     <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Back Button -->
         <div 
@@ -10,7 +10,7 @@
         >
             <button 
                 onclick="window.history.back()"
-                class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 group">
+                class="inline-flex items-center gap-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 transition-all duration-300 transform hover:translate-x-1 group">
                 <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -20,20 +20,20 @@
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
-            <div class="mb-6 p-4 bg-green-900/50 border border-green-700 rounded-lg text-green-200">
+            <div class="mb-6 p-4 dark:bg-green-900/50 bg-green-50 border dark:border-green-700 border-green-200 rounded-lg dark:text-green-200 text-green-800 font-medium">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session()->has('error'))
-            <div class="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-200">
+            <div class="mb-6 p-4 dark:bg-red-900/50 bg-red-50 border dark:border-red-700 border-red-200 rounded-lg dark:text-red-200 text-red-800 font-medium">
                 {{ session('error') }}
             </div>
         @endif
 
         <!-- Profile Header -->
         <div 
-            class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6 shadow-2xl"
+            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl p-6 mb-6 shadow-2xl"
             x-show="loaded"
             x-transition:enter="transition ease-out duration-700"
             x-transition:enter-start="opacity-0 translate-y-8 scale-95"
@@ -41,7 +41,7 @@
         >
             <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <!-- Profile Photo/Avatar -->
-                <div class="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-3xl font-bold text-gray-300">
+                <div class="w-24 h-24 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-3xl font-bold dark:text-gray-300 text-gray-700">
                     {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                 </div>
 
@@ -50,20 +50,20 @@
                     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                         <div>
                             <div class="flex items-center gap-3 mb-2">
-                                <h1 class="text-2xl font-bold text-white">{{ $user->username }}</h1>
+                                <h1 class="text-2xl font-bold dark:text-white text-gray-900">{{ $user->username }}</h1>
                                 @if($user->role)
-                                    <span class="px-3 py-1 text-xs font-medium rounded-full {{ $user->role === 'seeker' ? 'bg-blue-600/20 text-blue-300 border border-blue-600/50' : 'bg-purple-600/20 text-purple-300 border border-purple-600/50' }}">
+                                    <span class="px-3 py-1 text-xs font-medium rounded-full {{ $user->role === 'seeker' ? 'dark:bg-blue-600/20 bg-blue-100 dark:text-blue-300 text-blue-700 dark:border-blue-600/50 border-blue-300' : 'dark:bg-purple-600/20 bg-purple-100 dark:text-purple-300 text-purple-700 dark:border-purple-600/50 border-purple-300' }}">
                                         {{ ucfirst($user->role) }}
                                     </span>
                                 @endif
                             </div>
                             
                             @if($user->profile && $user->profile->bio)
-                                <p class="text-gray-300 mb-4 max-w-xl">{{ $user->profile->bio }}</p>
+                                <p class="dark:text-gray-300 text-gray-700 mb-4 max-w-xl">{{ $user->profile->bio }}</p>
                             @endif
 
                             <!-- Additional Info: Location and Website -->
-                            <div class="flex flex-wrap items-center gap-4 mb-4 text-sm text-gray-400">
+                            <div class="flex flex-wrap items-center gap-4 mb-4 text-sm dark:text-gray-400 text-gray-600">
                                 @if($user->profile && $user->profile->location)
                                     <div class="flex items-center gap-2">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +85,7 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                                         </svg>
-                                        <a href="{{ $websiteUrl }}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 hover:underline">
+                                        <a href="{{ $websiteUrl }}" target="_blank" rel="noopener noreferrer" class="dark:text-blue-400 text-blue-600 dark:hover:text-blue-300 hover:text-blue-700 hover:underline">
                                             {{ $websiteDisplay }}
                                         </a>
                                     </div>
@@ -95,22 +95,22 @@
                             <!-- Stats -->
                             <div class="flex gap-6 mb-2">
                                 <div>
-                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Posts</span>
-                                    <p class="text-white font-semibold">{{ $postsCount }}</p>
+                                    <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Posts</span>
+                                    <p class="dark:text-white text-gray-900 font-semibold">{{ $postsCount }}</p>
                                 </div>
                                 <button 
                                     type="button"
                                     wire:click="openFollowersModal"
                                     class="text-left hover:opacity-80 transition-opacity">
-                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Followers</span>
-                                    <p class="text-white font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followersCount }}</p>
+                                    <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Followers</span>
+                                    <p class="dark:text-white text-gray-900 font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followersCount }}</p>
                                 </button>
                                 <button 
                                     type="button"
                                     wire:click="openFollowingModal"
                                     class="text-left hover:opacity-80 transition-opacity">
-                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Following</span>
-                                    <p class="text-white font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followingCount }}</p>
+                                    <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Following</span>
+                                    <p class="dark:text-white text-gray-900 font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followingCount }}</p>
                                 </button>
                             </div>
                         </div>
@@ -120,7 +120,7 @@
                             @if(Auth::check() && Auth::id() !== $user->id)
                                 @if($isBlocked)
                                     <!-- Show blocked message when current user has blocked this user -->
-                                    <div class="px-6 py-3 rounded-lg bg-red-900/30 border border-red-700/50 text-red-200">
+                                    <div class="px-6 py-3 rounded-lg dark:bg-red-900/30 bg-red-50 dark:border-red-700/50 border-red-200 dark:text-red-200 text-red-800 font-medium">
                                         <div class="flex items-center gap-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
@@ -130,7 +130,7 @@
                                     </div>
                                     <button 
                                         wire:click="toggleBlock"
-                                        class="px-6 py-2 rounded-lg font-medium transition-colors bg-gray-800 hover:bg-gray-700 text-white border border-gray-700">
+                                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700">
                                         Unblock
                                     </button>
                                 @else
@@ -138,9 +138,9 @@
                                         wire:click="toggleFollow"
                                         class="px-6 py-2 rounded-lg font-medium transition-colors
                                             @if($isFollowing)
-                                                bg-gray-800 hover:bg-gray-700 text-white border border-gray-700
+                                                dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700
                                             @else
-                                                bg-blue-600 hover:bg-blue-700 text-white
+                                                dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white
                                             @endif">
                                         @if($isFollowing)
                                             Unfollow
@@ -161,7 +161,7 @@
                             @if(Auth::check() && Auth::id() === $user->id)
                                 <a 
                                     href="{{ route('profile.show') }}"
-                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-100 transition-colors"
+                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border dark:border-gray-700 border-gray-300 dark:bg-gray-800 bg-gray-200 dark:hover:bg-gray-700 hover:bg-gray-300 dark:text-gray-100 text-gray-900 transition-colors"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a3 3 0 014.243 4.243L9 19.95 4 21l1.05-5 10.182-10.768z" />
@@ -172,7 +172,7 @@
                                     @csrf
                                     <button 
                                         type="submit"
-                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-red-700 bg-red-700/20 hover:bg-red-700/40 text-red-200 transition-colors"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg dark:border-red-700 border-red-300 dark:bg-red-700/20 bg-red-100 dark:hover:bg-red-700/40 hover:bg-red-200 dark:text-red-200 text-red-700 transition-colors"
                                     >
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3-3m0 0l3 3m-3-3v12" />
@@ -198,12 +198,12 @@
             </div>
         @else
             <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-4">Posts</h2>
+                <h2 class="text-xl font-bold dark:text-white text-gray-900 mb-4">Posts</h2>
                 
                 <div class="space-y-6">
                     @forelse ($posts as $index => $post)
                     <div 
-                        class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1"
+                        class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg p-6 dark:hover:border-gray-700 hover:border-gray-300 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1"
                         x-data="{ show: false }"
                         x-init="
                             setTimeout(() => {
@@ -218,14 +218,14 @@
                         <!-- Post Header -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-                                    <span class="text-gray-300 font-semibold">
+                                <div class="w-10 h-10 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
+                                    <span class="dark:text-gray-300 text-gray-700 font-semibold">
                                         {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
                                     </span>
                                 </div>
                                 <div>
-                                    <h3 class="font-semibold text-white">{{ $post->user->name ?? 'Unknown User' }}</h3>
-                                    <p class="text-sm text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
+                                    <h3 class="font-semibold dark:text-white text-gray-900">{{ $post->user->name ?? 'Unknown User' }}</h3>
+                                    <p class="text-sm dark:text-gray-400 text-gray-600">{{ $post->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
                         </div>
@@ -233,9 +233,9 @@
                         <!-- Post Title & Content -->
                         <div class="mb-4">
                             @if(!empty($post->title))
-                                <h3 class="text-lg font-semibold text-white mb-1">{{ $post->title }}</h3>
+                                <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-1">{{ $post->title }}</h3>
                             @endif
-                            <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">{{ $post->content }}</p>
+                            <p class="dark:text-gray-200 text-gray-700 leading-relaxed whitespace-pre-wrap">{{ $post->content }}</p>
                         </div>
 
                         <!-- Post Media -->
@@ -258,14 +258,14 @@
 
                         <!-- Post Specialties -->
                         @if($post->specialties && $post->specialties->count() > 0)
-                            <div class="mb-2 pt-4 border-t border-gray-800">
+                            <div class="mb-2 pt-4 border-t dark:border-gray-800 border-gray-200">
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($post->specialties as $specialty)
                                         @php
                                             $subSpecialty = $specialty->subSpecialties->firstWhere('id', $specialty->pivot->sub_specialty_id);
                                         @endphp
                                         @if($subSpecialty)
-                                            <span class="px-3 py-1 bg-blue-600/20 border border-blue-600/50 rounded-lg text-blue-300 text-xs">
+                                            <span class="px-3 py-1 dark:bg-blue-600/20 bg-blue-100 dark:border-blue-600/50 border-blue-300 rounded-lg dark:text-blue-300 text-blue-700 text-xs font-medium">
                                                 {{ $specialty->name }} - {{ $subSpecialty->name }}
                                             </span>
                                         @endif
@@ -279,7 +279,7 @@
                             <div class="mb-4 @if(!$post->specialties || $post->specialties->count() === 0) pt-4 border-t border-gray-800 @endif">
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($post->tags as $tag)
-                                        <span class="px-3 py-1 bg-purple-600/20 border border-purple-600/50 rounded-lg text-purple-300 text-xs">
+                                        <span class="px-3 py-1 dark:bg-purple-600/20 bg-purple-100 dark:border-purple-600/50 border-purple-300 rounded-lg dark:text-purple-300 text-purple-700 text-xs font-medium">
                                             #{{ $tag->name }}
                                         </span>
                                     @endforeach
@@ -288,27 +288,33 @@
                         @endif
 
                         <!-- Post Stats -->
-                        <div class="flex items-center gap-6 pt-4 border-t border-gray-800">
-                            <div class="flex items-center gap-2 text-gray-400">
+                        <div class="flex items-center gap-6 pt-4 border-t dark:border-gray-800 border-gray-200">
+                            <div class="flex items-center gap-2 dark:text-gray-400 text-gray-600">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                 </svg>
                                 <span>{{ $post->likes->count() }}</span>
                             </div>
-                            <div class="flex items-center gap-2 text-gray-400">
+                            <div class="flex items-center gap-2 dark:text-gray-400 text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                </svg>
+                                <span>{{ $post->stars->count() }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 dark:text-gray-400 text-gray-600">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                 </svg>
                                 <span>{{ $post->comments->count() }}</span>
                             </div>
-                            <a href="{{ route('posts.show', $post->slug) }}" class="text-blue-400 hover:text-blue-300 text-sm">
+                            <a href="{{ route('posts.show', $post->slug) }}" class="dark:text-blue-400 text-blue-600 dark:hover:text-blue-300 hover:text-blue-700 text-sm">
                                 View Post
                             </a>
                         </div>
                     </div>
                     @empty
-                        <div class="bg-gray-900 border border-gray-800 rounded-lg p-12 text-center">
-                            <p class="text-gray-400">No posts yet.</p>
+                        <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg p-12 text-center">
+                            <p class="dark:text-gray-400 text-gray-600">No posts yet.</p>
                         </div>
                     @endforelse
                 </div>
@@ -347,27 +353,12 @@
     x-transition:leave="transition ease-in duration-200"
     x-transition:leave-start="opacity-100 transform translate-y-0"
     x-transition:leave-end="opacity-0 transform translate-y-full"
-    class="fixed bottom-0 z-50 max-w-md w-full -translate-x-1/2 bg-gray-600/60 backdrop-blur-sm rounded-2xl left-1/2 shadow-lg mb-2 mx-auto px-4 py-2"
+    class="fixed bottom-0 z-50 max-w-md w-full -translate-x-1/2 dark:bg-gray-600/60 bg-white backdrop-blur-sm rounded-2xl left-1/2 shadow-lg mb-2 mx-auto px-4 py-2 border dark:border-gray-700 border-gray-200"
 >
-    <div class="w-full">
-        <div class="grid max-w-xs grid-cols-3 gap-1 p-1 mx-auto my-1 bg-gray-700/80 rounded-lg" role="group">
-            <button type="button"
-                class="px-5 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 hover:text-white rounded">
-                New
-            </button>
-            <button type="button" class="px-5 py-1.5 text-xs font-medium text-white bg-gray-800 rounded">
-                Popular
-            </button>
-            <button type="button"
-                class="px-5 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800 hover:text-white rounded">
-                Following
-            </button>
-        </div>
-    </div>
-    <div class="grid h-full max-w-md grid-cols-7 mx-auto">
+    <div class="grid h-full max-w-md grid-cols-8 mx-auto">
         <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
-            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
-            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
@@ -388,8 +379,8 @@
             wire:click="$dispatch('openNotifications')"
             data-tooltip-target="tooltip-notifications" 
             type="button"
-            class="relative inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
-            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+            class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m2 0v1a3 3 0 11-6 0v-1h6z" />
@@ -410,8 +401,8 @@
             wire:click="$dispatch('openCreatePost')"
             data-tooltip-target="tooltip-post" 
             type="button"
-            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
-            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M5 12h14m-7 7V5" />
@@ -427,8 +418,8 @@
             wire:click="$dispatch('openSearch')"
             data-tooltip-target="tooltip-search" 
             type="button"
-            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
-            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
                     d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
@@ -457,12 +448,12 @@
             "
             data-tooltip-target="tooltip-chat" 
             type="button"
-            class="relative inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
-            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+            class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-            </svg>
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
             @if($totalUnreadMessages > 0)
                 <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500 text-white border border-gray-900">
                     {{ $totalUnreadMessages > 99 ? '99+' : $totalUnreadMessages }}
@@ -476,10 +467,27 @@
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <a 
+            href="{{ route('cvs') }}"
+            data-tooltip-target="tooltip-cvs"
+            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+        >
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span class="sr-only">CVs</span>
+        </a>
+        <div id="tooltip-cvs" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            CVs
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <a 
             href="{{ route('settings') }}"
             data-tooltip-target="tooltip-settings" 
-            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
-            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
@@ -495,15 +503,15 @@
         <a 
             href="{{ auth()->check() ? route('user.profile', auth()->user()->username ?? 'unknown') : route('profile.show') }}"
             data-tooltip-target="tooltip-profile"
-            class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors"
+            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
         >
-            <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
-                    d="M15.75 7.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 19.5a7.5 7.5 0 0 1 15 0v.75H4.5v-.75Z" />
-            </svg>
-            <span class="sr-only">Profile</span>
-        </a>
+                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                        d="M15.75 7.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 19.5a7.5 7.5 0 0 1 15 0v.75H4.5v-.75Z" />
+                </svg>
+                <span class="sr-only">Profile</span>
+            </a>
         <div id="tooltip-profile" role="tooltip"
             class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
             Profile
@@ -514,14 +522,14 @@
 
 <!-- Followers Modal -->
 @if($showFollowersModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" wire:click="closeFollowersModal">
-        <div class="bg-gray-900 border border-gray-800 rounded-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col" wire:click.stop>
-            <div class="flex items-center justify-between p-5 border-b border-gray-800">
-                <h3 class="text-lg font-semibold text-white">Followers</h3>
+    <div class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm" wire:click="closeFollowersModal">
+        <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col" wire:click.stop>
+            <div class="flex items-center justify-between p-5 border-b dark:border-gray-800 border-gray-200">
+                <h3 class="text-lg font-semibold dark:text-white text-gray-900">Followers</h3>
                 <button
                     type="button"
                     wire:click="closeFollowersModal"
-                    class="text-gray-400 hover:text-white transition-colors">
+                    class="dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -534,21 +542,21 @@
                         @foreach($user->followers as $follower)
                             <a 
                                 href="{{ route('user.profile', $follower->username ?? 'unknown') }}"
-                                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800/80 transition-colors group">
-                                <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-sm font-semibold text-gray-300 flex-shrink-0">
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg dark:hover:bg-gray-800/80 hover:bg-gray-100 transition-colors group">
+                                <div class="w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-300 text-gray-700 flex-shrink-0">
                                     {{ strtoupper(substr($follower->name ?? 'U', 0, 1)) }}
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+                                    <p class="text-sm font-semibold dark:text-white text-gray-900 group-hover:text-blue-400 transition-colors truncate">
                                         {{ $follower->name ?? 'Unknown User' }}
                                     </p>
                                     @if(!empty($follower->username))
-                                        <p class="text-xs text-gray-400 truncate">
+                                        <p class="text-xs dark:text-gray-400 text-gray-600 truncate">
                                             {{ '@' . $follower->username }}
                                         </p>
                                     @endif
                                     @if($follower->profile && !empty($follower->profile->bio))
-                                        <p class="text-xs text-gray-500 truncate mt-0.5">
+                                        <p class="text-xs dark:text-gray-500 text-gray-500 truncate mt-0.5">
                                             {{ Str::limit($follower->profile->bio, 50) }}
                                         </p>
                                     @endif
@@ -558,7 +566,7 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-sm text-gray-400">No followers yet.</p>
+                        <p class="text-sm dark:text-gray-400 text-gray-600">No followers yet.</p>
                     </div>
                 @endif
             </div>
@@ -568,14 +576,14 @@
 
 <!-- Following Modal -->
 @if($showFollowingModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" wire:click="closeFollowingModal">
-        <div class="bg-gray-900 border border-gray-800 rounded-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col" wire:click.stop>
-            <div class="flex items-center justify-between p-5 border-b border-gray-800">
-                <h3 class="text-lg font-semibold text-white">Following</h3>
+    <div class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm" wire:click="closeFollowingModal">
+        <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col" wire:click.stop>
+            <div class="flex items-center justify-between p-5 border-b dark:border-gray-800 border-gray-200">
+                <h3 class="text-lg font-semibold dark:text-white text-gray-900">Following</h3>
                 <button
                     type="button"
                     wire:click="closeFollowingModal"
-                    class="text-gray-400 hover:text-white transition-colors">
+                    class="dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -588,21 +596,21 @@
                         @foreach($user->following as $followedUser)
                             <a 
                                 href="{{ route('user.profile', $followedUser->username ?? 'unknown') }}"
-                                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800/80 transition-colors group">
-                                <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-sm font-semibold text-gray-300 flex-shrink-0">
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg dark:hover:bg-gray-800/80 hover:bg-gray-100 transition-colors group">
+                                <div class="w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-300 text-gray-700 flex-shrink-0">
                                     {{ strtoupper(substr($followedUser->name ?? 'U', 0, 1)) }}
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+                                    <p class="text-sm font-semibold dark:text-white text-gray-900 group-hover:text-blue-400 transition-colors truncate">
                                         {{ $followedUser->name ?? 'Unknown User' }}
                                     </p>
                                     @if(!empty($followedUser->username))
-                                        <p class="text-xs text-gray-400 truncate">
+                                        <p class="text-xs dark:text-gray-400 text-gray-600 truncate">
                                             {{ '@' . $followedUser->username }}
                                         </p>
                                     @endif
                                     @if($followedUser->profile && !empty($followedUser->profile->bio))
-                                        <p class="text-xs text-gray-500 truncate mt-0.5">
+                                        <p class="text-xs dark:text-gray-500 text-gray-500 truncate mt-0.5">
                                             {{ Str::limit($followedUser->profile->bio, 50) }}
                                         </p>
                                     @endif
@@ -612,7 +620,7 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-sm text-gray-400">Not following anyone yet.</p>
+                        <p class="text-sm dark:text-gray-400 text-gray-600">Not following anyone yet.</p>
                     </div>
                 @endif
             </div>

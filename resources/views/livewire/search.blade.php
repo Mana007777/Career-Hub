@@ -20,7 +20,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         @transition:leave-end="document.body.style.overflow = ''"
-        class="fixed inset-0 z-50 bg-gray-900/90 backdrop-blur-sm"
+        class="fixed inset-0 z-50 dark:bg-gray-900/90 bg-gray-900/90 backdrop-blur-sm"
         @click.self="$wire.closeSearch()"
         @keydown.escape.window="$wire.closeSearch()"
         wire:key="search-modal-{{ $showSearch }}"
@@ -32,12 +32,12 @@
         >
             <div class="w-full max-w-2xl">
                 <!-- Search Header -->
-                <div class="bg-gray-800 rounded-t-xl p-4 border-b border-gray-700">
+                <div class="dark:bg-gray-800 bg-white rounded-t-xl p-4 border-b dark:border-gray-700 border-gray-200">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-2xl font-bold text-white">Search Posts</h2>
+                        <h2 class="text-2xl font-bold dark:text-white text-gray-900">Search Posts</h2>
                         <button 
                             wire:click="closeSearch"
-                            class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
+                            class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -47,7 +47,7 @@
                     <!-- Search Input -->
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 dark:text-gray-400 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
@@ -55,7 +55,7 @@
                             type="text"
                             wire:model.live.debounce.300ms="query"
                             placeholder="Search for posts..."
-                            class="w-full pl-12 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="w-full pl-12 pr-4 py-3 dark:bg-gray-700 bg-gray-100 border dark:border-gray-600 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-400 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             autofocus>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                     x-data="{ loaded: false }"
                     x-init="setTimeout(() => loaded = true, 200)"
                 >
-                <div class="bg-gray-800 rounded-b-xl max-h-[60vh] overflow-y-auto">
+                <div class="dark:bg-gray-800 bg-white rounded-b-xl max-h-[60vh] overflow-y-auto">
                     @if($query && strlen(trim($query)) > 0)
                         @if($posts->count() > 0)
                             <div class="p-4 space-y-4">
@@ -73,7 +73,7 @@
                                     <a 
                                         href="{{ route('posts.show', $post->slug) }}"
                                         wire:click="closeSearch"
-                                        class="block bg-gray-900 border border-gray-700 rounded-lg p-4 hover:border-gray-600 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+                                        class="block dark:bg-gray-900 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4 dark:hover:border-gray-600 hover:border-gray-300 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
                                         x-data="{ show: false }"
                                         x-init="
                                             setTimeout(() => {

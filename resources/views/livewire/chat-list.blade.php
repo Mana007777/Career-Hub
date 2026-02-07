@@ -32,12 +32,12 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     @click.away="isOpen = false"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+    class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/50 bg-black/50 backdrop-blur-sm"
     style="display: none;"
 >
     <div 
         @click.stop
-        class="bg-gray-900 border border-gray-800 rounded-lg shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col mx-4 transform transition-all duration-500"
+        class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col mx-4 transform transition-all duration-500"
         x-transition:enter="transition ease-out duration-500"
         x-transition:enter-start="opacity-0 scale-95 -translate-y-10"
         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
@@ -46,11 +46,11 @@
         x-transition:leave-end="opacity-0 scale-95 -translate-y-10"
     >
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-            <h2 class="text-xl font-bold text-white">Chats</h2>
+        <div class="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800 border-gray-200">
+            <h2 class="text-xl font-bold dark:text-white text-gray-900">Chats</h2>
             <button
                 wire:click="close"
-                class="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                 title="Close"
             >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,8 +63,8 @@
         <div class="flex-1 overflow-y-auto">
             <!-- Pending Requests Section -->
             @if(count($requests) > 0)
-                <div class="px-6 py-3 border-b border-gray-800 bg-blue-600/10">
-                    <h3 class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3">Chat Requests</h3>
+                <div class="px-6 py-3 border-b dark:border-gray-800 border-gray-200 dark:bg-blue-600/10 bg-blue-50">
+                    <h3 class="text-xs font-semibold dark:text-blue-400 text-blue-600 uppercase tracking-wider mb-3">Chat Requests</h3>
                     <div class="space-y-2">
                         @foreach($requests as $index => $request)
                             @php
@@ -73,7 +73,7 @@
                             @endphp
                             @if($fromUser)
                                 <div 
-                                    class="bg-gray-800/50 rounded-lg p-3 border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 transform hover:scale-[1.02]"
+                                    class="dark:bg-gray-800/50 bg-gray-50 rounded-lg p-3 border dark:border-blue-500/30 border-blue-300 dark:hover:border-blue-500/50 hover:border-blue-400 transition-all duration-300 transform hover:scale-[1.02]"
                                     x-data="{ show: false }"
                                     x-init="
                                         setTimeout(() => {

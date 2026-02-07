@@ -106,14 +106,14 @@
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 transform translate-y-0"
                 x-transition:leave-end="opacity-0 transform translate-y-4"
-                class="fixed bottom-4 right-4 z-50 w-96 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl flex flex-col"
+                class="fixed bottom-4 right-4 z-50 w-96 dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg shadow-2xl flex flex-col"
                 style="height: 500px;"
             >
-                <div class="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700 rounded-t-lg">
-                    <h3 class="text-sm font-semibold text-white">{{ $otherUser->name }}</h3>
+                <div class="flex items-center justify-between px-4 py-3 dark:bg-gray-800 bg-gray-100 border-b dark:border-gray-700 border-gray-200 rounded-t-lg">
+                    <h3 class="text-sm font-semibold dark:text-white text-gray-900">{{ $otherUser->name }}</h3>
                     <button
                         wire:click="closeChat"
-                        class="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                        class="p-1.5 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 rounded transition-colors"
                         title="Close"
                     >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,10 +126,10 @@
                         <svg class="mx-auto h-16 w-16 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                         </svg>
-                        <p class="text-sm text-gray-400 mb-2">You need to follow {{ $otherUser->name }} to start chatting</p>
+                        <p class="text-sm dark:text-gray-400 text-gray-600 mb-2">You need to follow {{ $otherUser->name }} to start chatting</p>
                         <a 
                             href="{{ route('user.profile', $otherUser->username ?? 'unknown') }}"
-                            class="inline-block px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            class="inline-block px-4 py-2 text-sm font-medium dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors"
                         >
                             View Profile
                         </a>
@@ -157,7 +157,7 @@
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 transform translate-y-0"
                 x-transition:leave-end="opacity-0 transform translate-y-4"
-                class="fixed bottom-4 right-4 z-50 w-96 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl flex flex-col"
+                class="fixed bottom-4 right-4 z-50 w-96 dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg shadow-2xl flex flex-col"
                 style="height: 500px;"
             >
             <!-- Chat Header -->
@@ -165,7 +165,7 @@
                 <div class="flex items-center gap-3 flex-1 min-w-0">
                     <div class="relative flex-shrink-0">
                         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
-                            <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-sm font-semibold text-gray-100">
+                            <div class="w-full h-full rounded-full dark:bg-gray-900 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-100 text-gray-900">
                                 {{ strtoupper(substr($otherUser->name ?? 'U', 0, 1)) }}
                             </div>
                         </div>
@@ -176,19 +176,19 @@
                         ></span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h3 class="text-sm font-semibold text-white truncate">{{ $otherUser->name }}</h3>
+                        <h3 class="text-sm font-semibold dark:text-white text-gray-900 truncate">{{ $otherUser->name }}</h3>
                         <p 
                             class="text-xs user-status-text-{{ $otherUser->id }}"
                             x-data="{ isOnline: {{ $otherUser->isActive() ? 'true' : 'false' }} }"
                         >
-                            <span :class="isOnline ? 'text-green-400' : 'text-gray-400'" x-text="isOnline ? 'Active now' : 'Offline'"></span>
+                            <span :class="isOnline ? 'text-green-400' : 'dark:text-gray-400 text-gray-600'" x-text="isOnline ? 'Active now' : 'Offline'"></span>
                         </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1">
                     <button
                         @click="isMinimized = !isMinimized"
-                        class="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                        class="p-1.5 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 rounded transition-colors"
                         title="Minimize"
                     >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,7 +197,7 @@
                     </button>
                     <button
                         wire:click="closeChat"
-                        class="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                        class="p-1.5 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 rounded transition-colors"
                         title="Close"
                     >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,7 +211,7 @@
             <div 
                 x-show="!isMinimized"
                 x-transition
-                class="flex-1 overflow-y-auto bg-gray-900 relative flex flex-col"
+                class="flex-1 overflow-y-auto dark:bg-gray-900 bg-gray-50 relative flex flex-col"
                 id="chat-messages-container-{{ $chatId }}"
             >
                 <!-- Pending Request Banner (if receiver) - Sticky at top -->
@@ -220,7 +220,7 @@
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-blue-400">{{ $otherUser->name }} wants to chat with you</p>
-                                <p class="text-xs text-gray-400 mt-1">Review the messages below, then accept or reject</p>
+                                <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Review the messages below, then accept or reject</p>
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
                                 <button
@@ -297,11 +297,11 @@
                                     </div>
                                 @endif
                                 <div class="flex flex-col {{ $senderId === auth()->id() ? 'items-end' : 'items-start' }}">
-                                    <div class="px-4 py-2 rounded-2xl {{ $senderId === auth()->id() ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-gray-800 text-gray-100 rounded-bl-sm' }}">
+                                    <div class="px-4 py-2 rounded-2xl {{ $senderId === auth()->id() ? 'bg-blue-600 text-white rounded-br-sm' : 'dark:bg-gray-800 bg-gray-200 dark:text-gray-100 text-gray-900 rounded-bl-sm' }}">
                                         <p class="text-sm whitespace-pre-wrap break-words">{{ $messageText }}</p>
                                     </div>
                                     <div class="flex items-center gap-1 mt-1 px-1">
-                                        <span class="text-xs text-gray-500">
+                                        <span class="text-xs dark:text-gray-500 text-gray-600">
                                             {{ $createdAt ? \Carbon\Carbon::parse($createdAt)->format('h:i A') : '' }}
                                         </span>
                                         @if($senderId === auth()->id())
@@ -348,7 +348,7 @@
                     @endforeach
                 @else
                     <div class="text-center py-8">
-                        <p class="text-sm text-gray-500">No messages yet. Start the conversation!</p>
+                        <p class="text-sm dark:text-gray-500 text-gray-600">No messages yet. Start the conversation!</p>
                     </div>
                 @endif
                 </div>
@@ -358,12 +358,12 @@
             <div 
                 x-show="!isMinimized"
                 x-transition
-                class="p-4 bg-gray-800 border-t border-gray-700 rounded-b-lg"
+                class="p-4 dark:bg-gray-800 bg-gray-100 border-t dark:border-gray-700 border-gray-200 rounded-b-lg"
             >
                 @if($pendingRequest && !$isRequest)
                     <!-- Disabled input when there's a pending request (receiver side) -->
                     <div class="flex items-center justify-center py-3">
-                        <p class="text-xs text-gray-400">Accept or reject the request to start chatting</p>
+                        <p class="text-xs dark:text-gray-400 text-gray-600">Accept or reject the request to start chatting</p>
                     </div>
                 @else
                     <form wire:submit.prevent="sendMessage" class="flex items-end gap-2">
@@ -373,7 +373,7 @@
                                 wire:keydown.enter.prevent="sendMessage"
                                 rows="1"
                                 placeholder="{{ $isRequest ? 'Your message will be sent as a request...' : 'Type a message...' }}"
-                                class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                class="w-full px-4 py-2 dark:bg-gray-900 bg-white border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                 style="min-height: 40px; max-height: 120px;"
                                 x-on:input="
                                     $el.style.height = 'auto';
@@ -384,7 +384,7 @@
                         <button
                             type="submit"
                             wire:loading.attr="disabled"
-                            class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                            class="p-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                             title="Send message"
                         >
                         <svg wire:loading.remove wire:target="sendMessage" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

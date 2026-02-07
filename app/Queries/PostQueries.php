@@ -35,7 +35,7 @@ class PostQueries
         // Get excluded user IDs (both blocked and blocked by) if user is authenticated
         $excludedIds = $userId ? $this->getExcludedUserIds($userId) : [];
 
-        $queryBuilder = Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
+        $queryBuilder = Post::with(['user', 'likes', 'stars', 'comments', 'specialties', 'tags'])
             ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties, $hasTitleColumn) {
                 // Prefer searching by title when the column exists; fall back to content otherwise
                 if ($hasTitleColumn) {
@@ -71,9 +71,10 @@ class PostQueries
      *
      * @param  int  $userId
      * @param  int  $perPage
+     * @param  array  $filters
      * @return LengthAwarePaginator
      */
-    public function getFollowingForUser(int $userId, int $perPage = 10): LengthAwarePaginator
+    public function getFollowingForUser(int $userId, int $perPage = 10, array $filters = []): LengthAwarePaginator
     {
         // Note: Pagination results can't be easily cached, so we cache the query logic
         // For better performance, we could cache the following IDs separately
@@ -91,19 +92,23 @@ class PostQueries
         // Get excluded user IDs (both blocked and blocked by)
         $excludedIds = $this->getExcludedUserIds($userId);
 
-        return Post::whereIn('user_id', $followingIds)
+        $query = Post::whereIn('user_id', $followingIds)
             ->whereNotIn('user_id', $excludedIds)
             ->with([
                 'user',
                 'likes',
+                'stars',
                 'comments',
                 'specialties' => function($query) {
                     $query->with('subSpecialties');
                 },
                 'tags'
-            ])
-            ->latest()
-            ->paginate($perPage);
+            ]);
+        
+        // Apply filters
+        $this->applyFilters($query, $filters);
+        
+        return $query->paginate($perPage);
     }
 
     /**
@@ -112,42 +117,93 @@ class PostQueries
      * Cached for 10 minutes as popular posts change as likes are added.
      *
      * @param  int  $perPage
+     * @param  int|null  $userId
+     * @param  array  $filters
      * @return LengthAwarePaginator
      */
-    public function getPopular(int $perPage = 10, ?int $userId = null): LengthAwarePaginator
+    public function getPopular(int $perPage = 10, ?int $userId = null, array $filters = []): LengthAwarePaginator
     {
-        // Note: Pagination results can't be easily cached, so we cache the query logic
-        // The cache key includes perPage to handle different page sizes
-        $cacheKey = "posts:popular:per_page:{$perPage}";
-        
         // Get excluded user IDs (both blocked and blocked by) if user is authenticated
         $excludedIds = $userId ? $this->getExcludedUserIds($userId) : [];
         
-        // We'll cache the post IDs and then fetch them
-        // This is a simplified approach - for production, consider caching the full paginated result
-        return Cache::remember(
-            $cacheKey,
-            now()->addMinutes(10),
-            function () use ($perPage, $excludedIds) {
-                $query = Post::with([
-                        'user',
-                        'likes',
-                        'comments',
-                        'specialties' => function($query) {
-                            $query->with('subSpecialties');
-                        },
-                        'tags'
-                    ])
-                    ->withCount('likes');
-                
-                if (!empty($excludedIds)) {
-                    $query->whereNotIn('user_id', $excludedIds);
+        // Don't cache when filters are applied as cache keys would be too complex
+        $hasFilters = !empty($filters['tags']) || !empty($filters['specialties']) || !empty($filters['jobType']);
+        
+        $query = Post::with([
+                'user',
+                'likes',
+                'stars',
+                'comments',
+                'specialties' => function($query) {
+                    $query->with('subSpecialties');
+                },
+                'tags'
+            ])
+            ->withCount(['likes', 'stars']);
+        
+        if (!empty($excludedIds)) {
+            $query->whereNotIn('user_id', $excludedIds);
+        }
+        
+        // Apply filters
+        $this->applyFilters($query, $filters);
+        
+        // For popular posts, order by stars_count first (most stars = most popular), then likes_count, then date
+        $query->orderByDesc('stars_count')
+              ->orderByDesc('likes_count')
+              ->orderByDesc('created_at');
+        
+        // Only cache if no filters are applied
+        if (!$hasFilters) {
+            $cacheKey = "posts:popular:per_page:{$perPage}";
+            return Cache::remember(
+                $cacheKey,
+                now()->addMinutes(10),
+                function () use ($query, $perPage) {
+                    return $query->paginate($perPage);
                 }
-                
-                return $query->orderByDesc('likes_count')
-                    ->paginate($perPage);
+            );
+        }
+        
+        return $query->paginate($perPage);
+    }
+    
+    /**
+     * Apply filters to a query builder.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $filters
+     * @return void
+     */
+    private function applyFilters($query, array $filters): void
+    {
+        // Filter by tags
+        if (!empty($filters['tags']) && is_array($filters['tags'])) {
+            $query->whereHas('tags', function($q) use ($filters) {
+                $q->whereIn('tags.id', $filters['tags']);
+            });
+        }
+        
+        // Filter by specialties
+        if (!empty($filters['specialties']) && is_array($filters['specialties'])) {
+            $query->whereHas('specialties', function($q) use ($filters) {
+                $q->whereIn('specialties.id', $filters['specialties']);
+            });
+        }
+        
+        // Filter by job type
+        if (!empty($filters['jobType'])) {
+            $query->where('job_type', $filters['jobType']);
+        }
+        
+        // Apply sort order (only if not already set, like in popular posts)
+        if (isset($filters['sortOrder']) && !$query->getQuery()->orders) {
+            if ($filters['sortOrder'] === 'asc') {
+                $query->oldest();
+            } else {
+                $query->latest();
             }
-        );
+        }
     }
 
     /**
@@ -197,7 +253,7 @@ class PostQueries
     public function clearPostCache(int $postId): void
     {
         Cache::forget("post:{$postId}:with_relationships");
-        // Clear popular posts cache as likes/comments affect popularity
+        // Clear popular posts cache as likes/stars/comments affect popularity
         Cache::forget("posts:popular:per_page:10");
     }
 

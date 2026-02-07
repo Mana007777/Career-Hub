@@ -51,6 +51,13 @@ class Post extends Component
     public $showDeleteModal = false;
     public $postToDelete = null;
     public $feedMode = 'new'; // new, popular, following
+    
+    // Filter properties
+    public $sortOrder = 'desc'; // desc, asc
+    public $selectedTags = ''; // Single tag ID
+    public $selectedSpecialties = ''; // Single specialty ID
+    public $selectedJobType = '';
+    public $showFilters = false;
 
     protected $listeners = [
         'refreshPosts' => 'handleRefreshPosts',
@@ -89,6 +96,45 @@ class Post extends Component
         }
 
         $this->feedMode = $mode;
+        $this->resetPage();
+    }
+    
+    public function toggleFilters(): void
+    {
+        $this->showFilters = !$this->showFilters;
+    }
+    
+    public function applyFilters(): void
+    {
+        $this->resetPage();
+    }
+    
+    public function clearFilters(): void
+    {
+        $this->sortOrder = 'desc';
+        $this->selectedTags = '';
+        $this->selectedSpecialties = '';
+        $this->selectedJobType = '';
+        $this->resetPage();
+    }
+    
+    public function updatedSelectedTags(): void
+    {
+        $this->resetPage();
+    }
+    
+    public function updatedSelectedSpecialties(): void
+    {
+        $this->resetPage();
+    }
+    
+    public function updatedSelectedJobType(): void
+    {
+        $this->resetPage();
+    }
+    
+    public function updatedSortOrder(): void
+    {
         $this->resetPage();
     }
 
@@ -502,6 +548,17 @@ class Post extends Component
             session()->flash('error', 'Failed to like post. Please try again.');
         }
     }
+    
+    public function togglePostStar(int $postId, \App\Actions\Post\StarPost $starPostAction, PostRepository $postRepository): void
+    {
+        try {
+            $post = $postRepository->findById($postId);
+            $starPostAction->toggle($post);
+            $this->dispatch('$refresh');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to star post. Please try again.');
+        }
+    }
 
     public function handleRefreshPosts(): void
     {
@@ -533,14 +590,29 @@ class Post extends Component
 
     public function render(PostService $postService): View
     {
+        $filterParams = [
+            'sortOrder' => $this->sortOrder,
+            'tags' => $this->selectedTags ? [$this->selectedTags] : [],
+            'specialties' => $this->selectedSpecialties ? [$this->selectedSpecialties] : [],
+            'jobType' => $this->selectedJobType,
+        ];
+        
         $posts = match ($this->feedMode) {
-            'popular' => $postService->getPopularPosts(10),
-            'following' => $postService->getFollowingPosts(10),
-            default => $postService->getAllPosts(10),
+            'popular' => $postService->getPopularPosts(10, $filterParams),
+            'following' => $postService->getFollowingPosts(10, $filterParams),
+            default => $postService->getAllPosts(10, $filterParams),
         };
+        
+        // Get all available tags, specialties, and job types for filter dropdowns
+        $allTags = \App\Models\Tag::orderBy('name')->get();
+        $allSpecialties = \App\Models\Specialty::with('subSpecialties')->orderBy('name')->get();
+        $jobTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship', 'remote'];
 
         return view('livewire.post', [
             'posts' => $posts,
+            'allTags' => $allTags,
+            'allSpecialties' => $allSpecialties,
+            'jobTypes' => $jobTypes,
         ]);
     }
 }

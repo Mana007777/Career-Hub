@@ -46,7 +46,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 bg-gray-900/90 backdrop-blur-sm"
+        class="fixed inset-0 z-50 dark:bg-gray-900/90 bg-gray-900/90 backdrop-blur-sm"
         @click.self="show = false; $wire.closeNotifications(); stopAutoClose()"
         style="display: none;"
     >
@@ -65,7 +65,7 @@
                 x-transition:leave-end="opacity-0 -translate-y-10 scale-95"
             >
                 <!-- Progress Bar -->
-                <div class="h-1 bg-gray-800 rounded-t-xl overflow-hidden">
+                <div class="h-1 dark:bg-gray-800 bg-gray-200 rounded-t-xl overflow-hidden">
                     <div 
                         class="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-50 ease-linear"
                         :style="`width: ${progress}%`"
@@ -73,7 +73,7 @@
                 </div>
 
                 <!-- Header -->
-                <div class="bg-gray-800 rounded-t-xl p-4 border-b border-gray-700 flex items-center justify-between shadow-lg">
+                <div class="dark:bg-gray-800 bg-white rounded-t-xl p-4 border-b dark:border-gray-700 border-gray-200 flex items-center justify-between shadow-lg">
                     <div class="flex items-center gap-3">
                         <div class="relative">
                             <div class="absolute inset-0 bg-blue-500/20 rounded-full blur-lg animate-pulse"></div>
@@ -84,7 +84,7 @@
                             </div>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <h2 class="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
                                 Notifications
                                 @if($this->unreadCount > 0)
                                     <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full animate-pulse">
@@ -92,7 +92,7 @@
                                     </span>
                                 @endif
                             </h2>
-                            <p class="text-sm text-gray-400 mt-1">
+                            <p class="text-sm dark:text-gray-400 text-gray-600 mt-1">
                                 @if($this->unreadCount > 0)
                                     You have <span class="font-semibold text-blue-400">{{ $this->unreadCount }}</span> unread notification{{ $this->unreadCount > 1 ? 's' : '' }}
                                 @else
@@ -113,7 +113,7 @@
                         <button 
                             wire:click="closeNotifications"
                             x-on:click="stopAutoClose()"
-                            class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all transform hover:rotate-90 active:scale-95">
+                            class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 rounded-lg transition-all transform hover:rotate-90 active:scale-95">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -122,12 +122,12 @@
                 </div>
 
                 <!-- List -->
-                <div class="bg-gray-800 rounded-b-xl max-h-[60vh] overflow-y-auto shadow-2xl">
+                <div class="dark:bg-gray-800 bg-gray-50 rounded-b-xl max-h-[60vh] overflow-y-auto shadow-2xl">
                     @if($notifications->count() > 0)
-                        <div class="divide-y divide-gray-700">
+                        <div class="divide-y dark:divide-gray-700 divide-gray-200">
                             @foreach($notifications as $index => $notification)
                                 <div 
-                                    class="flex items-start gap-3 p-4 transition-all duration-300 hover:bg-gray-700/50 {{ $notification->is_read ? 'bg-gray-800' : 'bg-gray-900/80 border-l-4 border-blue-500' }}"
+                                    class="flex items-start gap-3 p-4 transition-all duration-300 dark:hover:bg-gray-700/50 hover:bg-gray-100 {{ $notification->is_read ? 'dark:bg-gray-800 bg-white' : 'dark:bg-gray-900/80 bg-blue-50 border-l-4 border-blue-500' }}"
                                     x-data="{ 
                                         show: false,
                                         init() {
@@ -144,21 +144,21 @@
                                     <div class="mt-1">
                                         @switch($notification->type)
                                             @case('welcome')
-                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-600/20 text-blue-400">
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full dark:bg-blue-600/20 bg-blue-100 dark:text-blue-400 text-blue-600">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1010 10A10.011 10.011 0 0012 2z"></path>
                                                     </svg>
                                                 </span>
                                                 @break
                                             @case('follow')
-                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-600/20 text-green-400">
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full dark:bg-green-600/20 bg-green-100 dark:text-green-400 text-green-600">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9a3 3 0 11-3-3 3 3 0 013 3zm-2 8a4 4 0 00-8 0v1h8zM8 9a3 3 0 11-3-3 3 3 0 013 3zM4 17a4 4 0 014-4"></path>
                                                     </svg>
                                                 </span>
                                                 @break
                                             @case('new_post_from_following')
-                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-600/20 text-purple-400">
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full dark:bg-purple-600/20 bg-purple-100 dark:text-purple-400 text-purple-600">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h14M5 9h14M5 15h10M5 19h6"></path>
                                                     </svg>
@@ -174,10 +174,10 @@
                                     </div>
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between mb-1">
-                                            <p class="text-sm text-gray-100">
+                                            <p class="text-sm dark:text-gray-100 text-gray-900">
                                                 {{ $notification->message }}
                                             </p>
-                                            <span class="ml-2 text-xs text-gray-500">
+                                            <span class="ml-2 text-xs dark:text-gray-500 text-gray-600">
                                                 {{ $notification->created_at->diffForHumans() }}
                                             </span>
                                         </div>
@@ -185,7 +185,7 @@
                                         @if($notification->post)
                                             <a 
                                                 href="{{ route('posts.show', $notification->post->slug) }}"
-                                                class="inline-flex items-center text-xs text-blue-400 hover:text-blue-300 mt-1"
+                                                class="inline-flex items-center text-xs dark:text-blue-400 text-blue-600 dark:hover:text-blue-300 hover:text-blue-700 mt-1"
                                                 wire:click="closeNotifications"
                                             >
                                                 View post
@@ -198,7 +198,7 @@
                                         @if(!$notification->is_read)
                                             <button 
                                                 wire:click="markAsRead({{ $notification->id }})"
-                                                class="mt-2 text-xs text-gray-300 hover:text-gray-100 underline"
+                                                class="mt-2 text-xs dark:text-gray-300 text-gray-700 dark:hover:text-gray-100 hover:text-gray-900 underline"
                                             >
                                                 Mark as read
                                             </button>
@@ -208,16 +208,16 @@
                             @endforeach
                         </div>
 
-                        <div class="p-4 border-t border-gray-700">
+                        <div class="p-4 border-t dark:border-gray-700 border-gray-200">
                             {{ $notifications->links() }}
                         </div>
                     @else
                         <div class="p-8 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="mx-auto h-12 w-12 dark:text-gray-600 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1010 10A10.011 10.011 0 0012 2z"></path>
                             </svg>
-                            <h3 class="text-lg font-medium text-gray-400 mb-2">No notifications yet</h3>
-                            <p class="text-sm text-gray-500">You’ll see updates here when something new happens.</p>
+                            <h3 class="text-lg font-medium dark:text-gray-400 text-gray-700 mb-2">No notifications yet</h3>
+                            <p class="text-sm dark:text-gray-500 text-gray-600">You'll see updates here when something new happens.</p>
                         </div>
                     @endif
                 </div>

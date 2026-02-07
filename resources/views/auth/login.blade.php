@@ -5,15 +5,15 @@
         </x-slot>
 
         <div class="text-center mb-6">
-            <h2 class="text-3xl font-bold text-white mb-2">{{ __('Welcome Back') }}</h2>
-            <p class="text-gray-300 text-sm">{{ __('Sign in to your account') }}</p>
+            <h2 class="text-3xl font-bold dark:text-white text-gray-900 mb-2">{{ __('Welcome Back') }}</h2>
+            <p class="dark:text-gray-300 text-gray-700 text-sm">{{ __('Sign in to your account') }}</p>
         </div>
 
         <x-validation-errors class="mb-4" />
 
         @session('status')
-            <div class="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-xl backdrop-blur-sm">
-                <p class="font-medium text-sm text-green-300">
+            <div class="mb-4 p-4 dark:bg-green-500/20 bg-green-50 dark:border-green-500/50 border-green-200 rounded-xl backdrop-blur-sm">
+                <p class="font-medium text-sm dark:text-green-300 text-green-800">
                     {{ $value }}
                 </p>
             </div>
@@ -35,11 +35,11 @@
             <div class="flex items-center justify-between mt-4">
                 <label for="remember_me" class="flex items-center">
                     <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-300">{{ __('Remember me') }}</span>
+                    <span class="ms-2 text-sm dark:text-gray-300 text-gray-700">{{ __('Remember me') }}</span>
                 </label>
 
                 @if (Route::has('password.request'))
-                    <a class="text-sm text-gray-300 hover:text-white underline transition-colors" href="{{ route('password.request') }}">
+                    <a class="text-sm dark:text-gray-300 text-gray-700 dark:hover:text-white hover:text-blue-600 underline transition-colors" href="{{ route('password.request') }}">
                         {{ __('Forgot password?') }}
                     </a>
                 @endif
