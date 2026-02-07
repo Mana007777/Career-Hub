@@ -10,6 +10,10 @@
                 <section>
                     <livewire:cvs />
                 </section>
+            @elseif(isset($showReports) && $showReports)
+                <section>
+                    <livewire:reports />
+                </section>
             @elseif(isset($profileUsername))
                 <section>
                     <livewire:user-profile :username="$profileUsername" />

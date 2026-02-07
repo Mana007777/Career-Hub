@@ -29,6 +29,10 @@ Route::middleware([
         return view('dashboard', ['showCvs' => true]);
     })->name('cvs');
 
+    Route::get('/reports', function () {
+        return view('dashboard', ['showReports' => true]);
+    })->name('reports')->middleware('can:view-admin-panel');
+
     Route::get('/settings', function () {
         return view('dashboard', ['showSettings' => true]);
     })->name('settings');

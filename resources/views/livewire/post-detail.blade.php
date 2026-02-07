@@ -63,6 +63,19 @@
                                 </svg>
                             </button>
                         @endif
+                        
+                        {{-- Report Post Button (Visible to all users except post owner and admins) --}}
+                        @if(auth()->check() && auth()->id() !== $post->user_id && !auth()->user()->isAdmin())
+                            <button 
+                                onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'post', targetId: {{ $post->id }} } }));"
+                                type="button"
+                                class="p-2 dark:text-gray-400 text-gray-600 hover:text-orange-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors relative z-10"
+                                title="Report Post">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </button>
+                        @endif
                     </div>
                 </div>
 
@@ -308,18 +321,32 @@
                                                 </p>
                                             </div>
                                             
-                                            {{-- Admin Delete Comment Button (Only visible to admins, not comment owners) --}}
-                                            @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $comment->user_id)
-                                                <button 
-                                                    wire:click="deleteCommentAsAdmin({{ $comment->id }})"
-                                                    wire:confirm="Are you sure you want to delete this comment as admin?"
-                                                    class="p-1.5 dark:text-red-400 text-red-600 hover:text-red-500 dark:hover:bg-red-900/20 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Admin: Delete Comment">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                </button>
-                                            @endif
+                                            <div class="flex items-center gap-2">
+                                                {{-- Admin Delete Comment Button (Only visible to admins, not comment owners) --}}
+                                                @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $comment->user_id)
+                                                    <button 
+                                                        wire:click="deleteCommentAsAdmin({{ $comment->id }})"
+                                                        wire:confirm="Are you sure you want to delete this comment as admin?"
+                                                        class="p-1.5 dark:text-red-400 text-red-600 hover:text-red-500 dark:hover:bg-red-900/20 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Admin: Delete Comment">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                    </button>
+                                                @endif
+                                                
+                                                {{-- Report Comment Button (Visible to all users except comment owner and admins) --}}
+                                                @if(auth()->check() && auth()->id() !== $comment->user_id && !auth()->user()->isAdmin())
+                                                    <button 
+                                                        onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'comment', targetId: {{ $comment->id }} } }));"
+                                                        class="p-1.5 dark:text-gray-400 text-gray-600 hover:text-orange-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded transition-colors"
+                                                        title="Report Comment">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                        </svg>
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </div>
                                         <p class="mt-2 text-sm dark:text-gray-200 text-gray-700 whitespace-pre-wrap">
                                             {{ $comment->content }}
@@ -590,23 +617,53 @@
             Chat
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
-        <a 
-            href="{{ route('cvs') }}"
-            data-tooltip-target="tooltip-cvs"
-            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
-        >
-            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span class="sr-only">CVs</span>
-        </a>
-        <div id="tooltip-cvs" role="tooltip"
-            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
-            CVs
-            <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
+        @if(auth()->check() && auth()->user()->isAdmin())
+            {{-- Reports Icon (Admin Only) --}}
+            <a 
+                href="{{ route('reports') }}"
+                data-tooltip-target="tooltip-reports"
+                class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+            >
+                @php
+                    $pendingReportsCount = \App\Models\Report::where('status', 'pending')->count();
+                @endphp
+                <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-orange-400" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                @if($pendingReportsCount > 0)
+                    <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500 text-white border border-gray-900">
+                        {{ $pendingReportsCount > 99 ? '99+' : $pendingReportsCount }}
+                    </span>
+                @endif
+                <span class="sr-only">Reports</span>
+            </a>
+            <div id="tooltip-reports" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                Reports
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        @else
+            {{-- CVs Icon (Regular Users) --}}
+            <a 
+                href="{{ route('cvs') }}"
+                data-tooltip-target="tooltip-cvs"
+                class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+            >
+                <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="sr-only">CVs</span>
+            </a>
+            <div id="tooltip-cvs" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                CVs
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        @endif
         <a 
             href="{{ route('settings') }}"
             data-tooltip-target="tooltip-settings"
@@ -643,6 +700,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- Report Modal -->
+    @livewire('report-modal')
 </div>
 
 @if($post && $showLikersModal)

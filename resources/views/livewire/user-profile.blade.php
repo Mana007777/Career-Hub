@@ -195,6 +195,19 @@
                                     <span>Delete User</span>
                                 </button>
                             @endif
+                            
+                            {{-- Report User Button (Visible to all users except themselves and admins) --}}
+                            @if(Auth::check() && Auth::id() !== $user->id && !Auth::user()->isAdmin())
+                                <button 
+                                    onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: {{ $user->id }} } }));"
+                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg dark:bg-orange-600/20 bg-orange-100 dark:text-orange-400 text-orange-700 dark:hover:bg-orange-600/30 hover:bg-orange-200 dark:border-orange-600/50 border-orange-300 border transition-colors"
+                                    title="Report User">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                    <span>Report</span>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -339,11 +352,14 @@
                         {{ $posts->links() }}
                     </div>
                 @endif
-            </div>
-        @endif
+    </div>
+@endif
 
-        <!-- Bottom Navigation -->
-        <div 
+<!-- Report Modal -->
+@livewire('report-modal')
+
+<!-- Bottom Navigation -->
+<div
     x-data="{ 
         isVisible: true,
         lastScroll: 0,
@@ -480,23 +496,53 @@
             Chat
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
-        <a 
-            href="{{ route('cvs') }}"
-            data-tooltip-target="tooltip-cvs"
-            class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
-        >
-            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span class="sr-only">CVs</span>
-        </a>
-        <div id="tooltip-cvs" role="tooltip"
-            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
-            CVs
-            <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
+        @if(auth()->check() && auth()->user()->isAdmin())
+            {{-- Reports Icon (Admin Only) --}}
+            <a 
+                href="{{ route('reports') }}"
+                data-tooltip-target="tooltip-reports"
+                class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+            >
+                @php
+                    $pendingReportsCount = \App\Models\Report::where('status', 'pending')->count();
+                @endphp
+                <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-orange-400" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                @if($pendingReportsCount > 0)
+                    <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500 text-white border border-gray-900">
+                        {{ $pendingReportsCount > 99 ? '99+' : $pendingReportsCount }}
+                    </span>
+                @endif
+                <span class="sr-only">Reports</span>
+            </a>
+            <div id="tooltip-reports" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                Reports
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        @else
+            {{-- CVs Icon (Regular Users) --}}
+            <a 
+                href="{{ route('cvs') }}"
+                data-tooltip-target="tooltip-cvs"
+                class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+            >
+                <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="sr-only">CVs</span>
+            </a>
+            <div id="tooltip-cvs" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                CVs
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        @endif
         <a 
             href="{{ route('settings') }}"
             data-tooltip-target="tooltip-settings" 

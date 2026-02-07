@@ -340,25 +340,27 @@
                                     $isFollowing = $this->isFollowing($post->user_id);
                                 @endphp
                                 <button 
-                                    wire:click="toggleFollow({{ $post->user_id }})"
-                                    onclick="event.stopPropagation()"
-                                    class="ml-auto px-4 py-1.5 text-sm rounded-lg font-medium transition-colors {{ $isFollowing ? 'dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700' : 'dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white' }}">
+                                    wire:click.stop="toggleFollow({{ $post->user_id }})"
+                                    type="button"
+                                    class="ml-auto px-4 py-1.5 text-sm rounded-lg font-medium transition-colors relative z-10 {{ $isFollowing ? 'dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700' : 'dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white' }}">
                                     {{ $isFollowing ? 'Following' : 'Follow' }}
                                 </button>
                             @endif
                         </div>
                         
-                        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                        <div class="flex items-center gap-2 relative z-10">
                             @if ($post->user_id === auth()->id())
                                 <button 
-                                    wire:click="openEditModal({{ $post->id }})"
+                                    wire:click.stop="openEditModal({{ $post->id }})"
+                                    type="button"
                                     class="p-2 dark:text-gray-400 text-gray-600 hover:text-blue-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
                                 </button>
                                 <button 
-                                    wire:click="openDeleteModal({{ $post->id }})"
+                                    wire:click.stop="openDeleteModal({{ $post->id }})"
+                                    type="button"
                                     class="p-2 dark:text-gray-400 text-gray-600 hover:text-red-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -369,11 +371,25 @@
                             {{-- Admin Delete Button (Only visible to admins, not post owners) --}}
                             @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $post->user_id)
                                 <button 
-                                    wire:click="openDeleteModal({{ $post->id }})"
+                                    wire:click.stop="openDeleteModal({{ $post->id }})"
+                                    type="button"
                                     class="p-2 dark:text-red-400 text-red-600 hover:text-red-500 dark:hover:bg-red-900/20 hover:bg-red-50 rounded-lg transition-colors"
                                     title="Admin: Delete Post">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            @endif
+                            
+                            {{-- Report Button (Visible to all users except post owner and admins) --}}
+                            @if(auth()->check() && auth()->id() !== $post->user_id && !auth()->user()->isAdmin())
+                                <button 
+                                    onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'post', targetId: {{ $post->id }} } }));"
+                                    type="button"
+                                    class="p-2 dark:text-gray-400 text-gray-600 hover:text-orange-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors relative z-10"
+                                    title="Report Post">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                     </svg>
                                 </button>
                             @endif
@@ -459,10 +475,10 @@
                         $hasLikedPost = auth()->check() && $post->likes->contains('user_id', auth()->id());
                         $hasStarredPost = auth()->check() && $post->stars->contains('user_id', auth()->id());
                     @endphp
-                    <div class="flex items-center gap-6 pt-4 border-t dark:border-gray-800 border-gray-200" onclick="event.stopPropagation()">
+                    <div class="flex items-center gap-6 pt-4 border-t dark:border-gray-800 border-gray-200 relative z-10">
                         <button
                             type="button"
-                            wire:click="togglePostLike({{ $post->id }})"
+                            wire:click.stop="togglePostLike({{ $post->id }})"
                             class="flex items-center gap-2 text-sm {{ $hasLikedPost ? 'text-red-400' : 'dark:text-gray-400 text-gray-600 hover:text-red-400' }} transition-colors">
                             <svg class="w-5 h-5" fill="{{ $hasLikedPost ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -471,7 +487,7 @@
                         </button>
                         <button
                             type="button"
-                            wire:click="togglePostStar({{ $post->id }})"
+                            wire:click.stop="togglePostStar({{ $post->id }})"
                             class="flex items-center gap-2 text-sm {{ $hasStarredPost ? 'text-yellow-400' : 'dark:text-gray-400 text-gray-600 hover:text-yellow-400' }} transition-colors">
                             <svg class="w-5 h-5" fill="{{ $hasStarredPost ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
@@ -685,6 +701,9 @@
         </div>
     @endif
 
+    <!-- Report Modal -->
+    @livewire('report-modal')
+
     <!-- Delete Confirmation Modal -->
     @if ($showDeleteModal)
         <div class="fixed inset-0 z-50 overflow-y-auto">
@@ -870,23 +889,53 @@
                 Chat
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-            <a 
-                href="{{ route('cvs') }}"
-                data-tooltip-target="tooltip-cvs"
-                class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
-            >
-                <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span class="sr-only">CVs</span>
-            </a>
-            <div id="tooltip-cvs" role="tooltip"
-                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
-                CVs
-                <div class="tooltip-arrow" data-popper-arrow></div>
-            </div>
+            @if(auth()->check() && auth()->user()->isAdmin())
+                {{-- Reports Icon (Admin Only) --}}
+                <a 
+                    href="{{ route('reports') }}"
+                    data-tooltip-target="tooltip-reports"
+                    class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+                >
+                    @php
+                        $pendingReportsCount = \App\Models\Report::where('status', 'pending')->count();
+                    @endphp
+                    <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-orange-400" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    @if($pendingReportsCount > 0)
+                        <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500 text-white border border-gray-900">
+                            {{ $pendingReportsCount > 99 ? '99+' : $pendingReportsCount }}
+                        </span>
+                    @endif
+                    <span class="sr-only">Reports</span>
+                </a>
+                <div id="tooltip-reports" role="tooltip"
+                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                    Reports
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
+            @else
+                {{-- CVs Icon (Regular Users) --}}
+                <a 
+                    href="{{ route('cvs') }}"
+                    data-tooltip-target="tooltip-cvs"
+                    class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+                >
+                    <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="sr-only">CVs</span>
+                </a>
+                <div id="tooltip-cvs" role="tooltip"
+                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                    CVs
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
+            @endif
             <a 
                 href="{{ route('settings') }}"
                 data-tooltip-target="tooltip-settings" 

@@ -4,19 +4,25 @@ namespace App\Livewire;
 
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Actions\User\BlockUser;
+use App\Models\Report;
+use App\Models\Post;
+use App\Models\User;
+use App\Models\Comment;
 use App\Repositories\BlockRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Settings extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     public $blockedUsers = [];
     public $showBlocksModal = false;
     public $showProfileModal = false;
+    public $showReportsModal = false;
     
     // Profile fields
     public $name;
@@ -74,6 +80,17 @@ class Settings extends Component
     public function closeBlocksModal(): void
     {
         $this->showBlocksModal = false;
+    }
+
+    public function openReportsModal(): void
+    {
+        $this->showReportsModal = true;
+        $this->resetPage();
+    }
+
+    public function closeReportsModal(): void
+    {
+        $this->showReportsModal = false;
     }
 
     protected function loadBlockedUsers(): void
@@ -172,6 +189,34 @@ class Settings extends Component
 
     public function render(): View
     {
-        return view('livewire.settings');
+        $reports = collect([]);
+        
+        // Only load reports for non-admin users
+        if (Auth::check() && !Auth::user()->isAdmin()) {
+            $reports = Report::where('reporter_id', Auth::id())
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+            
+            // Load targets for each report
+            foreach ($reports as $report) {
+                $modelClass = $report->getTargetModelClass();
+                if ($modelClass) {
+                    if ($modelClass === Post::class) {
+                        $target = Post::with('user')->find($report->target_id);
+                    } elseif ($modelClass === Comment::class) {
+                        $target = Comment::with('user')->find($report->target_id);
+                    } elseif ($modelClass === User::class) {
+                        $target = User::find($report->target_id);
+                    } else {
+                        $target = $modelClass::find($report->target_id);
+                    }
+                    $report->setRelation('target', $target);
+                }
+            }
+        }
+
+        return view('livewire.settings', [
+            'reports' => $reports,
+        ]);
     }
 }
