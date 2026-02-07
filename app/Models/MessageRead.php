@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MessageRead extends Model
 {
+    use HasFactory;
     protected $table = 'message_reads';
     
     public $timestamps = false; // Disable timestamps since table doesn't have created_at/updated_at

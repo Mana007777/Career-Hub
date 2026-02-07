@@ -2,7 +2,6 @@
 
 namespace App\Actions\Fortify;
 
-use App\Http\Requests\UpdateUserProfileRequest;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -19,11 +18,33 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
-        $request = app(UpdateUserProfileRequest::class);
-
+        // Convert empty strings to null for nullable fields
+        if (isset($input['username']) && $input['username'] === '') {
+            $input['username'] = null;
+        }
+        
         Validator::make(
             $input,
-            $request->rules(),
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => [
+                    'required',
+                    'email',
+                    'max:255',
+                    \Illuminate\Validation\Rule::unique('users')->ignore($user->id),
+                ],
+                'username' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                    \Illuminate\Validation\Rule::unique('users')->ignore($user->id),
+                    'regex:/^[a-z0-9_]+$/i',
+                ],
+                'bio' => ['nullable', 'string', 'max:1000'],
+                'location' => ['nullable', 'string', 'max:255'],
+                'website' => ['nullable', 'url', 'max:255'],
+                'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
+            ],
         )->validateWithBag('updateProfileInformation');
 
         if (isset($input['photo'])) {

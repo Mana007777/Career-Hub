@@ -43,5 +43,14 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null
         );
+
+        // Suppress broadcasting errors in development when broadcaster is not available
+        if (!app()->isProduction() && config('broadcasting.default') !== 'log' && config('broadcasting.default') !== 'null') {
+            \Illuminate\Support\Facades\Event::listen(\Illuminate\Broadcasting\BroadcastException::class, function ($exception) {
+                // Log the error but don't throw it in development
+                \Log::warning('Broadcasting error (suppressed in development): ' . $exception->getMessage());
+                return false;
+            });
+        }
     }
 }

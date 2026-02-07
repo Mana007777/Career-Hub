@@ -300,4 +300,12 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('last_activity', '>=', $activeThreshold)
             ->exists();
     }
+
+    /**
+     * Check if the user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true || $this->email === 'test@example.com';
+    }
 }

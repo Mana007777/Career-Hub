@@ -1,11 +1,13 @@
 <?php
 
 use App\Models\User;
-use Laravel\Jetstream\Http\Livewire\UpdateProfileInformationForm;
+use App\Livewire\Profile\UpdateProfileInformationForm;
 use Livewire\Livewire;
 
 test('current profile information is available', function () {
-    $this->actingAs($user = User::factory()->create());
+    $user = User::factory()->create();
+    \App\Models\Profile::factory()->create(['user_id' => $user->id]);
+    $this->actingAs($user);
 
     $component = Livewire::test(UpdateProfileInformationForm::class);
 
@@ -14,13 +16,28 @@ test('current profile information is available', function () {
 });
 
 test('profile information can be updated', function () {
-    $this->actingAs($user = User::factory()->create());
+    $user = User::factory()->create();
+    \App\Models\Profile::factory()->create(['user_id' => $user->id]);
+    $this->actingAs($user);
 
-    Livewire::test(UpdateProfileInformationForm::class)
-        ->set('state', ['name' => 'Test Name', 'email' => 'test@example.com'])
-        ->call('updateProfileInformation');
+    $newEmail = 'test' . uniqid() . '@example.com';
 
-    expect($user->fresh())
-        ->name->toEqual('Test Name')
-        ->email->toEqual('test@example.com');
+    $component = Livewire::test(UpdateProfileInformationForm::class)
+        ->set('state.name', 'Test Name')
+        ->set('state.email', $newEmail);
+    
+    // Only set username if it exists and is not empty
+    if (!empty($user->username)) {
+        $component->set('state.username', $user->username);
+    }
+    
+    $component->set('state.bio', '')
+        ->set('state.location', '')
+        ->set('state.website', '')
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors();
+
+    $user->refresh();
+    expect($user->name)->toEqual('Test Name')
+        ->and($user->email)->toEqual($newEmail);
 });

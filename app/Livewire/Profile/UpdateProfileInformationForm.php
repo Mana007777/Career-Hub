@@ -13,13 +13,14 @@ class UpdateProfileInformationForm extends JetstreamUpdateProfileInformationForm
      */
     public function mount()
     {
+        $profile = $this->user->profile;
         $this->state = [
             'name' => $this->user->name,
             'email' => $this->user->email,
             'username' => $this->user->username ?? '',
-            'bio' => $this->user->profile->bio ?? '',
-            'location' => $this->user->profile->location ?? '',
-            'website' => $this->user->profile->website ?? '',
+            'bio' => $profile->bio ?? '',
+            'location' => $profile->location ?? '',
+            'website' => $profile->website ?? '',
         ];
     }
 }

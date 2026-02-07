@@ -14,13 +14,14 @@ use App\Models\Post as PostModel;
 use App\Repositories\PostCvRepository;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class PostDetail extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, AuthorizesRequests;
 
     public $slug;
     public $post;
@@ -244,6 +245,53 @@ class PostDetail extends Component
             throw $e;
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to upload CV. Please try again.');
+        }
+    }
+
+    public function deletePostAsAdmin(int $postId): void
+    {
+        try {
+            $post = \App\Models\Post::findOrFail($postId);
+            
+            // Use policy for authorization
+            $this->authorize('delete', $post);
+            
+            // Delete the post
+            app(\App\Actions\Post\DeletePost::class)->delete($post);
+            
+            session()->flash('success', 'Post deleted successfully!');
+            $this->redirect(route('dashboard'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', 'You are not authorized to delete this post.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to delete post. Please try again.');
+        }
+    }
+
+    public function deleteCommentAsAdmin(int $commentId): void
+    {
+        try {
+            $comment = \App\Models\Comment::findOrFail($commentId);
+            
+            // Use policy for authorization
+            $this->authorize('delete', $comment);
+            
+            // Delete the comment
+            $comment->delete();
+            
+            // Refresh the post to update comments
+            $this->post->refresh()->loadMissing([
+                'comments.user',
+                'comments.likes',
+                'comments.replies.user',
+                'comments.replies.likes'
+            ]);
+            
+            session()->flash('success', 'Comment deleted successfully!');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', 'You are not authorized to delete this comment.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to delete comment. Please try again.');
         }
     }
 

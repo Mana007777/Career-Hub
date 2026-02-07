@@ -52,8 +52,7 @@ class DeletePost
      */
     protected function authorize(Post $post): void
     {
-        if ($post->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
+        // Use policy for authorization (allows admin or post owner)
+        \Illuminate\Support\Facades\Gate::authorize('delete', $post);
     }
 }

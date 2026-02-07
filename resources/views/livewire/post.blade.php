@@ -348,8 +348,8 @@
                             @endif
                         </div>
                         
-                        @if ($post->user_id === auth()->id())
-                            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                            @if ($post->user_id === auth()->id())
                                 <button 
                                     wire:click="openEditModal({{ $post->id }})"
                                     class="p-2 dark:text-gray-400 text-gray-600 hover:text-blue-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
@@ -364,8 +364,20 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
                                 </button>
-                            </div>
-                        @endif
+                            @endif
+                            
+                            {{-- Admin Delete Button (Only visible to admins, not post owners) --}}
+                            @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $post->user_id)
+                                <button 
+                                    wire:click="openDeleteModal({{ $post->id }})"
+                                    class="p-2 dark:text-red-400 text-red-600 hover:text-red-500 dark:hover:bg-red-900/20 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Admin: Delete Post">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Post Title & Content -->

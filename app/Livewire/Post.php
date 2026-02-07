@@ -18,6 +18,7 @@ use App\Repositories\PostRepository;
 use App\Repositories\UserRepository;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -25,7 +26,7 @@ use Livewire\WithPagination;
 
 class Post extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithPagination, WithFileUploads, AuthorizesRequests;
 
     public $title = '';
     public $content = '';
@@ -222,13 +223,13 @@ class Post extends Component
         try {
             $post = $postRepository->findById($postId);
             
-            if (!$authorizePostAction->canDelete($post)) {
-                session()->flash('error', 'You are not authorized to delete this post.');
-                return;
-            }
+            // Use policy for authorization (allows admin or post owner)
+            $this->authorize('delete', $post);
 
             $this->postToDelete = $postId;
             $this->showDeleteModal = true;
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', 'You are not authorized to delete this post.');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to load post. Please try again.');
         }
@@ -481,16 +482,16 @@ class Post extends Component
         try {
             $post = $postRepository->findById($this->postToDelete);
             
-            if (!$authorizePostAction->canDelete($post)) {
-                session()->flash('error', 'You are not authorized to delete this post.');
-                return;
-            }
+            // Use policy for authorization (allows admin or post owner)
+            $this->authorize('delete', $post);
 
             $deletePostAction->delete($post);
 
             session()->flash('success', 'Post deleted successfully!');
             $this->closeDeleteModal();
             $this->resetPage();
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', 'You are not authorized to delete this post.');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to delete post. Please try again.');
         }

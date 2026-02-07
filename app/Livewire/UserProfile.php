@@ -9,13 +9,14 @@ use App\Repositories\PostRepository;
 use App\Repositories\UserRepository;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class UserProfile extends Component
 {
-    use WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     public $username;
     public $user;
@@ -134,6 +135,26 @@ class UserProfile extends Component
             $this->loadUser(app(FollowUser::class), $blockUserAction, app(UserRepository::class));
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
+        }
+    }
+
+    public function deleteUserAsAdmin(int $userId): void
+    {
+        try {
+            $userToDelete = \App\Models\User::findOrFail($userId);
+            
+            // Use policy for authorization
+            $this->authorize('delete', $userToDelete);
+            
+            // Delete the user using Jetstream's DeleteUser action
+            app(\Laravel\Jetstream\Contracts\DeletesUsers::class)->delete($userToDelete);
+            
+            session()->flash('success', 'User deleted successfully!');
+            $this->redirect(route('dashboard'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', 'You are not authorized to delete this user.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to delete user. Please try again.');
         }
     }
 

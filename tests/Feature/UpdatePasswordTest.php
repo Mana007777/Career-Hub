@@ -9,14 +9,13 @@ test('password can be updated', function () {
     $this->actingAs($user = User::factory()->create());
 
     Livewire::test(UpdatePasswordForm::class)
-        ->set('state', [
-            'current_password' => 'password',
-            'password' => 'new-password',
-            'password_confirmation' => 'new-password',
-        ])
-        ->call('updatePassword');
+        ->set('state.current_password', 'password')
+        ->set('state.password', 'new-password-123')
+        ->set('state.password_confirmation', 'new-password-123')
+        ->call('updatePassword')
+        ->assertHasNoErrors();
 
-    expect(Hash::check('new-password', $user->fresh()->password))->toBeTrue();
+    expect(Hash::check('new-password-123', $user->fresh()->password))->toBeTrue();
 });
 
 test('current password must be correct', function () {
