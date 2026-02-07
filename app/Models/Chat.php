@@ -25,6 +25,20 @@ class Chat extends Model
 
     public function messages()
     {
-        return $this->hasMany(Message::class);
+        return $this->hasMany(Message::class)->orderBy('created_at', 'asc');
+    }
+
+    /**
+     * Get the other user in a one-on-one chat
+     */
+    public function getOtherUser(?int $currentUserId = null): ?User
+    {
+        if ($this->is_group) {
+            return null;
+        }
+
+        $currentUserId = $currentUserId ?? auth()->id();
+        
+        return $this->users()->where('users.id', '!=', $currentUserId)->first();
     }
 }

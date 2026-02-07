@@ -2,6 +2,8 @@
     <div class="bg-transparent text-white min-h-screen">
         @livewire('search')
         @livewire('notifications')
+        @livewire('chat-box')
+        @livewire('chat-list')
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
             @if(isset($showCvs) && $showCvs)
@@ -19,108 +21,100 @@
             @else
                 @php
                     $user = auth()->user();
-                    $profile = $user->profile ?? null;
-                    $postsCount = $user->posts()->count();
-                    $followersCount = $user->followers()->count();
                     $followingCount = $user->following()->count();
+                    $followingUsers = $user->following()->with('profile')->get();
                 @endphp
 
-                <div class="lg:grid lg:grid-cols-[minmax(280px,320px)_minmax(0,1fr)] lg:gap-10 space-y-6 lg:space-y-0">
-                    <!-- Left profile sidebar -->
-                    <aside class="hidden lg:block">
-                        <div class="rounded-2xl border border-gray-800 bg-[#0D1117] shadow-xl overflow-hidden">
-                            <div class="px-6 pt-6 pb-5">
-                                <div class="flex items-start gap-4">
-                                    <div class="relative">
-                                        <div class="w-32 h-32 rounded-full bg-gradient-to-tr from-red-500 via-rose-500 to-orange-500 p-[3px]">
-                                            <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-3xl font-bold text-gray-100">
-                                                {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 pt-2">
-                                        <h1 class="text-2xl font-bold text-white leading-tight">
-                                            {{ $user->name }}
-                                        </h1>
-                                        @if($user->username)
-                                            <p class="text-sm text-gray-400">
-                                                {{ '@'.$user->username }}
-                                            </p>
-                                        @endif
-                                        @if($profile && $profile->headline)
-                                            <p class="mt-2 text-sm text-gray-300">
-                                                {{ $profile->headline }}
-                                            </p>
-                                        @elseif($profile && $profile->bio)
-                                            <p class="mt-2 text-sm text-gray-300 line-clamp-2">
-                                                {{ $profile->bio }}
-                                            </p>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <a 
-                                    href="{{ route('user.profile', $user->username ?? 'unknown') }}"
-                                    class="mt-5 inline-flex w-full items-center justify-center px-4 py-2 text-sm font-medium rounded-md border border-gray-700 bg-[#21262D] hover:bg-[#30363D] text-gray-100 transition-colors"
-                                >
-                                    Edit profile
-                                </a>
-                            </div>
-
-                            <div class="border-t border-gray-800 px-6 py-4">
-                                <div class="flex items-center gap-4 text-sm text-gray-300">
-                                    <div class="flex items-center gap-1.5">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8a6 6 0 11-12 0 6 6 0 0112 0zM12 14v7"></path>
-                                        </svg>
-                                        <span>{{ $postsCount }} posts</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a3 3 0 015.356-1.857M15 11a3 3 0 10-6 0 3 3 0 006 0z"></path>
-                                        </svg>
-                                        <span>{{ $followersCount }} followers</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="text-gray-500">·</span>
-                                        <span>{{ $followingCount }} following</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-
-                    <!-- Right main feed -->
-                    <main class="space-y-4 lg:pl-2">
-                        <section class="rounded-2xl border border-gray-800 bg-gradient-to-r from-gray-900/90 via-gray-900/80 to-gray-800/70 px-5 py-4 sm:px-6 sm:py-5 shadow-lg">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
-                                        Welcome back, {{ $user->name }} 👋
-                                    </h1>
-                                    <p class="mt-1 text-sm text-gray-400">
-                                        Share what you’re working on, discover people by specialties, and stay up to date with your network.
-                                    </p>
-                                </div>
-                                <div class="hidden sm:flex items-center gap-3">
-                                    <button
-                                        wire:click="$dispatch('openSearch')"
-                                        type="button"
-                                        class="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-gray-900/70 px-3 py-1.5 text-xs font-medium text-gray-200 hover:border-blue-500 hover:text-blue-300 hover:bg-gray-900 transition-colors"
-                                    >
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-                                        </svg>
-                                        <span>Quick search</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </section>
-
+                <div class="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-6 md:gap-10">
+                    <!-- Main feed -->
+                    <main class="space-y-4">
                         <section>
                             <livewire:post />
                         </section>
                     </main>
+
+                    <!-- Right sidebar - Following list -->
+                    <aside>
+                        <div class="px-6 pt-6 pb-4 border-b border-gray-800">
+                            <h2 class="text-lg font-bold text-white">Following</h2>
+                            <p class="text-sm text-gray-400 mt-1">{{ $followingCount }} people</p>
+                        </div>
+                            
+                        <div class="max-h-[calc(100vh-200px)] overflow-y-auto">
+                                    @if($followingUsers->count() > 0)
+                                        <div class="divide-y divide-gray-800">
+                                            @foreach($followingUsers as $followingUser)
+                                                @php
+                                                    $isActive = $followingUser->isActive();
+                                                @endphp
+                                                <div class="flex items-center gap-3 px-6 py-4 hover:bg-gray-900/50 transition-colors group">
+                                                    <a 
+                                                        href="{{ route('user.profile', $followingUser->username ?? 'unknown') }}"
+                                                        class="flex items-center gap-3 flex-1 min-w-0"
+                                                    >
+                                                        <div class="relative flex-shrink-0">
+                                                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
+                                                                <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-lg font-semibold text-gray-100">
+                                                                    {{ strtoupper(substr($followingUser->name ?? 'U', 0, 1)) }}
+                                                                </div>
+                                                            </div>
+                                                            @if($isActive)
+                                                                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-gray-900 rounded-full"></span>
+                                                            @else
+                                                                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-gray-500 border-2 border-gray-900 rounded-full"></span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <div class="flex items-center gap-2">
+                                                                <p class="text-sm font-medium text-white group-hover:text-blue-400 transition-colors truncate">
+                                                                    {{ $followingUser->name }}
+                                                                </p>
+                                                                @if($isActive)
+                                                                    <span class="flex-shrink-0 px-2 py-0.5 text-xs font-medium bg-green-500/20 text-green-400 rounded-full border border-green-500/30">
+                                                                        Active
+                                                                    </span>
+                                                                @else
+                                                                    <span class="flex-shrink-0 px-2 py-0.5 text-xs font-medium bg-gray-500/20 text-gray-400 rounded-full border border-gray-500/30">
+                                                                        Offline
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+                                                            @if($followingUser->username)
+                                                                <p class="text-xs text-gray-400 truncate">
+                                                                    {{ '@'.$followingUser->username }}
+                                                                </p>
+                                                            @endif
+                                                            @if($followingUser->profile && $followingUser->profile->headline)
+                                                                <p class="text-xs text-gray-500 truncate mt-0.5">
+                                                                    {{ $followingUser->profile->headline }}
+                                                                </p>
+                                                            @endif
+                                                        </div>
+                                                    </a>
+                                                    <button
+                                                        type="button"
+                                                        onclick="window.dispatchEvent(new CustomEvent('open-chat', { detail: { userId: {{ $followingUser->id }} } }))"
+                                                        class="flex-shrink-0 p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-blue-400 transition-colors"
+                                                        title="Start chat"
+                                                    >
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="px-6 py-8 text-center">
+                                            <svg class="mx-auto h-12 w-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a3 3 0 015.356-1.857M15 11a3 3 0 10-6 0 3 3 0 006 0z"></path>
+                                            </svg>
+                                            <p class="mt-2 text-sm text-gray-400">You're not following anyone yet</p>
+                                            <p class="mt-1 text-xs text-gray-500">Start following people to see them here</p>
+                                        </div>
+                                    @endif
+                        </div>
+                    </aside>
                 </div>
             @endif
         </div>

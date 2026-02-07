@@ -377,7 +377,7 @@
                 </button>
             </div>
         </div>
-        <div class="grid h-full max-w-md grid-cols-5 mx-auto">
+        <div class="grid h-full max-w-md grid-cols-6 mx-auto">
             <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
                 class="inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
                 <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
@@ -451,6 +451,41 @@
             <div id="tooltip-search" role="tooltip"
                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
                 Search
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            @php
+                if (auth()->check()) {
+                    $chatService = app(\App\Services\ChatService::class);
+                    $totalUnreadMessages = $chatService->getTotalUnreadCount(auth()->id());
+                } else {
+                    $totalUnreadMessages = 0;
+                }
+            @endphp
+            <button 
+                onclick="
+                    window.location.href = '{{ route('dashboard') }}';
+                    setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('openChatList'));
+                    }, 100);
+                "
+                data-tooltip-target="tooltip-chat" 
+                type="button"
+                class="relative inline-flex flex-col items-center justify-center p-2 hover:bg-gray-700/80 group rounded-lg transition-colors">
+                <svg class="w-6 h-6 mb-1 text-gray-200 group-hover:text-blue-400" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                @if($totalUnreadMessages > 0)
+                    <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500 text-white border border-gray-900">
+                        {{ $totalUnreadMessages > 99 ? '99+' : $totalUnreadMessages }}
+                    </span>
+                @endif
+                <span class="sr-only">Chat</span>
+            </button>
+            <div id="tooltip-chat" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+                Chat
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
             <a 

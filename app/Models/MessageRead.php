@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class MessageRead extends Model
 {
     protected $table = 'message_reads';
+    
+    public $timestamps = false; // Disable timestamps since table doesn't have created_at/updated_at
 
     protected $fillable = [
         'message_id',

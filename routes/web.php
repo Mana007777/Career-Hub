@@ -29,3 +29,17 @@ Route::middleware([
         return view('dashboard', ['showCvs' => true]);
     })->name('cvs');
 });
+
+// Development helper: Quick user switch for testing
+if (app()->environment('local')) {
+    Route::get('/test/login-as/{userId}', function ($userId) {
+        $user = \App\Models\User::findOrFail($userId);
+        auth()->login($user);
+        return redirect()->route('dashboard')->with('success', "Logged in as {$user->name}");
+    })->name('test.login-as');
+    
+    Route::get('/test/users', function () {
+        $users = \App\Models\User::select('id', 'name', 'email', 'username')->get();
+        return view('test.users', ['users' => $users]);
+    })->name('test.users');
+}

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -275,5 +276,19 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sourceNotifications()
     {
         return $this->hasMany(UserNotification::class, 'source_user_id');
+    }
+
+    /**
+     * Check if the user is currently active (online)
+     * A user is considered active if they have a session with last_activity within the last 5 minutes
+     */
+    public function isActive(): bool
+    {
+        $activeThreshold = now()->subMinutes(5)->timestamp;
+        
+        return DB::table('sessions')
+            ->where('user_id', $this->id)
+            ->where('last_activity', '>=', $activeThreshold)
+            ->exists();
     }
 }
