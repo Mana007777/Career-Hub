@@ -19,7 +19,7 @@ class PostQueries
      * @param  int  $perPage
      * @return LengthAwarePaginator
      */
-    public function search(string $query, int $perPage = 10): LengthAwarePaginator
+    public function search(string $query, int $perPage = 10, ?int $userId = null): LengthAwarePaginator
     {
         $searchTerm = '%' . $query . '%';
         $hasTitleColumn = Schema::hasColumn('posts', 'title');
@@ -32,7 +32,10 @@ class PostQueries
             ->whereIn('sub_specialty_id', $matchingSubSpecialtyIds)
             ->pluck('post_id');
 
-        return Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
+        // Get excluded user IDs (both blocked and blocked by) if user is authenticated
+        $excludedIds = $userId ? $this->getExcludedUserIds($userId) : [];
+
+        $queryBuilder = Post::with(['user', 'likes', 'comments', 'specialties', 'tags'])
             ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties, $hasTitleColumn) {
                 // Prefer searching by title when the column exists; fall back to content otherwise
                 if ($hasTitleColumn) {
@@ -51,8 +54,13 @@ class PostQueries
                 ->orWhereHas('tags', function($tq) use ($searchTerm) {
                     $tq->where('name', 'like', $searchTerm);
                 });
-            })
-            ->latest()
+            });
+        
+        if (!empty($excludedIds)) {
+            $queryBuilder->whereNotIn('user_id', $excludedIds);
+        }
+        
+        return $queryBuilder->latest()
             ->paginate($perPage);
     }
 
@@ -80,7 +88,11 @@ class PostQueries
             }
         );
 
+        // Get excluded user IDs (both blocked and blocked by)
+        $excludedIds = $this->getExcludedUserIds($userId);
+
         return Post::whereIn('user_id', $followingIds)
+            ->whereNotIn('user_id', $excludedIds)
             ->with([
                 'user',
                 'likes',
@@ -102,19 +114,22 @@ class PostQueries
      * @param  int  $perPage
      * @return LengthAwarePaginator
      */
-    public function getPopular(int $perPage = 10): LengthAwarePaginator
+    public function getPopular(int $perPage = 10, ?int $userId = null): LengthAwarePaginator
     {
         // Note: Pagination results can't be easily cached, so we cache the query logic
         // The cache key includes perPage to handle different page sizes
         $cacheKey = "posts:popular:per_page:{$perPage}";
+        
+        // Get excluded user IDs (both blocked and blocked by) if user is authenticated
+        $excludedIds = $userId ? $this->getExcludedUserIds($userId) : [];
         
         // We'll cache the post IDs and then fetch them
         // This is a simplified approach - for production, consider caching the full paginated result
         return Cache::remember(
             $cacheKey,
             now()->addMinutes(10),
-            function () use ($perPage) {
-                return Post::with([
+            function () use ($perPage, $excludedIds) {
+                $query = Post::with([
                         'user',
                         'likes',
                         'comments',
@@ -123,8 +138,13 @@ class PostQueries
                         },
                         'tags'
                     ])
-                    ->withCount('likes')
-                    ->orderByDesc('likes_count')
+                    ->withCount('likes');
+                
+                if (!empty($excludedIds)) {
+                    $query->whereNotIn('user_id', $excludedIds);
+                }
+                
+                return $query->orderByDesc('likes_count')
                     ->paginate($perPage);
             }
         );
@@ -192,5 +212,58 @@ class PostQueries
         // Clear popular posts cache
         Cache::forget("posts:popular:per_page:10");
         // Individual post caches will expire via TTL
+    }
+
+    /**
+     * Get blocked user IDs for a user (users they blocked).
+     *
+     * @param  int  $userId
+     * @return array
+     */
+    private function getBlockedUserIds(int $userId): array
+    {
+        return Cache::remember(
+            "user:{$userId}:blocked_user_ids",
+            now()->addMinutes(5),
+            function () use ($userId) {
+                return DB::table('blocks')
+                    ->where('blocker_id', $userId)
+                    ->pluck('blocked_id')
+                    ->toArray();
+            }
+        );
+    }
+
+    /**
+     * Get user IDs who have blocked the given user.
+     *
+     * @param  int  $userId
+     * @return array
+     */
+    private function getBlockedByUserIds(int $userId): array
+    {
+        return Cache::remember(
+            "user:{$userId}:blocked_by_user_ids",
+            now()->addMinutes(5),
+            function () use ($userId) {
+                return DB::table('blocks')
+                    ->where('blocked_id', $userId)
+                    ->pluck('blocker_id')
+                    ->toArray();
+            }
+        );
+    }
+
+    /**
+     * Get all user IDs to exclude (both blocked and blocked by).
+     *
+     * @param  int  $userId
+     * @return array
+     */
+    private function getExcludedUserIds(int $userId): array
+    {
+        $blockedIds = $this->getBlockedUserIds($userId);
+        $blockedByIds = $this->getBlockedByUserIds($userId);
+        return array_unique(array_merge($blockedIds, $blockedByIds));
     }
 }

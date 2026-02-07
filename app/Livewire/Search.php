@@ -35,6 +35,10 @@ class Search extends Component
     {
         $this->showSearch = false;
         $this->resetSearch();
+        // Force unlock body scroll
+        $this->dispatch('search-closed');
+        // Use JavaScript to ensure body scroll is unlocked
+        $this->js('document.body.style.overflow = "";');
     }
 
     public function updatedQuery(): void

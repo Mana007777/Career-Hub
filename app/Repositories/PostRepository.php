@@ -12,11 +12,12 @@ class PostRepository
      * Simple query - kept in repository.
      *
      * @param  int  $perPage
+     * @param  int|null  $userId  Current user ID to filter blocked users
      * @return LengthAwarePaginator
      */
-    public function getAll(int $perPage = 10): LengthAwarePaginator
+    public function getAll(int $perPage = 10, ?int $userId = null): LengthAwarePaginator
     {
-        return Post::with([
+        $query = Post::with([
             'user', 
             'likes',
             'comments',
@@ -24,8 +25,31 @@ class PostRepository
                 $query->with('subSpecialties');
             },
             'tags'
-        ])
-            ->latest()
+        ]);
+        
+        // Filter out posts from blocked users (bidirectional blocking)
+        if ($userId) {
+            // Users the current user has blocked
+            $blockedIds = \DB::table('blocks')
+                ->where('blocker_id', $userId)
+                ->pluck('blocked_id')
+                ->toArray();
+            
+            // Users who have blocked the current user
+            $blockedByIds = \DB::table('blocks')
+                ->where('blocked_id', $userId)
+                ->pluck('blocker_id')
+                ->toArray();
+            
+            // Combine both arrays
+            $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
+            
+            if (!empty($excludedIds)) {
+                $query->whereNotIn('user_id', $excludedIds);
+            }
+        }
+        
+        return $query->latest()
             ->paginate($perPage);
     }
 

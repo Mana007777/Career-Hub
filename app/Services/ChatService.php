@@ -83,7 +83,7 @@ class ChatService
         $isFollowedBack = $this->isFollowedBack($currentUser, $otherUser);
         
         // Determine initial message status based on recipient's online status
-        $initialStatus = $this->userRepository->isActive($otherUser) ? 'delivered' : 'sent';
+        $initialStatus = $otherUser->isActive() ? 'delivered' : 'sent';
         
         $messageModel = $this->messageRepository->create([
             'chat_id' => $chat->id,

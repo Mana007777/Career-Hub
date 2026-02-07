@@ -27,7 +27,8 @@ class PostService
      */
     public function getAllPosts(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->repository->getAll($perPage);
+        $userId = auth()->id();
+        return $this->repository->getAll($perPage, $userId);
     }
 
     /**
@@ -39,7 +40,8 @@ class PostService
      */
     public function getPopularPosts(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->queries->getPopular($perPage);
+        $userId = auth()->id();
+        return $this->queries->getPopular($perPage, $userId);
     }
 
     /**
@@ -94,7 +96,8 @@ class PostService
      */
     public function searchPosts(string $query, int $perPage = 10): LengthAwarePaginator
     {
-        return $this->queries->search($query, $perPage);
+        $userId = auth()->id();
+        return $this->queries->search($query, $perPage, $userId);
     }
 
     /**

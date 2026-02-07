@@ -18,11 +18,46 @@
                 <section>
                     <livewire:post-detail :slug="$postSlug" />
                 </section>
+            @elseif(isset($showSettings) && $showSettings)
+                <section>
+                    <livewire:settings />
+                </section>
             @else
                 @php
                     $user = auth()->user();
-                    $followingCount = $user->following()->count();
-                    $followingUsers = $user->following()->with('profile')->get();
+                    
+                    // Get excluded user IDs (both blocked and blocked by)
+                    $blockedIds = \DB::table('blocks')
+                        ->where('blocker_id', $user->id)
+                        ->pluck('blocked_id')
+                        ->toArray();
+                    
+                    $blockedByIds = \DB::table('blocks')
+                        ->where('blocked_id', $user->id)
+                        ->pluck('blocker_id')
+                        ->toArray();
+                    
+                    $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
+                    
+                    // Get following users excluding blocked ones
+                    // Note: following() returns a relationship, we need to get the IDs first
+                    $followingIds = $user->following()->pluck('following_id')->toArray();
+                    
+                    // Filter out excluded IDs
+                    if (!empty($excludedIds)) {
+                        $followingIds = array_diff($followingIds, $excludedIds);
+                    }
+                    
+                    // Get the filtered following users with profile
+                    if (!empty($followingIds)) {
+                        $followingUsers = \App\Models\User::whereIn('id', $followingIds)
+                            ->with('profile')
+                            ->get();
+                    } else {
+                        $followingUsers = collect();
+                    }
+                    
+                    $followingCount = $followingUsers->count();
                 @endphp
 
                 <div class="grid grid-cols-1 md:grid-cols-[1fr_minmax(280px,320px)] gap-6 md:gap-10">

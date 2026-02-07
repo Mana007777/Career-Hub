@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Actions\User\BlockUser;
 use App\Actions\User\FollowUser;
 use App\Models\Post as PostModel;
 use App\Repositories\PostRepository;
@@ -19,30 +20,40 @@ class UserProfile extends Component
     public $username;
     public $user;
     public $isFollowing = false;
+    public $isBlocked = false;
+    public $isBlockedBy = false;
     public $followersCount = 0;
     public $followingCount = 0;
     public $postsCount = 0;
     public $showFollowersModal = false;
     public $showFollowingModal = false;
 
-    public function mount(string $username, FollowUser $followUserAction, UserRepository $userRepository): void
+    public function mount(string $username, FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
         // Remove @ if present
         $this->username = ltrim($username, '@');
-        $this->loadUser($followUserAction, $userRepository);
+        $this->loadUser($followUserAction, $blockUserAction, $userRepository);
     }
 
-    protected function loadUser(FollowUser $followUserAction, UserRepository $userRepository): void
+    protected function loadUser(FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
         $this->user = $userRepository->findByUsernameWithCounts($this->username);
+        
+        if (Auth::check()) {
+            $this->isBlockedBy = $blockUserAction->isBlockedBy($this->user);
+            
+            // If the profile owner has blocked the current user, show 404
+            if ($this->isBlockedBy) {
+                abort(404, 'User not found');
+            }
+            
+            $this->isFollowing = $followUserAction->isFollowing($this->user);
+            $this->isBlocked = $blockUserAction->isBlocked($this->user);
+        }
         
         $this->followersCount = $this->user->followers_count;
         $this->followingCount = $this->user->following_count;
         $this->postsCount = $this->user->posts_count;
-
-        if (Auth::check()) {
-            $this->isFollowing = $followUserAction->isFollowing($this->user);
-        }
     }
 
     public function toggleFollow(FollowUser $followUserAction): void
@@ -105,13 +116,38 @@ class UserProfile extends Component
         $this->showFollowingModal = false;
     }
 
+    public function toggleBlock(BlockUser $blockUserAction): void
+    {
+        try {
+            if ($this->isBlocked) {
+                $blockUserAction->unblock($this->user);
+                $this->isBlocked = false;
+                session()->flash('success', 'You have unblocked ' . $this->user->name);
+            } else {
+                $blockUserAction->block($this->user);
+                $this->isBlocked = true;
+                $this->isFollowing = false; // Unfollow when blocking
+                session()->flash('success', 'You have blocked ' . $this->user->name);
+            }
+
+            // Refresh the user data
+            $this->loadUser(app(FollowUser::class), $blockUserAction, app(UserRepository::class));
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
+    }
+
     public function render(PostRepository $postRepository): View
     {
         if (!$this->user) {
             abort(404, 'User not found');
         }
 
-        $posts = $postRepository->getByUserId($this->user->id, 10);
+        // Don't show posts if user is blocked or has blocked the current user
+        $posts = null;
+        if (!($this->isBlocked || $this->isBlockedBy)) {
+            $posts = $postRepository->getByUserId($this->user->id, 10);
+        }
 
         return view('livewire.user-profile', [
             'posts' => $posts,

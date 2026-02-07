@@ -28,6 +28,10 @@ Route::middleware([
     Route::get('/cvs', function () {
         return view('dashboard', ['showCvs' => true]);
     })->name('cvs');
+
+    Route::get('/settings', function () {
+        return view('dashboard', ['showSettings' => true]);
+    })->name('settings');
 });
 
 // Development helper: Quick user switch for testing

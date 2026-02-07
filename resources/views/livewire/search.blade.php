@@ -1,16 +1,29 @@
 <div>
+    @if($showSearch)
     <!-- Search Overlay -->
     <div 
-        x-data="{ show: @entangle('showSearch') }"
-        x-show="show"
+        x-data="{ 
+            init() {
+                // Lock body scroll when modal opens
+                document.body.style.overflow = 'hidden';
+                
+                // Cleanup on component destroy
+                this.$el.addEventListener('livewire:destroy', () => {
+                    document.body.style.overflow = '';
+                });
+            }
+        }"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
+        @transition:leave-end="document.body.style.overflow = ''"
         class="fixed inset-0 z-50 bg-gray-900/90 backdrop-blur-sm"
-        @click.self="show = false; $wire.closeSearch()"
+        @click.self="$wire.closeSearch()"
+        @keydown.escape.window="$wire.closeSearch()"
+        wire:key="search-modal-{{ $showSearch }}"
     >
         <!-- Search Container -->
         <div 
@@ -169,4 +182,5 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
