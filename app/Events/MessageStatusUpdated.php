@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcastNow
+class MessageStatusUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -20,7 +20,7 @@ class MessageSent implements ShouldBroadcastNow
      */
     public function __construct(Message $message)
     {
-        $this->message = $message->load('sender');
+        $this->message = $message;
     }
 
     /**
@@ -38,7 +38,7 @@ class MessageSent implements ShouldBroadcastNow
      */
     public function broadcastAs(): string
     {
-        return 'message.sent';
+        return 'message.status.updated';
     }
 
     /**
@@ -47,17 +47,9 @@ class MessageSent implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->message->id,
+            'message_id' => $this->message->id,
             'chat_id' => $this->message->chat_id,
-            'sender_id' => $this->message->sender_id,
-            'sender' => [
-                'id' => $this->message->sender->id,
-                'name' => $this->message->sender->name,
-                'username' => $this->message->sender->username,
-            ],
-            'message' => $this->message->message,
-            'status' => $this->message->status ?? 'sent',
-            'created_at' => $this->message->created_at->toIso8601String(),
+            'status' => $this->message->status,
         ];
     }
 }

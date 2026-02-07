@@ -2,14 +2,49 @@
 
 namespace App\Services;
 
+use App\Events\MessageStatusUpdated;
+use App\Events\UserPresenceChanged;
 use App\Models\Chat;
 use App\Models\Message;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Queries\ChatQueries;
+use App\Queries\MessageQueries;
+use App\Repositories\ChatRepository;
+use App\Repositories\ChatRequestRepository;
+use App\Repositories\MessageReadRepository;
+use App\Repositories\MessageRepository;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 
 class ChatService
 {
+    protected ChatRepository $chatRepository;
+    protected ChatQueries $chatQueries;
+    protected MessageRepository $messageRepository;
+    protected MessageQueries $messageQueries;
+    protected MessageReadRepository $messageReadRepository;
+    protected ChatRequestRepository $chatRequestRepository;
+    protected UserRepository $userRepository;
+
+    public function __construct(
+        ChatRepository $chatRepository,
+        ChatQueries $chatQueries,
+        MessageRepository $messageRepository,
+        MessageQueries $messageQueries,
+        MessageReadRepository $messageReadRepository,
+        ChatRequestRepository $chatRequestRepository,
+        UserRepository $userRepository
+    ) {
+        $this->chatRepository = $chatRepository;
+        $this->chatQueries = $chatQueries;
+        $this->messageRepository = $messageRepository;
+        $this->messageQueries = $messageQueries;
+        $this->messageReadRepository = $messageReadRepository;
+        $this->chatRequestRepository = $chatRequestRepository;
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * Get or create a chat between two users
      */
@@ -18,25 +53,21 @@ class ChatService
         $currentUser = Auth::user();
 
         // Check if a chat already exists between these two users
-        $chat = Chat::whereHas('users', function ($query) use ($currentUser) {
-            $query->where('users.id', $currentUser->id);
-        })
-        ->whereHas('users', function ($query) use ($otherUser) {
-            $query->where('users.id', $otherUser->id);
-        })
-        ->where('is_group', false)
-        ->with('users')
-        ->first();
+        $chat = $this->chatQueries->findChatBetweenUsers($currentUser, $otherUser);
 
         if (!$chat) {
             // Create a new chat
             DB::transaction(function () use ($currentUser, $otherUser, &$chat) {
-                $chat = Chat::create(['is_group' => false]);
-                $chat->users()->attach([$currentUser->id, $otherUser->id]);
+                $chat = $this->chatRepository->create(['is_group' => false]);
+                $this->chatRepository->attachUsers($chat, [$currentUser->id, $otherUser->id]);
+                
+                // Clear chat cache for both users
+                $this->chatQueries->clearUserChatCache($currentUser->id);
+                $this->chatQueries->clearUserChatCache($otherUser->id);
             });
         }
 
-        return $chat->load('users');
+        return $this->chatRepository->loadUsers($chat);
     }
 
     /**
@@ -48,18 +79,29 @@ class ChatService
         $otherUser = $chat->users->where('id', '!=', $currentUser->id)->first();
         
         // Check if this is a request scenario (one-way follow)
-        $isFollowing = $currentUser->following()->where('following_id', $otherUser->id)->exists();
-        $isFollowedBack = $currentUser->followers()->where('follower_id', $otherUser->id)->exists();
+        $isFollowing = $this->isFollowing($currentUser, $otherUser);
+        $isFollowedBack = $this->isFollowedBack($currentUser, $otherUser);
         
-        $messageModel = Message::create([
+        // Determine initial message status based on recipient's online status
+        $initialStatus = $this->userRepository->isActive($otherUser) ? 'delivered' : 'sent';
+        
+        $messageModel = $this->messageRepository->create([
             'chat_id' => $chat->id,
             'sender_id' => Auth::id(),
             'message' => $message,
+            'status' => $initialStatus,
         ]);
+
+        // Clear unread count cache for the recipient
+        $this->messageQueries->clearUnreadCountCache($chat->id, $otherUser->id);
+        
+        // Clear chat cache for both users as new message affects chat list
+        $this->chatQueries->clearUserChatCache($currentUser->id);
+        $this->chatQueries->clearUserChatCache($otherUser->id);
 
         // If user is following but not followed back, create a chat request
         if ($isFollowing && !$isFollowedBack) {
-            \App\Models\ChatRequest::updateOrCreate(
+            $this->chatRequestRepository->updateOrCreate(
                 [
                     'from_user_id' => $currentUser->id,
                     'to_user_id' => $otherUser->id,
@@ -71,7 +113,12 @@ class ChatService
             );
         }
 
-        return $messageModel->load('sender');
+        // Broadcast message status update if delivered
+        if ($initialStatus === 'delivered') {
+            broadcast(new MessageStatusUpdated($messageModel));
+        }
+
+        return $this->messageRepository->loadSender($messageModel);
     }
 
     /**
@@ -79,11 +126,7 @@ class ChatService
      */
     public function getMessages(Chat $chat, int $limit = 100)
     {
-        return Message::where('chat_id', $chat->id)
-            ->with('sender')
-            ->orderBy('created_at', 'asc')
-            ->limit($limit)
-            ->get();
+        return $this->messageRepository->getMessagesForChat($chat, $limit);
     }
 
     /**
@@ -91,24 +134,26 @@ class ChatService
      */
     public function markMessagesAsRead(Chat $chat, int $userId): void
     {
-        $unreadMessages = Message::where('chat_id', $chat->id)
-            ->where('sender_id', '!=', $userId)
-            ->whereDoesntHave('reads', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->get();
+        $unreadMessages = $this->messageQueries->getUnreadMessages($chat, $userId);
 
         foreach ($unreadMessages as $message) {
-            \App\Models\MessageRead::updateOrCreate(
-                [
-                    'message_id' => $message->id,
-                    'user_id' => $userId,
-                ],
-                [
-                    'read_at' => now(),
-                ]
-            );
+            $this->messageReadRepository->markAsRead($message, $userId);
         }
+        
+        // Update status of ALL messages sent TO this user (not from them) to 'seen'
+        // This ensures that when user opens chat, all messages they received show as seen
+        $messagesToUpdate = Message::where('chat_id', $chat->id)
+            ->where('sender_id', '!=', $userId) // Messages sent TO this user
+            ->whereIn('status', ['sent', 'delivered']) // Only update sent/delivered messages
+            ->get();
+
+        foreach ($messagesToUpdate as $message) {
+            $message->update(['status' => 'seen']);
+            broadcast(new MessageStatusUpdated($message));
+        }
+        
+        // Clear unread count cache
+        $this->messageQueries->clearUnreadCountCache($chat->id, $userId);
     }
 
     /**
@@ -116,14 +161,8 @@ class ChatService
      */
     public function getUnreadCountsPerUser(int $userId): array
     {
-        $chats = Chat::whereHas('users', function ($query) use ($userId) {
-            $query->where('users.id', $userId);
-        })
-        ->where('is_group', false)
-        ->with(['users', 'messages' => function ($query) {
-            $query->latest()->limit(1);
-        }])
-        ->get();
+        $user = $this->userRepository->findById($userId);
+        $chats = $this->chatQueries->getChatsForUser($user);
 
         $unreadCounts = [];
 
@@ -133,12 +172,7 @@ class ChatService
                 continue;
             }
 
-            $unreadCount = Message::where('chat_id', $chat->id)
-                ->where('sender_id', '!=', $userId)
-                ->whereDoesntHave('reads', function ($query) use ($userId) {
-                    $query->where('user_id', $userId);
-                })
-                ->count();
+            $unreadCount = $this->messageQueries->getUnreadCount($chat, $userId);
 
             if ($unreadCount > 0) {
                 $unreadCounts[$otherUser->id] = $unreadCount;
@@ -153,22 +187,12 @@ class ChatService
      */
     public function getTotalUnreadCount(int $userId): int
     {
-        $chats = Chat::whereHas('users', function ($query) use ($userId) {
-            $query->where('users.id', $userId);
-        })
-        ->where('is_group', false)
-        ->get();
+        $chats = $this->chatQueries->getChatsForUnreadCount($userId);
 
         $totalUnread = 0;
 
         foreach ($chats as $chat) {
-            $unreadCount = Message::where('chat_id', $chat->id)
-                ->where('sender_id', '!=', $userId)
-                ->whereDoesntHave('reads', function ($query) use ($userId) {
-                    $query->where('user_id', $userId);
-                })
-                ->count();
-
+            $unreadCount = $this->messageQueries->getUnreadCount($chat, $userId);
             $totalUnread += $unreadCount;
         }
 
@@ -183,16 +207,11 @@ class ChatService
         $user = Auth::user();
         
         // Get IDs of users that the current user follows
-        $followingIds = $user->following()->pluck('following_id')->toArray();
+        $followingIds = $this->userRepository->getFollowingIds($user);
 
-        return Chat::whereHas('users', function ($query) use ($user) {
-            $query->where('users.id', $user->id);
-        })
-        ->where('is_group', false)
-        ->with(['users', 'messages' => function ($query) {
-            $query->latest()->limit(1)->with('sender');
-        }])
-        ->get()
+        $chats = $this->chatQueries->getChatsForUser($user);
+
+        return $chats
         ->map(function ($chat) use ($user) {
             $otherUser = $chat->users->where('id', '!=', $user->id)->first();
             $chat->other_user = $otherUser;
@@ -216,10 +235,38 @@ class ChatService
     {
         $user = Auth::user();
         
-        return \App\Models\ChatRequest::where('to_user_id', $user->id)
-            ->where('status', 'pending')
-            ->with(['fromUser', 'message.sender'])
-            ->latest()
-            ->get();
+        return $this->chatRequestRepository->getPendingRequestsForUser($user->id);
+    }
+
+    /**
+     * Find a chat request by ID
+     */
+    public function findChatRequest(int $requestId): ?\App\Models\ChatRequest
+    {
+        return $this->chatRequestRepository->findById($requestId);
+    }
+
+    /**
+     * Get pending chat request between two users
+     */
+    public function getPendingRequest(int $fromUserId, int $toUserId): ?\App\Models\ChatRequest
+    {
+        return $this->chatRequestRepository->getPendingRequest($fromUserId, $toUserId);
+    }
+
+    /**
+     * Check if user follows another user
+     */
+    public function isFollowing(User $currentUser, User $otherUser): bool
+    {
+        return $this->userRepository->isFollowing($currentUser, $otherUser);
+    }
+
+    /**
+     * Check if user is followed back
+     */
+    public function isFollowedBack(User $currentUser, User $otherUser): bool
+    {
+        return $this->userRepository->isFollowedBack($currentUser, $otherUser);
     }
 }

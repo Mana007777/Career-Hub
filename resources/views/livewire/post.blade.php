@@ -1,8 +1,14 @@
-<div class="min-h-screen text-white pb-24">
+<div class="min-h-screen text-white pb-24" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
     <div class="w-full px-0 sm:px-2 lg:px-0 py-4">
         <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-white">Posts</h1>
+        <div 
+            class="mb-8"
+            x-show="loaded"
+            x-transition:enter="transition ease-out duration-500"
+            x-transition:enter-start="opacity-0 -translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+        >
+            <h1 class="text-3xl font-bold text-white bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Posts</h1>
         </div>
 
     
@@ -211,13 +217,27 @@
 
         <!-- Posts List -->
         <div class="space-y-5">
-            @forelse ($posts as $post)
+            @forelse ($posts as $index => $post)
                 <!-- Post Card -->
-                <article class="group rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/95 via-gray-900 to-gray-900/80 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:border-gray-600 transition-all duration-200">
+                <article 
+                    onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
+                    class="group rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/95 via-gray-900 to-gray-900/80 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:border-gray-600 transition-all duration-300 cursor-pointer transform hover:scale-[1.02] hover:-translate-y-1"
+                    x-data="{ show: false }"
+                    x-init="
+                        setTimeout(() => {
+                            show = true;
+                        }, {{ $index * 100 }});
+                    "
+                    x-show="show"
+                    x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                    style="position: relative;"
+                >
                     <!-- Post Header -->
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex items-center gap-3 flex-1">
-                            <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                            <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" onclick="event.stopPropagation()" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                 <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
                                     <span class="text-gray-300 font-semibold">
                                         {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
@@ -236,6 +256,7 @@
                                 @endphp
                                 <button 
                                     wire:click="toggleFollow({{ $post->user_id }})"
+                                    onclick="event.stopPropagation()"
                                     class="ml-auto px-4 py-1.5 text-sm rounded-lg font-medium transition-colors {{ $isFollowing ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700' : 'bg-blue-600 hover:bg-blue-700 text-white' }}">
                                     {{ $isFollowing ? 'Following' : 'Follow' }}
                                 </button>
@@ -243,7 +264,7 @@
                         </div>
                         
                         @if ($post->user_id === auth()->id())
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
                                 <button 
                                     wire:click="openEditModal({{ $post->id }})"
                                     class="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-800 rounded-lg transition-colors">
@@ -340,7 +361,7 @@
                     @php
                         $hasLikedPost = auth()->check() && $post->likes->contains('user_id', auth()->id());
                     @endphp
-                    <div class="flex items-center gap-6 pt-4 border-t border-gray-800">
+                    <div class="flex items-center gap-6 pt-4 border-t border-gray-800" onclick="event.stopPropagation()">
                         <button
                             type="button"
                             wire:click="togglePostLike({{ $post->id }})"
@@ -350,23 +371,12 @@
                             </svg>
                             <span>{{ $post->likes->count() }}</span>
                         </button>
-                        <a
-                            href="{{ route('posts.show', $post->slug) }}"
-                            class="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors text-sm">
+                        <div class="flex items-center gap-2 text-gray-400 text-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>
                             <span>{{ $post->comments->count() }}</span>
-                        </a>
-                        <a
-                            href="{{ route('posts.show', $post->slug) }}"
-                            class="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors text-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            <span>View Post</span>
-                        </a>
+                        </div>
                     </div>
                 </article>
             @empty

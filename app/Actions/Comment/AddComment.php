@@ -5,6 +5,7 @@ namespace App\Actions\Comment;
 use App\Jobs\SendUserNotification;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Queries\PostQueries;
 use Illuminate\Support\Facades\Auth;
 
 class AddComment
@@ -23,6 +24,9 @@ class AddComment
             'parent_id'=> null,
             'content'  => trim($content),
         ]);
+
+        // Clear post cache as comment count changed
+        app(PostQueries::class)->clearPostCache($post->id);
 
         // Notify post owner about a new comment
         if ($post->user_id !== $userId) {

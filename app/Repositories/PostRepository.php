@@ -98,4 +98,29 @@ class PostRepository
     {
         return Post::with(['specialties', 'tags'])->find($id);
     }
+
+    /**
+     * Find a post by ID.
+     * Simple query - kept in repository.
+     *
+     * @param  int  $id
+     * @return Post
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public function findById(int $id): Post
+    {
+        return Post::findOrFail($id);
+    }
+
+    /**
+     * Get empty paginated result (for search when no query).
+     * Simple query - kept in repository.
+     *
+     * @param  int  $perPage
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function getEmptyPaginated(int $perPage = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return Post::query()->whereRaw('1 = 0')->paginate($perPage);
+    }
 }

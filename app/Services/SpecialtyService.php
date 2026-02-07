@@ -2,12 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Specialty;
-use App\Models\SubSpecialty;
+use App\Repositories\SpecialtyRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class SpecialtyService
 {
+    protected SpecialtyRepository $repository;
+
+    public function __construct(SpecialtyRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * Get all specialties with their sub-specialties.
      *
@@ -15,7 +21,7 @@ class SpecialtyService
      */
     public function getAllSpecialtiesWithSubSpecialties(): Collection
     {
-        return Specialty::with('subSpecialties')->get();
+        return $this->repository->getAllWithSubSpecialties();
     }
 
     /**
@@ -26,6 +32,6 @@ class SpecialtyService
      */
     public function getSubSpecialtiesBySpecialty(int $specialtyId): Collection
     {
-        return SubSpecialty::where('specialty_id', $specialtyId)->get();
+        return $this->repository->getSubSpecialtiesBySpecialty($specialtyId);
     }
 }

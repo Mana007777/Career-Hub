@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Listeners\OpenSearchListener;
-use App\Models\Post;
+use App\Repositories\PostRepository;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -53,11 +53,11 @@ class Search extends Component
         app(OpenSearchListener::class)->handle($this);
     }
 
-    public function render(PostService $postService): View
+    public function render(PostService $postService, PostRepository $postRepository): View
     {
         $posts = $this->query
             ? $postService->searchPosts($this->query, 10)
-            : Post::query()->whereRaw('1 = 0')->paginate(10);
+            : $postRepository->getEmptyPaginated(10);
 
         return view('livewire.search', [
             'posts' => $posts,

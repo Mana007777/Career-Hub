@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Specialty;
 use App\Models\SubSpecialty;
 use App\Models\Tag;
+use App\Queries\PostQueries;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -78,6 +79,9 @@ class UpdatePost
             }
             $post->tags()->sync($tagIds);
         }
+
+        // Clear post cache as post was updated
+        app(PostQueries::class)->clearPostCache($post->id);
 
         return $post->fresh()->load(['specialties', 'subSpecialties', 'tags']);
     }

@@ -1,11 +1,17 @@
-<div class="min-h-screen bg-gray-950 text-white pb-24">
+<div class="min-h-screen bg-black text-white pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
     <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Back Button -->
-        <div class="mb-6">
+        <div 
+            class="mb-6"
+            x-show="loaded"
+            x-transition:enter="transition ease-out duration-500"
+            x-transition:enter-start="opacity-0 -translate-x-4"
+            x-transition:enter-end="opacity-100 translate-x-0"
+        >
             <a 
                 href="{{ route('dashboard') }}"
-                class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 group">
+                <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
                 <span>Back to Posts</span>
@@ -13,7 +19,13 @@
         </div>
 
         @if($post)
-            <div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
+            <div 
+                class="bg-gray-900 border border-gray-800 rounded-lg p-6 shadow-2xl"
+                x-show="loaded"
+                x-transition:enter="transition ease-out duration-700"
+                x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            >
                 <!-- Post Header -->
                 <div class="flex items-start justify-between mb-4">
                     <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -79,6 +91,38 @@
                                 </a>
                             </div>
                         @endif
+                    </div>
+                @endif
+
+                <!-- Post Specialties -->
+                @if($post->specialties && $post->specialties->count() > 0)
+                    <div class="mb-4 pt-4 border-t border-gray-800">
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($post->specialties as $specialty)
+                                @php
+                                    $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
+                                    $subSpecialty = $subSpecialtyId ? \App\Models\SubSpecialty::find($subSpecialtyId) : null;
+                                @endphp
+                                @if($subSpecialty)
+                                    <span class="px-3 py-1 bg-blue-600/20 border border-blue-600/50 rounded-lg text-blue-300 text-xs">
+                                        {{ $specialty->name }} - {{ $subSpecialty->name }}
+                                    </span>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Post Tags -->
+                @if($post->tags && $post->tags->count() > 0)
+                    <div class="mb-4 pt-4 border-t border-gray-800">
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($post->tags as $tag)
+                                <span class="px-3 py-1 bg-purple-600/20 border border-purple-600/50 rounded-lg text-purple-300 text-xs">
+                                    #{{ $tag->name }}
+                                </span>
+                            @endforeach
+                        </div>
                     </div>
                 @endif
 
@@ -209,11 +253,23 @@
                             $rootComments = $post->comments->whereNull('parent_id');
                         @endphp
 
-                        @forelse($rootComments as $comment)
+                        @forelse($rootComments as $index => $comment)
                             @php
                                 $hasLikedComment = auth()->check() && $comment->likes->contains('user_id', auth()->id());
                             @endphp
-                            <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-4">
+                            <div 
+                                class="bg-gray-900/60 border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-all duration-300 transform hover:scale-[1.01]"
+                                x-data="{ show: false }"
+                                x-init="
+                                    setTimeout(() => {
+                                        show = true;
+                                    }, {{ $index * 100 }});
+                                "
+                                x-show="show"
+                                x-transition:enter="transition ease-out duration-500"
+                                x-transition:enter-start="opacity-0 translate-x-4"
+                                x-transition:enter-end="opacity-100 translate-x-0"
+                            >
                                 <div class="flex items-start gap-3">
                                     <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-xs font-semibold text-gray-300">
                                         {{ strtoupper(substr($comment->user->name ?? 'U', 0, 1)) }}
@@ -269,7 +325,7 @@
                                                         <div class="flex justify-end">
                                                             <button
                                                                 type="submit"
-                                                                class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors">
+                                                                class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50">
                                                                 Reply
                                                             </button>
                                                         </div>
@@ -280,11 +336,23 @@
 
                                         @if($comment->replies && $comment->replies->count() > 0)
                                             <div class="mt-4 space-y-3 border-l border-gray-800 pl-4">
-                                                @foreach($comment->replies as $reply)
+                                                @foreach($comment->replies as $replyIndex => $reply)
                                                     @php
                                                         $hasLikedReply = auth()->check() && $reply->likes->contains('user_id', auth()->id());
                                                     @endphp
-                                                    <div class="flex items-start gap-3">
+                                                    <div 
+                                                        class="flex items-start gap-3 transition-all duration-300 transform hover:translate-x-1"
+                                                        x-data="{ show: false }"
+                                                        x-init="
+                                                            setTimeout(() => {
+                                                                show = true;
+                                                            }, {{ ($index * 100) + ($replyIndex * 50) }});
+                                                        "
+                                                        x-show="show"
+                                                        x-transition:enter="transition ease-out duration-400"
+                                                        x-transition:enter-start="opacity-0 translate-x-2"
+                                                        x-transition:enter-end="opacity-100 translate-x-0"
+                                                    >
                                                         <div class="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-[10px] font-semibold text-gray-300">
                                                             {{ strtoupper(substr($reply->user->name ?? 'U', 0, 1)) }}
                                                         </div>
@@ -517,7 +585,7 @@
                 <button
                     type="button"
                     wire:click="toggleLikersModal"
-                    class="text-gray-400 hover:text:white">
+                    class="text-gray-400 hover:text-white">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -531,7 +599,7 @@
                             {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                         </div>
                         <div>
-                            <p class="text-sm text:white">{{ $user->name ?? 'Unknown User' }}</p>
+                            <p class="text-sm text-white">{{ $user->name ?? 'Unknown User' }}</p>
                             @if(!empty($user->username))
                                 <p class="text-xs text-gray-400">@{{ $user->username }}</p>
                             @endif

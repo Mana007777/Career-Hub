@@ -4,6 +4,7 @@ namespace App\Actions\Post;
 
 use App\Jobs\SendUserNotification;
 use App\Models\Post;
+use App\Queries\PostQueries;
 use Illuminate\Support\Facades\Auth;
 
 class LikePost
@@ -20,9 +21,16 @@ class LikePost
 
         if ($existing) {
             $existing->delete();
+            
+            // Clear post cache as like count changed
+            app(PostQueries::class)->clearPostCache($post->id);
+            
             return false; // Unlike
         } else {
             $post->likes()->create(['user_id' => $userId]);
+
+            // Clear post cache as like count changed
+            app(PostQueries::class)->clearPostCache($post->id);
 
             // Notify post owner when someone likes their post
             if ($post->user_id !== $userId) {

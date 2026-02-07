@@ -2,17 +2,18 @@
 
 namespace App\Livewire;
 
-use App\Models\PostCv;
+use App\Repositories\PostCvRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Cvs extends Component
 {
     use WithPagination;
 
-    public function render(): View
+    public function render(PostCvRepository $postCvRepository): View
     {
         $user = Auth::user();
         
@@ -20,23 +21,27 @@ class Cvs extends Component
             abort(403, 'Unauthorized');
         }
 
-        // Get all CVs for posts owned by the current user
-        $cvs = PostCv::with(['post', 'user'])
-            ->whereHas('post', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->latest()
-            ->paginate(10);
+        $cvs = $postCvRepository->getCvsForUserPosts($user->id, 10);
 
         return view('livewire.cvs', [
             'cvs' => $cvs,
         ]);
     }
 
-    public function downloadCv(PostCv $postCv): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function downloadCv(int $postCvId, PostCvRepository $postCvRepository): BinaryFileResponse
     {
         $user = Auth::user();
         
+        if (!$user) {
+            abort(403, 'Unauthorized');
+        }
+
+        $postCv = $postCvRepository->findById($postCvId);
+        
+        if (!$postCv) {
+            abort(404, 'CV not found');
+        }
+
         // Verify the CV belongs to a post owned by the current user
         if ($postCv->post->user_id !== $user->id) {
             abort(403, 'Unauthorized');

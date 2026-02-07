@@ -10,7 +10,15 @@ class Message extends Model
         'chat_id',
         'sender_id',
         'message',
+        'status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => 'string',
+        ];
+    }
 
     public function chat()
     {

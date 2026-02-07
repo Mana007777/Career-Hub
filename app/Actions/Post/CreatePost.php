@@ -8,6 +8,8 @@ use App\Models\Post;
 use App\Models\Specialty;
 use App\Models\SubSpecialty;
 use App\Models\Tag;
+use App\Queries\PostQueries;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -76,6 +78,13 @@ class CreatePost
         }
 
         $post->load(['specialties', 'subSpecialties', 'tags', 'user.followers']);
+
+        // Clear user cache as post count changed
+        $userRepository = app(UserRepository::class);
+        $userRepository->clearUserCache($post->user);
+
+        // Clear popular posts cache as new post affects popularity
+        app(PostQueries::class)->clearAllPostCaches();
 
         // Notify followers that this user has shared a new post
         $author = $post->user;

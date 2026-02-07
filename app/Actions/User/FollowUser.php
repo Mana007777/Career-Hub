@@ -4,6 +4,7 @@ namespace App\Actions\User;
 
 use App\Jobs\SendUserNotification;
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -25,6 +26,12 @@ class FollowUser
 
         // Create follow relationship
         $currentUser->following()->attach($userToFollow->id);
+
+        // Clear cache for both users
+        $userRepository = app(UserRepository::class);
+        $userRepository->clearUserCache($currentUser);
+        $userRepository->clearUserCache($userToFollow);
+        $userRepository->clearFollowCache($currentUser->id, $userToFollow->id);
 
         // Queue a notification for the user who was followed (sync connection = execute immediately)
         SendUserNotification::dispatch([
@@ -48,6 +55,12 @@ class FollowUser
 
         // Remove follow relationship
         $currentUser->following()->detach($userToUnfollow->id);
+
+        // Clear cache for both users
+        $userRepository = app(UserRepository::class);
+        $userRepository->clearUserCache($currentUser);
+        $userRepository->clearUserCache($userToUnfollow);
+        $userRepository->clearFollowCache($currentUser->id, $userToUnfollow->id);
 
         return true;
     }

@@ -17,11 +17,24 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-gray-950 text-white">
+    <body class="font-sans antialiased bg-gray-950 text-white" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
         <div class="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
             <!-- Page Content -->
-            <main class="pt-4 pb-10">
-                {{ $slot }}
+            <main 
+                class="pt-4 pb-10"
+                x-show="pageLoaded"
+                x-transition:enter="transition ease-out duration-500"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+            >
+                <div 
+                    x-show="pageLoaded"
+                    x-transition:enter="transition ease-out duration-700"
+                    x-transition:enter-start="opacity-0 translate-y-4"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                >
+                    {{ $slot }}
+                </div>
             </main>
         </div>
 

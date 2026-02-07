@@ -3,6 +3,8 @@
 namespace App\Actions\Post;
 
 use App\Models\Post;
+use App\Queries\PostQueries;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,6 +24,21 @@ class DeletePost
         if ($post->media) {
             Storage::disk('public')->delete($post->media);
         }
+
+        $postId = $post->id;
+        $userId = $post->user_id;
+
+        // Clear post cache
+        app(PostQueries::class)->clearPostCache($postId);
+        
+        // Clear user cache as post count changed
+        $user = $post->user;
+        if ($user) {
+            app(UserRepository::class)->clearUserCache($user);
+        }
+
+        // Clear popular posts cache
+        app(PostQueries::class)->clearAllPostCaches();
 
         return $post->delete();
     }

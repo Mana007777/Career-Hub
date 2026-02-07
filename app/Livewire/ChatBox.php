@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Events\MessageSent;
 use App\Models\Chat;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Services\ChatService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -23,7 +23,8 @@ class ChatBox extends Component
 
     protected $listeners = [
         'openChat' => 'openChat',
-        'closeChat' => 'closeChat'
+        'closeChat' => 'closeChat',
+        'messageStatusUpdated' => 'handleStatusUpdate'
     ];
 
     public function mount()
@@ -31,30 +32,27 @@ class ChatBox extends Component
         // Initialize
     }
 
-    public function openChat($userId = null)
+    public function openChat($userId = null, ChatService $chatService = null, UserRepository $userRepository = null)
     {
         if (!$userId) {
             return;
         }
         
-        $chatService = app(ChatService::class);
-        $otherUser = User::findOrFail($userId);
+        $chatService = $chatService ?? app(ChatService::class);
+        $userRepository = $userRepository ?? app(UserRepository::class);
+        
+        $otherUser = $userRepository->findById($userId);
         $currentUser = Auth::user();
         
         // Check if current user follows the other user
-        $isFollowing = $currentUser->following()->where('following_id', $otherUser->id)->exists();
-        $isFollowedBack = $currentUser->followers()->where('follower_id', $otherUser->id)->exists();
+        $isFollowing = $chatService->isFollowing($currentUser, $otherUser);
+        $isFollowedBack = $chatService->isFollowedBack($currentUser, $otherUser);
         
         $this->otherUser = $otherUser;
         $this->otherUserId = $userId;
         
         // Check for pending request (incoming - someone wants to chat with current user)
-        $this->pendingRequest = \App\Models\ChatRequest::where('from_user_id', $otherUser->id)
-            ->where('to_user_id', $currentUser->id)
-            ->where('status', 'pending')
-            ->with('message')
-            ->latest()
-            ->first();
+        $this->pendingRequest = $chatService->getPendingRequest($otherUser->id, $currentUser->id);
         
         // If not following, don't allow chat
         if (!$isFollowing) {
@@ -78,6 +76,8 @@ class ChatBox extends Component
         // Mark messages as read when opening chat (only if not a request scenario)
         if (!$this->isRequest) {
             $chatService->markMessagesAsRead($this->chat, Auth::id());
+            // Refresh messages to get updated status
+            $this->messages = collect($chatService->getMessages($this->chat));
         }
         
         // Dispatch browser event for chat.js to set up Echo listener
@@ -87,7 +87,7 @@ class ChatBox extends Component
         $this->dispatch('unread-counts-updated');
     }
     
-    public function acceptRequest()
+    public function acceptRequest(ChatService $chatService)
     {
         if (!$this->pendingRequest) {
             return;
@@ -105,7 +105,6 @@ class ChatBox extends Component
         $this->isRequest = false;
         
         // Reload chat
-        $chatService = app(ChatService::class);
         $this->chat = $chatService->getOrCreateChat($this->otherUser);
         $this->chatId = $this->chat->id;
         $this->messages = collect($chatService->getMessages($this->chat));
@@ -211,6 +210,35 @@ class ChatBox extends Component
             $this->dispatch('scroll-to-bottom');
         }
     }
+
+    /**
+     * Handle message status update from broadcast
+     */
+    public function handleStatusUpdate($messageId, $status)
+    {
+        // Update status in the collection while preserving Eloquent models
+        if ($this->messages && is_object($this->messages) && method_exists($this->messages, 'map')) {
+            $this->messages = $this->messages->map(function ($message) use ($messageId, $status) {
+                // Handle both Eloquent models and plain objects/arrays
+                $id = is_object($message) 
+                    ? (isset($message->id) ? $message->id : null)
+                    : (isset($message['id']) ? $message['id'] : null);
+                
+                if ($id == $messageId) {
+                    if (is_object($message)) {
+                        // For Eloquent models or objects, update the property
+                        $message->status = $status;
+                    } else {
+                        // For arrays, convert to object or update array
+                        $message['status'] = $status;
+                        // Convert array back to object for consistency
+                        $message = (object) $message;
+                    }
+                }
+                return $message;
+            });
+        }
+    }
     
     public function addMessage($messageData)
     {
@@ -257,15 +285,15 @@ class ChatBox extends Component
                     'senderName' => $messageData['sender']['name'] ?? 'Unknown'
                 ]);
                 
-                // Create message object
-                $newMessage = (object) [
-                    'id' => $messageData['id'],
-                    'chat_id' => $messageData['chat_id'],
-                    'sender_id' => $messageData['sender_id'],
-                    'sender' => (object) $messageData['sender'],
-                    'message' => $messageData['message'],
-                    'created_at' => $messageData['created_at'],
-                ];
+                // Create message object - ensure it's a proper object
+                $newMessage = new \stdClass();
+                $newMessage->id = $messageData['id'];
+                $newMessage->chat_id = $messageData['chat_id'];
+                $newMessage->sender_id = $messageData['sender_id'];
+                $newMessage->sender = (object) $messageData['sender'];
+                $newMessage->message = $messageData['message'];
+                $newMessage->status = $messageData['status'] ?? 'sent';
+                $newMessage->created_at = $messageData['created_at'];
                 
                 // Add to collection
                 $this->messages->push($newMessage);

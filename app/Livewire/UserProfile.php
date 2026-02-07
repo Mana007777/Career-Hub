@@ -4,8 +4,8 @@ namespace App\Livewire;
 
 use App\Actions\User\FollowUser;
 use App\Models\Post as PostModel;
-use App\Models\User;
 use App\Repositories\PostRepository;
+use App\Repositories\UserRepository;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -22,19 +22,19 @@ class UserProfile extends Component
     public $followersCount = 0;
     public $followingCount = 0;
     public $postsCount = 0;
+    public $showFollowersModal = false;
+    public $showFollowingModal = false;
 
-    public function mount(string $username, FollowUser $followUserAction): void
+    public function mount(string $username, FollowUser $followUserAction, UserRepository $userRepository): void
     {
         // Remove @ if present
         $this->username = ltrim($username, '@');
-        $this->loadUser($followUserAction);
+        $this->loadUser($followUserAction, $userRepository);
     }
 
-    protected function loadUser(FollowUser $followUserAction): void
+    protected function loadUser(FollowUser $followUserAction, UserRepository $userRepository): void
     {
-        $this->user = User::withCount(['followers', 'following', 'posts'])
-            ->where('username', $this->username)
-            ->firstOrFail();
+        $this->user = $userRepository->findByUsernameWithCounts($this->username);
         
         $this->followersCount = $this->user->followers_count;
         $this->followingCount = $this->user->following_count;
@@ -69,6 +69,40 @@ class UserProfile extends Component
     public function getMediaUrl(PostModel $post): ?string
     {
         return app(PostService::class)->getMediaUrl($post);
+    }
+
+    public function openFollowersModal(UserRepository $userRepository): void
+    {
+        if (!$this->user) {
+            return;
+        }
+
+        // Load followers with profile using repository
+        $this->user->setRelation('followers', $userRepository->getFollowersWithProfile($this->user));
+        
+        $this->showFollowersModal = true;
+    }
+
+    public function openFollowingModal(UserRepository $userRepository): void
+    {
+        if (!$this->user) {
+            return;
+        }
+
+        // Load following with profile using repository
+        $this->user->setRelation('following', $userRepository->getFollowingWithProfile($this->user));
+        
+        $this->showFollowingModal = true;
+    }
+
+    public function closeFollowersModal(): void
+    {
+        $this->showFollowersModal = false;
+    }
+
+    public function closeFollowingModal(): void
+    {
+        $this->showFollowingModal = false;
     }
 
     public function render(PostRepository $postRepository): View

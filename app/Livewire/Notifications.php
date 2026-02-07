@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Actions\Notification\MarkNotificationRead;
 use App\Livewire\Listeners\OpenNotificationsListener;
-use App\Models\UserNotification;
+use App\Repositories\NotificationRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -53,7 +53,7 @@ class Notifications extends Component
         app(OpenNotificationsListener::class)->handle($this);
     }
 
-    public function getUnreadCountProperty(): int
+    public function getUnreadCountProperty(NotificationRepository $notificationRepository): int
     {
         $user = Auth::user();
 
@@ -61,22 +61,17 @@ class Notifications extends Component
             return 0;
         }
 
-        return UserNotification::where('user_id', $user->id)
-            ->where('is_read', false)
-            ->count();
+        return $notificationRepository->getUnreadCount($user->id);
     }
 
-    public function render(): View
+    public function render(NotificationRepository $notificationRepository): View
     {
         $user = Auth::user();
 
         $notifications = collect();
 
         if ($user) {
-            $notifications = UserNotification::with(['sourceUser', 'post'])
-                ->where('user_id', $user->id)
-                ->latest()
-                ->paginate(10);
+            $notifications = $notificationRepository->getForUser($user->id, 10);
         }
 
         return view('livewire.notifications', [

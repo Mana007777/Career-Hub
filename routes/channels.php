@@ -15,3 +15,12 @@ Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
         'name' => $user->name,
     ] : false;
 });
+
+// Presence channel for user online/offline status
+Broadcast::channel('presence.users', function ($user) {
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'username' => $user->username,
+    ];
+});

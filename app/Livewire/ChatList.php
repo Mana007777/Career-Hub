@@ -63,11 +63,11 @@ class ChatList extends Component
         $this->dispatch('openChat', userId: $userId);
     }
 
-    public function acceptRequest($requestId)
+    public function acceptRequest($requestId, ChatService $chatService)
     {
-        $request = \App\Models\ChatRequest::findOrFail($requestId);
+        $request = $chatService->findChatRequest($requestId);
         
-        if ($request->to_user_id !== Auth::id() || $request->status !== 'pending') {
+        if (!$request || $request->to_user_id !== Auth::id() || $request->status !== 'pending') {
             return;
         }
         
@@ -88,11 +88,11 @@ class ChatList extends Component
         $this->dispatch('unread-counts-updated');
     }
 
-    public function rejectRequest($requestId)
+    public function rejectRequest($requestId, ChatService $chatService)
     {
-        $request = \App\Models\ChatRequest::findOrFail($requestId);
+        $request = $chatService->findChatRequest($requestId);
         
-        if ($request->to_user_id !== Auth::id() || $request->status !== 'pending') {
+        if (!$request || $request->to_user_id !== Auth::id() || $request->status !== 'pending') {
             return;
         }
         

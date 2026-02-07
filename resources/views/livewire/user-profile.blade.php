@@ -1,5 +1,23 @@
-<div class="min-h-screen bg-gray-950 text-white pb-24">
+<div class="min-h-screen bg-black text-white pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
     <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Back Button -->
+        <div 
+            class="mb-6"
+            x-show="loaded"
+            x-transition:enter="transition ease-out duration-500"
+            x-transition:enter-start="opacity-0 -translate-x-4"
+            x-transition:enter-end="opacity-100 translate-x-0"
+        >
+            <button 
+                onclick="window.history.back()"
+                class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 group">
+                <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span>Back</span>
+            </button>
+        </div>
+
         <!-- Flash Messages -->
         @if (session()->has('success'))
             <div class="mb-6 p-4 bg-green-900/50 border border-green-700 rounded-lg text-green-200">
@@ -14,7 +32,13 @@
         @endif
 
         <!-- Profile Header -->
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
+        <div 
+            class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6 shadow-2xl"
+            x-show="loaded"
+            x-transition:enter="transition ease-out duration-700"
+            x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+        >
             <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <!-- Profile Photo/Avatar -->
                 <div class="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-3xl font-bold text-gray-300">
@@ -27,11 +51,46 @@
                         <div>
                             <div class="flex items-center gap-3 mb-2">
                                 <h1 class="text-2xl font-bold text-white">{{ $user->username }}</h1>
+                                @if($user->role)
+                                    <span class="px-3 py-1 text-xs font-medium rounded-full {{ $user->role === 'seeker' ? 'bg-blue-600/20 text-blue-300 border border-blue-600/50' : 'bg-purple-600/20 text-purple-300 border border-purple-600/50' }}">
+                                        {{ ucfirst($user->role) }}
+                                    </span>
+                                @endif
                             </div>
                             
                             @if($user->profile && $user->profile->bio)
                                 <p class="text-gray-300 mb-4 max-w-xl">{{ $user->profile->bio }}</p>
                             @endif
+
+                            <!-- Additional Info: Location and Website -->
+                            <div class="flex flex-wrap items-center gap-4 mb-4 text-sm text-gray-400">
+                                @if($user->profile && $user->profile->location)
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        <span>{{ $user->profile->location }}</span>
+                                    </div>
+                                @endif
+                                @if($user->profile && $user->profile->website)
+                                    @php
+                                        $websiteUrl = $user->profile->website;
+                                        if (!preg_match('/^https?:\/\//', $websiteUrl)) {
+                                            $websiteUrl = 'https://' . $websiteUrl;
+                                        }
+                                        $websiteDisplay = parse_url($websiteUrl, PHP_URL_HOST) ?: $user->profile->website;
+                                    @endphp
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                        <a href="{{ $websiteUrl }}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 hover:underline">
+                                            {{ $websiteDisplay }}
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
 
                             <!-- Stats -->
                             <div class="flex gap-6 mb-2">
@@ -39,14 +98,20 @@
                                     <span class="text-gray-400 text-xs uppercase tracking-wide">Posts</span>
                                     <p class="text-white font-semibold">{{ $postsCount }}</p>
                                 </div>
-                                <div>
+                                <button 
+                                    type="button"
+                                    wire:click="openFollowersModal"
+                                    class="text-left hover:opacity-80 transition-opacity">
                                     <span class="text-gray-400 text-xs uppercase tracking-wide">Followers</span>
-                                    <p class="text-white font-semibold">{{ $followersCount }}</p>
-                                </div>
-                                <div>
+                                    <p class="text-white font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followersCount }}</p>
+                                </button>
+                                <button 
+                                    type="button"
+                                    wire:click="openFollowingModal"
+                                    class="text-left hover:opacity-80 transition-opacity">
                                     <span class="text-gray-400 text-xs uppercase tracking-wide">Following</span>
-                                    <p class="text-white font-semibold">{{ $followingCount }}</p>
-                                </div>
+                                    <p class="text-white font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followingCount }}</p>
+                                </button>
                             </div>
                         </div>
 
@@ -104,8 +169,20 @@
             <h2 class="text-xl font-bold text-white mb-4">Posts</h2>
             
             <div class="space-y-6">
-                @forelse ($posts as $post)
-                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors">
+                @forelse ($posts as $index => $post)
+                    <div 
+                        class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1"
+                        x-data="{ show: false }"
+                        x-init="
+                            setTimeout(() => {
+                                show = true;
+                            }, {{ $index * 100 }});
+                        "
+                        x-show="show"
+                        x-transition:enter="transition ease-out duration-500"
+                        x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                    >
                         <!-- Post Header -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
@@ -382,3 +459,111 @@
         </div>
     </div>
 </div>
+
+<!-- Followers Modal -->
+@if($showFollowersModal)
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" wire:click="closeFollowersModal">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col" wire:click.stop>
+            <div class="flex items-center justify-between p-5 border-b border-gray-800">
+                <h3 class="text-lg font-semibold text-white">Followers</h3>
+                <button
+                    type="button"
+                    wire:click="closeFollowersModal"
+                    class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 p-4">
+                @if($user->followers && $user->followers->count() > 0)
+                    <div class="space-y-3">
+                        @foreach($user->followers as $follower)
+                            <a 
+                                href="{{ route('user.profile', $follower->username ?? 'unknown') }}"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800/80 transition-colors group">
+                                <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-sm font-semibold text-gray-300 flex-shrink-0">
+                                    {{ strtoupper(substr($follower->name ?? 'U', 0, 1)) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+                                        {{ $follower->name ?? 'Unknown User' }}
+                                    </p>
+                                    @if(!empty($follower->username))
+                                        <p class="text-xs text-gray-400 truncate">
+                                            {{ '@' . $follower->username }}
+                                        </p>
+                                    @endif
+                                    @if($follower->profile && !empty($follower->profile->bio))
+                                        <p class="text-xs text-gray-500 truncate mt-0.5">
+                                            {{ Str::limit($follower->profile->bio, 50) }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-8">
+                        <p class="text-sm text-gray-400">No followers yet.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+@endif
+
+<!-- Following Modal -->
+@if($showFollowingModal)
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" wire:click="closeFollowingModal">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col" wire:click.stop>
+            <div class="flex items-center justify-between p-5 border-b border-gray-800">
+                <h3 class="text-lg font-semibold text-white">Following</h3>
+                <button
+                    type="button"
+                    wire:click="closeFollowingModal"
+                    class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 p-4">
+                @if($user->following && $user->following->count() > 0)
+                    <div class="space-y-3">
+                        @foreach($user->following as $followedUser)
+                            <a 
+                                href="{{ route('user.profile', $followedUser->username ?? 'unknown') }}"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800/80 transition-colors group">
+                                <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-sm font-semibold text-gray-300 flex-shrink-0">
+                                    {{ strtoupper(substr($followedUser->name ?? 'U', 0, 1)) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+                                        {{ $followedUser->name ?? 'Unknown User' }}
+                                    </p>
+                                    @if(!empty($followedUser->username))
+                                        <p class="text-xs text-gray-400 truncate">
+                                            {{ '@' . $followedUser->username }}
+                                        </p>
+                                    @endif
+                                    @if($followedUser->profile && !empty($followedUser->profile->bio))
+                                        <p class="text-xs text-gray-500 truncate mt-0.5">
+                                            {{ Str::limit($followedUser->profile->bio, 50) }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-8">
+                        <p class="text-sm text-gray-400">Not following anyone yet.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+@endif

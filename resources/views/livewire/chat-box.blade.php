@@ -56,11 +56,27 @@
                 }
             };
             
+            // Listen for message status updates
+            const statusHandler = (e) => {
+                if (e.detail && e.detail.messageId && e.detail.status) {
+                    console.log('📬 Message status update received:', e.detail);
+                    @this.call('handleStatusUpdate', e.detail.messageId, e.detail.status)
+                        .then(() => {
+                            console.log('✅ Status update handled');
+                        })
+                        .catch((error) => {
+                            console.error('❌ Status update error:', error);
+                        });
+                }
+            };
+            
             window.addEventListener('new-message', messageHandler);
+            window.addEventListener('message-status-updated', statusHandler);
             
             // Clean up on component destroy
             this.$el.addEventListener('livewire:destroy', () => {
                 window.removeEventListener('new-message', messageHandler);
+                window.removeEventListener('message-status-updated', statusHandler);
             });
         }
     }"
@@ -153,18 +169,19 @@
                                 {{ strtoupper(substr($otherUser->name ?? 'U', 0, 1)) }}
                             </div>
                         </div>
-                        @if($otherUser->isActive())
-                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-gray-900 rounded-full"></span>
-                        @endif
+                        <span 
+                            class="absolute bottom-0 right-0 w-3 h-3 border-2 border-gray-900 rounded-full transition-all duration-300 user-status-indicator-{{ $otherUser->id }}"
+                            x-data="{ isOnline: {{ $otherUser->isActive() ? 'true' : 'false' }} }"
+                            :class="isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-500'"
+                        ></span>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h3 class="text-sm font-semibold text-white truncate">{{ $otherUser->name }}</h3>
-                        <p class="text-xs text-gray-400">
-                            @if($otherUser->isActive())
-                                <span class="text-green-400">Active now</span>
-                            @else
-                                <span>Offline</span>
-                            @endif
+                        <p 
+                            class="text-xs user-status-text-{{ $otherUser->id }}"
+                            x-data="{ isOnline: {{ $otherUser->isActive() ? 'true' : 'false' }} }"
+                        >
+                            <span :class="isOnline ? 'text-green-400' : 'text-gray-400'" x-text="isOnline ? 'Active now' : 'Offline'"></span>
                         </p>
                     </div>
                 </div>
@@ -261,22 +278,70 @@
                 >
                 @if(count($messages) > 0)
                     @foreach($messages as $message)
-                        <div class="flex {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
-                            <div class="flex items-start gap-2 max-w-[75%] {{ $message->sender_id === auth()->id() ? 'flex-row-reverse' : 'flex-row' }}">
-                                @if($message->sender_id !== auth()->id())
+                        @php
+                            // Ensure we can access properties safely
+                            $senderId = is_object($message) ? ($message->sender_id ?? null) : ($message['sender_id'] ?? null);
+                            $messageId = is_object($message) ? ($message->id ?? null) : ($message['id'] ?? null);
+                            $messageText = is_object($message) ? ($message->message ?? '') : ($message['message'] ?? '');
+                            $createdAt = is_object($message) ? ($message->created_at ?? null) : ($message['created_at'] ?? null);
+                            $status = is_object($message) ? ($message->status ?? 'sent') : ($message['status'] ?? 'sent');
+                            $sender = is_object($message) ? ($message->sender ?? null) : ($message['sender'] ?? null);
+                        @endphp
+                        <div class="flex {{ $senderId === auth()->id() ? 'justify-end' : 'justify-start' }}">
+                            <div class="flex items-start gap-2 max-w-[75%] {{ $senderId === auth()->id() ? 'flex-row-reverse' : 'flex-row' }}">
+                                @if($senderId !== auth()->id())
                                     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[1px] flex-shrink-0">
                                         <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-xs font-semibold text-gray-100">
-                                            {{ strtoupper(substr($message->sender->name ?? 'U', 0, 1)) }}
+                                            {{ strtoupper(substr(is_object($sender) ? ($sender->name ?? 'U') : ($sender['name'] ?? 'U'), 0, 1)) }}
                                         </div>
                                     </div>
                                 @endif
-                                <div class="flex flex-col {{ $message->sender_id === auth()->id() ? 'items-end' : 'items-start' }}">
-                                    <div class="px-4 py-2 rounded-2xl {{ $message->sender_id === auth()->id() ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-gray-800 text-gray-100 rounded-bl-sm' }}">
-                                        <p class="text-sm whitespace-pre-wrap break-words">{{ $message->message }}</p>
+                                <div class="flex flex-col {{ $senderId === auth()->id() ? 'items-end' : 'items-start' }}">
+                                    <div class="px-4 py-2 rounded-2xl {{ $senderId === auth()->id() ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-gray-800 text-gray-100 rounded-bl-sm' }}">
+                                        <p class="text-sm whitespace-pre-wrap break-words">{{ $messageText }}</p>
                                     </div>
-                                    <span class="text-xs text-gray-500 mt-1 px-1">
-                                        {{ \Carbon\Carbon::parse($message->created_at)->format('h:i A') }}
-                                    </span>
+                                    <div class="flex items-center gap-1 mt-1 px-1">
+                                        <span class="text-xs text-gray-500">
+                                            {{ $createdAt ? \Carbon\Carbon::parse($createdAt)->format('h:i A') : '' }}
+                                        </span>
+                                        @if($senderId === auth()->id())
+                                            <span 
+                                                class="text-xs message-status-{{ $messageId }}"
+                                                x-data="{ 
+                                                    status: '{{ $status }}',
+                                                    init() {
+                                                        // Listen for status updates
+                                                        const handler = (e) => {
+                                                            if (e.detail && parseInt(e.detail.messageId) === {{ $messageId }}) {
+                                                                console.log('Alpine: Updating status for message {{ $messageId }} to', e.detail.status);
+                                                                this.status = e.detail.status;
+                                                            }
+                                                        };
+                                                        window.addEventListener('message-status-updated', handler);
+                                                        
+                                                        // Clean up on destroy
+                                                        this.$el.addEventListener('livewire:destroy', () => {
+                                                            window.removeEventListener('message-status-updated', handler);
+                                                        });
+                                                    }
+                                                }"
+                                                x-text="status === 'seen' ? '✓✓ Seen' : (status === 'delivered' ? '✓✓ Delivered' : '✓ Sent')"
+                                                :class="{
+                                                    'text-gray-400': status === 'sent',
+                                                    'text-blue-400': status === 'delivered',
+                                                    'text-green-400': status === 'seen'
+                                                }"
+                                            >
+                                                @if($status === 'seen')
+                                                    ✓✓ Seen
+                                                @elseif($status === 'delivered')
+                                                    ✓✓ Delivered
+                                                @else
+                                                    ✓ Sent
+                                                @endif
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>

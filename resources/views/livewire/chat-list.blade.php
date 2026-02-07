@@ -37,7 +37,13 @@
 >
     <div 
         @click.stop
-        class="bg-gray-900 border border-gray-800 rounded-lg shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col mx-4"
+        class="bg-gray-900 border border-gray-800 rounded-lg shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col mx-4 transform transition-all duration-500"
+        x-transition:enter="transition ease-out duration-500"
+        x-transition:enter-start="opacity-0 scale-95 -translate-y-10"
+        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+        x-transition:leave-end="opacity-0 scale-95 -translate-y-10"
     >
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
@@ -60,13 +66,25 @@
                 <div class="px-6 py-3 border-b border-gray-800 bg-blue-600/10">
                     <h3 class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3">Chat Requests</h3>
                     <div class="space-y-2">
-                        @foreach($requests as $request)
+                        @foreach($requests as $index => $request)
                             @php
                                 $fromUser = $request->fromUser;
                                 $requestMessage = $request->message;
                             @endphp
                             @if($fromUser)
-                                <div class="bg-gray-800/50 rounded-lg p-3 border border-blue-500/30">
+                                <div 
+                                    class="bg-gray-800/50 rounded-lg p-3 border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 transform hover:scale-[1.02]"
+                                    x-data="{ show: false }"
+                                    x-init="
+                                        setTimeout(() => {
+                                            show = true;
+                                        }, {{ $index * 50 }});
+                                    "
+                                    x-show="show"
+                                    x-transition:enter="transition ease-out duration-400"
+                                    x-transition:enter-start="opacity-0 translate-x-4"
+                                    x-transition:enter-end="opacity-100 translate-x-0"
+                                >
                                     <div class="flex items-start gap-3">
                                         <div class="relative flex-shrink-0">
                                             <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
@@ -74,9 +92,11 @@
                                                     {{ strtoupper(substr($fromUser->name ?? 'U', 0, 1)) }}
                                                 </div>
                                             </div>
-                                            @if($fromUser->isActive())
-                                                <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-gray-900 rounded-full"></span>
-                                            @endif
+                                            <span 
+                                                class="absolute bottom-0 right-0 w-3 h-3 border-2 border-gray-900 rounded-full transition-all duration-300 user-status-indicator-{{ $fromUser->id }}"
+                                                x-data="{ isOnline: {{ $fromUser->isActive() ? 'true' : 'false' }} }"
+                                                :class="isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-500'"
+                                            ></span>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-semibold text-white mb-1">{{ $fromUser->name }}</p>
@@ -118,7 +138,7 @@
                     </div>
                 @endif
                 <div class="divide-y divide-gray-800">
-                    @foreach($chats as $chat)
+                    @foreach($chats as $index => $chat)
                         @php
                             $otherUser = $chat->other_user ?? null;
                             if (!$otherUser) {
@@ -128,10 +148,21 @@
                             $isActive = $otherUser->isActive();
                             $unreadCount = $unreadCounts[$otherUser->id] ?? 0;
                         @endphp
-                        <div>
+                        <div
+                            x-data="{ show: false }"
+                            x-init="
+                                setTimeout(() => {
+                                    show = true;
+                                }, {{ $index * 50 }});
+                            "
+                            x-show="show"
+                            x-transition:enter="transition ease-out duration-400"
+                            x-transition:enter-start="opacity-0 translate-x-4"
+                            x-transition:enter-end="opacity-100 translate-x-0"
+                        >
                             <button
                                 wire:click="openChat({{ $otherUser->id }})"
-                                class="w-full flex items-center gap-3 px-6 py-4 hover:bg-gray-800/50 transition-colors text-left group"
+                                class="w-full flex items-center gap-3 px-6 py-4 hover:bg-gray-800/50 transition-all duration-300 transform hover:scale-[1.02] text-left group"
                             >
                                 <div class="relative flex-shrink-0">
                                     <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
@@ -139,9 +170,11 @@
                                             {{ strtoupper(substr($otherUser->name ?? 'U', 0, 1)) }}
                                         </div>
                                     </div>
-                                    @if($isActive)
-                                        <span class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-gray-900 rounded-full"></span>
-                                    @endif
+                                    <span 
+                                        class="absolute bottom-0 right-0 w-4 h-4 border-2 border-gray-900 rounded-full transition-all duration-300 user-status-indicator-{{ $otherUser->id }}"
+                                        x-data="{ isOnline: {{ $isActive ? 'true' : 'false' }} }"
+                                        :class="isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-500'"
+                                    ></span>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between gap-2 mb-1">

@@ -11,6 +11,7 @@ use App\Livewire\Validations\AddCommentValidation;
 use App\Livewire\Validations\AddReplyValidation;
 use App\Models\Comment;
 use App\Models\Post as PostModel;
+use App\Repositories\PostCvRepository;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -31,23 +32,21 @@ class PostDetail extends Component
     public $showCvUpload = false;
     public $hasUploadedCv = false;
 
-    public function mount(string $slug, PostService $postService): void
+    public function mount(string $slug, PostService $postService, PostCvRepository $postCvRepository): void
     {
         $this->slug = $slug;
-        $this->loadPost($postService);
+        $this->loadPost($postService, $postCvRepository);
     }
 
-    public function hydrate(): void
+    public function hydrate(PostCvRepository $postCvRepository): void
     {
         // Re-check CV upload status on re-hydration
         if ($this->post && Auth::check() && $this->post->job_type) {
-            $this->hasUploadedCv = \App\Models\PostCv::where('post_id', $this->post->id)
-                ->where('user_id', Auth::id())
-                ->exists();
+            $this->hasUploadedCv = $postCvRepository->hasUserUploadedCv($this->post->id, Auth::id());
         }
     }
 
-    protected function loadPost(PostService $postService): void
+    protected function loadPost(PostService $postService, PostCvRepository $postCvRepository): void
     {
         // Extract ID from slug (format: slug-text-123)
         $parts = explode('-', $this->slug);
@@ -65,9 +64,7 @@ class PostDetail extends Component
 
         // Check if current user has already uploaded a CV for this post
         if (Auth::check() && $this->post->job_type) {
-            $this->hasUploadedCv = \App\Models\PostCv::where('post_id', $this->post->id)
-                ->where('user_id', Auth::id())
-                ->exists();
+            $this->hasUploadedCv = $postCvRepository->hasUserUploadedCv($this->post->id, Auth::id());
         }
     }
 
@@ -183,6 +180,10 @@ class PostDetail extends Component
 
     public function toggleLikersModal(): void
     {
+        if (!$this->showLikersModal && $this->post) {
+            // Ensure likedBy relationship is loaded when opening the modal
+            $this->post->loadMissing('likedBy');
+        }
         $this->showLikersModal = !$this->showLikersModal;
     }
 

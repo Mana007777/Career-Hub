@@ -48,15 +48,30 @@
                 </div>
 
                 <!-- Search Results -->
+                <div 
+                    x-data="{ loaded: false }"
+                    x-init="setTimeout(() => loaded = true, 200)"
+                >
                 <div class="bg-gray-800 rounded-b-xl max-h-[60vh] overflow-y-auto">
                     @if($query && strlen(trim($query)) > 0)
                         @if($posts->count() > 0)
                             <div class="p-4 space-y-4">
-                                @foreach($posts as $post)
+                                @foreach($posts as $index => $post)
                                     <a 
                                         href="{{ route('posts.show', $post->slug) }}"
                                         wire:click="closeSearch"
-                                        class="block bg-gray-900 border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-colors cursor-pointer">
+                                        class="block bg-gray-900 border border-gray-700 rounded-lg p-4 hover:border-gray-600 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+                                        x-data="{ show: false }"
+                                        x-init="
+                                            setTimeout(() => {
+                                                show = true;
+                                            }, {{ $index * 50 }});
+                                        "
+                                        x-show="show"
+                                        x-transition:enter="transition ease-out duration-400"
+                                        x-transition:enter-start="opacity-0 translate-y-4"
+                                        x-transition:enter-end="opacity-100 translate-y-0"
+                                    >
                                         
                                         <!-- Post Meta (no user profile card) -->
                                         <div class="flex items-center justify-between mb-2">

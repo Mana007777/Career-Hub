@@ -58,26 +58,23 @@
                                                                     {{ strtoupper(substr($followingUser->name ?? 'U', 0, 1)) }}
                                                                 </div>
                                                             </div>
-                                                            @if($isActive)
-                                                                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-gray-900 rounded-full"></span>
-                                                            @else
-                                                                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-gray-500 border-2 border-gray-900 rounded-full"></span>
-                                                            @endif
+                                                            <span 
+                                                                class="absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-gray-900 rounded-full transition-all duration-300 user-status-indicator-{{ $followingUser->id }}"
+                                                                x-data="{ isOnline: {{ $isActive ? 'true' : 'false' }} }"
+                                                                :class="isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-500'"
+                                                            ></span>
                                                         </div>
                                                         <div class="flex-1 min-w-0">
                                                             <div class="flex items-center gap-2">
                                                                 <p class="text-sm font-medium text-white group-hover:text-blue-400 transition-colors truncate">
                                                                     {{ $followingUser->name }}
                                                                 </p>
-                                                                @if($isActive)
-                                                                    <span class="flex-shrink-0 px-2 py-0.5 text-xs font-medium bg-green-500/20 text-green-400 rounded-full border border-green-500/30">
-                                                                        Active
-                                                                    </span>
-                                                                @else
-                                                                    <span class="flex-shrink-0 px-2 py-0.5 text-xs font-medium bg-gray-500/20 text-gray-400 rounded-full border border-gray-500/30">
-                                                                        Offline
-                                                                    </span>
-                                                                @endif
+                                                                <span 
+                                                                    class="flex-shrink-0 px-2 py-0.5 text-xs font-medium rounded-full border transition-all duration-300 user-status-badge-{{ $followingUser->id }}"
+                                                                    x-data="{ isOnline: {{ $isActive ? 'true' : 'false' }} }"
+                                                                    :class="isOnline ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-500/20 text-gray-400 border-gray-500/30'"
+                                                                    x-text="isOnline ? 'Active' : 'Offline'"
+                                                                ></span>
                                                             </div>
                                                             @if($followingUser->username)
                                                                 <p class="text-xs text-gray-400 truncate">

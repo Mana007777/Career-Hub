@@ -14,6 +14,8 @@ use App\Livewire\Listeners\NotificationsUpdatedListener;
 use App\Livewire\Listeners\OpenCreatePostListener;
 use App\Livewire\Listeners\RefreshPostsListener;
 use App\Models\Post as PostModel;
+use App\Repositories\PostRepository;
+use App\Repositories\UserRepository;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -169,10 +171,10 @@ class Post extends Component
         $this->editTagName = '';
     }
 
-    public function openDeleteModal(int $postId, AuthorizePostAction $authorizePostAction): void
+    public function openDeleteModal(int $postId, AuthorizePostAction $authorizePostAction, PostRepository $postRepository): void
     {
         try {
-            $post = PostModel::findOrFail($postId);
+            $post = $postRepository->findById($postId);
             
             if (!$authorizePostAction->canDelete($post)) {
                 session()->flash('error', 'You are not authorized to delete this post.');
@@ -401,7 +403,7 @@ class Post extends Component
         $this->editTags = array_values(array_filter($this->editTags, fn($tag) => !empty($tag['name'] ?? '')));
 
         try {
-            $post = PostModel::findOrFail($this->editingPostId);
+            $post = app(PostRepository::class)->findById($this->editingPostId);
             
             if (!$authorizePostAction->canEdit($post)) {
                 session()->flash('error', 'You are not authorized to update this post.');
@@ -428,10 +430,10 @@ class Post extends Component
         }
     }
 
-    public function delete(DeletePost $deletePostAction, AuthorizePostAction $authorizePostAction): void
+    public function delete(DeletePost $deletePostAction, AuthorizePostAction $authorizePostAction, PostRepository $postRepository): void
     {
         try {
-            $post = PostModel::findOrFail($this->postToDelete);
+            $post = $postRepository->findById($this->postToDelete);
             
             if (!$authorizePostAction->canDelete($post)) {
                 session()->flash('error', 'You are not authorized to delete this post.');
@@ -459,14 +461,22 @@ class Post extends Component
             return false;
         }
         
-        $user = \App\Models\User::find($userId);
-        return $user ? app(FollowUser::class)->isFollowing($user) : false;
+        try {
+            $userRepository = app(UserRepository::class);
+            $followUserAction = app(FollowUser::class);
+            $user = $userRepository->findById($userId);
+            return $followUserAction->isFollowing($user);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
-    public function toggleFollow(int $userId, FollowUser $followUserAction): void
+    public function toggleFollow(int $userId): void
     {
         try {
-            $user = \App\Models\User::findOrFail($userId);
+            $followUserAction = app(FollowUser::class);
+            $userRepository = app(UserRepository::class);
+            $user = $userRepository->findById($userId);
             
             if ($followUserAction->isFollowing($user)) {
                 $followUserAction->unfollow($user);
@@ -482,10 +492,10 @@ class Post extends Component
         }
     }
 
-    public function togglePostLike(int $postId, LikePost $likePostAction): void
+    public function togglePostLike(int $postId, LikePost $likePostAction, PostRepository $postRepository): void
     {
         try {
-            $post = PostModel::findOrFail($postId);
+            $post = $postRepository->findById($postId);
             $likePostAction->toggle($post);
             $this->dispatch('$refresh');
         } catch (\Exception $e) {
