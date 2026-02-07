@@ -10,7 +10,7 @@ class StorePostValidation
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string', 'max:5000'],
             'media' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,mp4,avi,mov', 'max:10240'],
-            'jobType' => ['nullable', 'string', 'in:remote,full-time,part-time'],
+            'jobType' => ['nullable', 'string', 'in:full-time,part-time,contract,freelance,internship,remote'],
             'specialties' => ['required', 'array', 'min:1'],
             'specialties.*.specialty_name' => ['required', 'string', 'max:255'],
             'specialties.*.sub_specialty_name' => ['required', 'string', 'max:255'],

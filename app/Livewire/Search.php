@@ -57,14 +57,19 @@ class Search extends Component
         app(OpenSearchListener::class)->handle($this);
     }
 
-    public function render(PostService $postService, PostRepository $postRepository): View
+    public function render(PostService $postService, PostRepository $postRepository, \App\Repositories\UserRepository $userRepository): View
     {
         $posts = $this->query
             ? $postService->searchPosts($this->query, 10)
             : $postRepository->getEmptyPaginated(10);
+        
+        $users = $this->query
+            ? $userRepository->searchUsers($this->query, 10, auth()->id())
+            : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
 
         return view('livewire.search', [
             'posts' => $posts,
+            'users' => $users,
         ]);
     }
 }

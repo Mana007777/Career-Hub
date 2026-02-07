@@ -10,7 +10,7 @@ class UpdatePostValidation
             'editTitle' => ['required', 'string', 'max:255'],
             'editContent' => ['required', 'string', 'max:5000'],
             'editMedia' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,mp4,avi,mov', 'max:10240'],
-            'editJobType' => ['nullable', 'string', 'in:remote,full-time,part-time'],
+            'editJobType' => ['nullable', 'string', 'in:full-time,part-time,contract,freelance,internship,remote'],
             'editSpecialties' => ['required', 'array', 'min:1'],
             'editSpecialties.*.specialty_name' => ['required', 'string', 'max:255'],
             'editSpecialties.*.sub_specialty_name' => ['required', 'string', 'max:255'],

@@ -137,9 +137,12 @@
                             id="jobType"
                             class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Select job type...</option>
-                            <option value="remote">Remote</option>
                             <option value="full-time">Full-time</option>
                             <option value="part-time">Part-time</option>
+                            <option value="contract">Contract</option>
+                            <option value="freelance">Freelance</option>
+                            <option value="internship">Internship</option>
+                            <option value="remote">Remote</option>
                         </select>
                         @error('job_type')
                             <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
@@ -532,9 +535,12 @@
                                     id="editJobType"
                                     class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                     <option value="">Select job type...</option>
-                                    <option value="remote">Remote</option>
                                     <option value="full-time">Full-time</option>
                                     <option value="part-time">Part-time</option>
+                                    <option value="contract">Contract</option>
+                                    <option value="freelance">Freelance</option>
+                                    <option value="internship">Internship</option>
+                                    <option value="remote">Remote</option>
                                 </select>
                                 @error('editJobType')
                                     <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
