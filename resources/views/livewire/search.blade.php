@@ -97,11 +97,11 @@
                                                 <!-- User Info -->
                                                 <div class="flex-1">
                                                     <h4 class="text-base font-semibold dark:text-white text-gray-900">
-                                                        {!! str_ireplace($query, '<mark class="bg-yellow-500/30 text-yellow-200">' . $query . '</mark>', e($user->name ?? 'Unknown User')) !!}
+                                                        {!! str_ireplace(e($query), '<mark class="bg-yellow-500/30 text-yellow-200">' . e($query) . '</mark>', e($user->name ?? 'Unknown User')) !!}
                                                     </h4>
                                                     @if($user->username)
                                                         <p class="text-sm dark:text-gray-400 text-gray-600">
-                                                            @{!! str_ireplace($query, '<mark class="bg-yellow-500/30 text-yellow-200">' . $query . '</mark>', e($user->username)) !!}
+                                                            {!! '@' . str_ireplace(e($query), '<mark class="bg-yellow-500/30 text-yellow-200">' . e($query) . '</mark>', e($user->username)) !!}
                                                         </p>
                                                     @endif
                                                 </div>
@@ -157,7 +157,7 @@
                                         <div class="mb-2">
                                             @if(!empty($post->title))
                                                 <h3 class="text-sm font-semibold dark:text-white text-gray-900 mb-1">
-                                                    {!! str_ireplace($query, '<mark class="bg-yellow-500/30 text-yellow-200">' . $query . '</mark>', e($post->title)) !!}
+                                                    {!! str_ireplace(e($query), '<mark class="bg-yellow-500/30 text-yellow-200">' . e($query) . '</mark>', e($post->title)) !!}
                                                 </h3>
                                             @endif
                                             <p class="dark:text-gray-200 text-gray-700 text-sm leading-relaxed line-clamp-3">

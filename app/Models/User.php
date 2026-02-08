@@ -92,6 +92,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Post::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function likedPosts()
     {
         return $this->belongsToMany(
@@ -307,5 +312,23 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->is_admin === true || $this->email === 'test@example.com';
+    }
+
+    /**
+     * Determine if the user can access the Filament admin panel.
+     * ONLY test@example.com with admin role can access the admin dashboard.
+     */
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        // Strictly only allow test@example.com with admin role
+        if ($this->email === null) {
+            return false;
+        }
+        
+        $email = strtolower(trim($this->email));
+        $role = $this->role ?? '';
+        
+        // Only test@example.com with admin role can access
+        return $email === 'test@example.com' && $role === 'admin';
     }
 }

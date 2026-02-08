@@ -2,6 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\Comment;
+use App\Models\JobApplication;
+use App\Models\Message;
+use App\Models\Post;
+use App\Models\PostLike;
+use App\Observers\CommentObserver;
+use App\Observers\JobApplicationObserver;
+use App\Observers\MessageObserver;
+use App\Observers\PostLikeObserver;
+use App\Observers\PostObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +34,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->registerObservers();
+    }
+
+    /**
+     * Register model observers.
+     */
+    protected function registerObservers(): void
+    {
+        Post::observe(PostObserver::class);
+        Comment::observe(CommentObserver::class);
+        PostLike::observe(PostLikeObserver::class);
+        JobApplication::observe(JobApplicationObserver::class);
+        Message::observe(MessageObserver::class);
     }
 
     protected function configureDefaults(): void
