@@ -80,6 +80,11 @@ class Post extends Model
             ->withTimestamps();
     }
 
+    public function suspension()
+    {
+        return $this->hasOne(PostSuspension::class);
+    }
+
     /**
      * Get the slug for the post.
      *
@@ -101,5 +106,24 @@ class Post extends Model
         }
         
         return $slug . '-' . $this->id;
+    }
+
+    /**
+     * Check if the post is currently suspended
+     */
+    public function isSuspended(): bool
+    {
+        if (!$this->suspension) {
+            return false;
+        }
+
+        // Check if suspension has expired
+        if ($this->suspension->expires_at && $this->suspension->expires_at->isPast()) {
+            // Auto-delete expired suspension
+            $this->suspension->delete();
+            return false;
+        }
+
+        return true;
     }
 }

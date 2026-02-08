@@ -28,6 +28,10 @@ class UserProfile extends Component
     public $postsCount = 0;
     public $showFollowersModal = false;
     public $showFollowingModal = false;
+    public $showAdminActionsModal = false;
+    public $adminActionType = ''; // 'suspend', 'unsuspend', 'delete'
+    public $suspendReason = '';
+    public $suspendExpiresAt = null;
 
     public function mount(string $username, FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
@@ -38,13 +42,20 @@ class UserProfile extends Component
 
     protected function loadUser(FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
-        $this->user = $userRepository->findByUsernameWithCounts($this->username);
+        // Allow admins to see suspended users
+        $includeSuspended = Auth::check() && Auth::user()->isAdmin();
+        $this->user = $userRepository->findByUsernameWithCounts($this->username, $includeSuspended);
+        
+        // Ensure suspension relationship is loaded
+        if (!$this->user->relationLoaded('suspension')) {
+            $this->user->load('suspension');
+        }
         
         if (Auth::check()) {
             $this->isBlockedBy = $blockUserAction->isBlockedBy($this->user);
             
-            // If the profile owner has blocked the current user, show 404
-            if ($this->isBlockedBy) {
+            // If the profile owner has blocked the current user, show 404 (unless admin)
+            if ($this->isBlockedBy && !Auth::user()->isAdmin()) {
                 abort(404, 'User not found');
             }
             
@@ -150,11 +161,255 @@ class UserProfile extends Component
             app(\Laravel\Jetstream\Contracts\DeletesUsers::class)->delete($userToDelete);
             
             session()->flash('success', 'User deleted successfully!');
+            $this->closeAdminActionsModal();
             $this->redirect(route('dashboard'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             session()->flash('error', 'You are not authorized to delete this user.');
+            $this->closeAdminActionsModal();
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to delete user. Please try again.');
+            $this->closeAdminActionsModal();
+        }
+    }
+
+    public function openAdminActionsModal(string $action): void
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            session()->flash('error', 'You are not authorized to perform this action.');
+            return;
+        }
+
+        $this->adminActionType = $action;
+        
+        if ($action === 'suspend') {
+            $this->suspendReason = '';
+            $this->suspendExpiresAt = null;
+        }
+        
+        $this->showAdminActionsModal = true;
+    }
+
+    public function openSuspendUserModal(): void
+    {
+        $this->openAdminActionsModal('suspend');
+    }
+
+    public function openUnsuspendUserModal(): void
+    {
+        $this->openAdminActionsModal('unsuspend');
+    }
+
+    public function openDeleteUserModal(): void
+    {
+        $this->openAdminActionsModal('delete');
+    }
+
+    public function closeAdminActionsModal(): void
+    {
+        $this->showAdminActionsModal = false;
+        $this->adminActionType = '';
+        $this->suspendReason = '';
+        $this->suspendExpiresAt = null;
+    }
+
+    public function openSuspendModal(): void
+    {
+        try {
+            if (!Auth::check()) {
+                session()->flash('error', 'You must be logged in to perform this action.');
+                return;
+            }
+
+            if (!Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to suspend users.');
+                return;
+            }
+
+            // Reload user to ensure we have fresh data
+            if (!$this->user || !$this->user->id) {
+                $this->loadUser(app(FollowUser::class), app(\App\Actions\User\BlockUser::class), app(UserRepository::class));
+            }
+
+            if (!$this->user) {
+                session()->flash('error', 'User not found.');
+                return;
+            }
+
+            // Ensure user is fresh and load suspension relationship
+            $this->user->refresh();
+            if (!$this->user->relationLoaded('suspension')) {
+                $this->user->load('suspension');
+            }
+
+            $this->suspendReason = '';
+            $this->suspendExpiresAt = null;
+            $this->showSuspendModal = true;
+            
+            // Debug logging
+            \Log::info('Suspend modal opened', [
+                'user_id' => $this->user->id,
+                'admin_id' => Auth::id(),
+                'showSuspendModal' => $this->showSuspendModal,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error opening suspend modal: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $this->user->id ?? null,
+                'admin_id' => Auth::id(),
+            ]);
+            session()->flash('error', 'Failed to load suspension form. Please try again.');
+        }
+    }
+
+    public function closeSuspendModal(): void
+    {
+        $this->showSuspendModal = false;
+        $this->suspendReason = '';
+        $this->suspendExpiresAt = null;
+    }
+
+    public function suspendUser(): void
+    {
+        try {
+            \Log::info('suspendUser method called', [
+                'user_id' => $this->user->id ?? null,
+                'admin_id' => Auth::id(),
+                'suspendReason' => $this->suspendReason,
+                'suspendExpiresAt' => $this->suspendExpiresAt,
+            ]);
+
+            if (!$this->user) {
+                session()->flash('error', 'User not found.');
+                \Log::error('User not found in suspendUser');
+                return;
+            }
+
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to suspend users.');
+                \Log::error('Not authorized to suspend user', ['admin_id' => Auth::id()]);
+                return;
+            }
+
+            // Normalize empty string to null for expires_at
+            if (empty($this->suspendExpiresAt) || $this->suspendExpiresAt === '') {
+                $this->suspendExpiresAt = null;
+            }
+
+            $rules = [
+                'suspendReason' => 'required|string|max:1000',
+            ];
+            
+            $messages = [
+                'suspendReason.required' => 'Please provide a reason for suspending this user.',
+                'suspendReason.max' => 'The reason cannot exceed 1000 characters.',
+            ];
+
+            // Only validate expires_at if it's not null
+            if ($this->suspendExpiresAt !== null) {
+                $rules['suspendExpiresAt'] = 'required|date|after:now';
+                $messages['suspendExpiresAt.required'] = 'If provided, expiration date is required.';
+                $messages['suspendExpiresAt.after'] = 'The expiration date must be in the future.';
+            }
+
+            $this->validate($rules, $messages);
+
+            $expiresAt = null;
+            if (!empty($this->suspendExpiresAt)) {
+                try {
+                    // Handle datetime-local format (Y-m-d\TH:i)
+                    $expiresAt = \Carbon\Carbon::createFromFormat('Y-m-d\TH:i', $this->suspendExpiresAt);
+                } catch (\Exception $e) {
+                    // Try alternative format
+                    try {
+                        $expiresAt = \Carbon\Carbon::parse($this->suspendExpiresAt);
+                    } catch (\Exception $e2) {
+                        \Log::error('Failed to parse expiration date', [
+                            'date' => $this->suspendExpiresAt,
+                            'error' => $e2->getMessage(),
+                        ]);
+                        throw new \Exception('Invalid expiration date format.');
+                    }
+                }
+            }
+
+            $suspension = \App\Models\UserSuspension::updateOrCreate(
+                ['user_id' => $this->user->id],
+                [
+                    'reason' => trim($this->suspendReason),
+                    'expires_at' => $expiresAt,
+                ]
+            );
+
+            \Log::info('User suspension created', [
+                'suspension_id' => $suspension->user_id,
+                'reason' => $suspension->reason,
+                'expires_at' => $suspension->expires_at,
+            ]);
+
+            // Log admin action
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Suspended user: ' . $this->user->name . ' - Reason: ' . $this->suspendReason,
+                'target_type' => \App\Models\User::class,
+                'target_id' => $this->user->id,
+            ]);
+
+            session()->flash('success', 'User suspended successfully!');
+            $this->closeAdminActionsModal();
+            $this->loadUser(app(FollowUser::class), app(\App\Actions\User\BlockUser::class), app(UserRepository::class));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in suspendUser', [
+                'errors' => $e->errors(),
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Error in suspendUser: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            session()->flash('error', 'Failed to suspend user: ' . $e->getMessage());
+        }
+    }
+
+    public function unsuspendUser(): void
+    {
+        try {
+            if (!$this->user) {
+                session()->flash('error', 'User not found.');
+                return;
+            }
+
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to unsuspend users.');
+                return;
+            }
+
+            $this->user->suspension?->delete();
+
+            // Log admin action
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Unsuspended user: ' . $this->user->name,
+                'target_type' => \App\Models\User::class,
+                'target_id' => $this->user->id,
+            ]);
+
+            session()->flash('success', 'User unsuspended successfully!');
+            $this->closeAdminActionsModal();
+            $this->loadUser(app(FollowUser::class), app(\App\Actions\User\BlockUser::class), app(UserRepository::class));
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to unsuspend user. Please try again.');
+        }
+    }
+
+    public function handleAdminAction(): void
+    {
+        if ($this->adminActionType === 'suspend') {
+            $this->suspendUser();
+        } elseif ($this->adminActionType === 'unsuspend') {
+            $this->unsuspendUser();
+        } elseif ($this->adminActionType === 'delete') {
+            $this->deleteUserAsAdmin($this->user->id);
         }
     }
 

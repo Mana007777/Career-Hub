@@ -329,7 +329,14 @@
                                     </span>
                                 </div>
                                 <div>
-                                    <h3 class="font-semibold dark:text-white text-gray-900">{{ $post->user->name ?? 'Unknown User' }}</h3>
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="font-semibold dark:text-white text-gray-900">{{ $post->user->name ?? 'Unknown User' }}</h3>
+                                        @if($post->suspension)
+                                            <span class="px-2 py-0.5 text-xs font-medium rounded dark:bg-red-600/20 bg-red-100 dark:text-red-400 text-red-700 dark:border-red-600/50 border-red-300 border" title="Suspended">
+                                                Suspended
+                                            </span>
+                                        @endif
+                                    </div>
                                     <p class="text-sm dark:text-gray-400 text-gray-600">{{ $post->created_at->diffForHumans() }}</p>
                                 </div>
                             </a>
@@ -368,17 +375,62 @@
                                 </button>
                             @endif
                             
-                            {{-- Admin Delete Button (Only visible to admins, not post owners) --}}
+                            {{-- Admin Actions (Only visible to admins, not post owners) --}}
                             @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $post->user_id)
-                                <button 
-                                    wire:click.stop="openDeleteModal({{ $post->id }})"
-                                    type="button"
-                                    class="p-2 dark:text-red-400 text-red-600 hover:text-red-500 dark:hover:bg-red-900/20 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Admin: Delete Post">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                </button>
+                                <div class="relative" x-data="{ open: false }">
+                                    <button 
+                                        type="button"
+                                        @click.stop="open = !open"
+                                        class="p-2 dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                                        title="Admin Actions">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <div 
+                                        x-show="open"
+                                        @click.away="open = false"
+                                        x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="opacity-0 scale-95"
+                                        x-transition:enter-end="opacity-100 scale-100"
+                                        x-transition:leave="transition ease-in duration-75"
+                                        x-transition:leave-start="opacity-100 scale-100"
+                                        x-transition:leave-end="opacity-0 scale-95"
+                                        class="absolute right-0 mt-2 w-48 dark:bg-gray-800 bg-white border dark:border-gray-700 border-gray-200 rounded-lg shadow-lg z-50"
+                                        style="display: none;">
+                                        @if($post->suspension)
+                                            <button 
+                                                wire:click.stop="openAdminActionsModal('unsuspend', {{ $post->id }})"
+                                                class="w-full text-left px-4 py-2 text-sm dark:text-green-400 text-green-600 hover:dark:bg-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                @click="open = false">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+                                                </svg>
+                                                Unsuspend Post
+                                            </button>
+                                        @else
+                                            <button 
+                                                wire:click.stop="openAdminActionsModal('suspend', {{ $post->id }})"
+                                                class="w-full text-left px-4 py-2 text-sm dark:text-yellow-400 text-yellow-600 hover:dark:bg-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                @click="open = false">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                </svg>
+                                                Suspend Post
+                                            </button>
+                                        @endif
+                                        <button 
+                                            wire:click.stop="openAdminActionsModal('delete', {{ $post->id }})"
+                                            class="w-full text-left px-4 py-2 text-sm dark:text-red-400 text-red-600 hover:dark:bg-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                            @click="open = false">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                            Remove Post
+                                        </button>
+                                    </div>
+                                </div>
                             @endif
                             
                             {{-- Report Button (Visible to all users except post owner and admins) --}}
@@ -732,6 +784,181 @@
                             Delete
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Admin Actions Modal -->
+    @if ($showAdminActionsModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity dark:bg-gray-900 bg-gray-900 bg-opacity-75" wire:click="closeAdminActionsModal"></div>
+
+                <div class="inline-block align-bottom dark:bg-gray-900 bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border dark:border-gray-800 border-gray-200" wire:click.stop>
+                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-b dark:border-gray-800 border-gray-200">
+                        <h3 class="text-lg font-semibold dark:text-white text-gray-900">
+                            @if($adminActionType === 'suspend')
+                                Suspend Post
+                            @elseif($adminActionType === 'unsuspend')
+                                Unsuspend Post
+                            @elseif($adminActionType === 'delete')
+                                Remove Post
+                            @endif
+                        </h3>
+                    </div>
+                    
+                    @if($adminActionType === 'suspend')
+                        <form wire:submit.prevent="suspendPost" class="dark:bg-gray-900 bg-white px-6 py-4">
+                            <div class="mb-4">
+                                <label for="suspendReason" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Suspension Reason *</label>
+                                <textarea
+                                    wire:model="suspendReason"
+                                    id="suspendReason"
+                                    rows="3"
+                                    class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                                    placeholder="Enter the reason for suspending this post..."></textarea>
+                                @error('suspendReason')
+                                    <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="suspendExpiresAt" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Expires At (Optional)</label>
+                                <input
+                                    type="datetime-local"
+                                    wire:model="suspendExpiresAt"
+                                    id="suspendExpiresAt"
+                                    min="{{ now()->format('Y-m-d\TH:i') }}"
+                                    class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Leave empty for permanent suspension</p>
+                                @error('suspendExpiresAt')
+                                    <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                                <button 
+                                    type="button"
+                                    wire:click="closeAdminActionsModal"
+                                    class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    wire:loading.attr="disabled"
+                                    wire:target="suspendPost"
+                                    class="px-4 py-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:text-white bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                                    <span wire:loading.remove wire:target="suspendPost">Suspend Post</span>
+                                    <span wire:loading wire:target="suspendPost">Suspending...</span>
+                                </button>
+                            </div>
+                        </form>
+                    @elseif($adminActionType === 'unsuspend')
+                        <div class="dark:bg-gray-900 bg-white px-6 py-4">
+                            <p class="mb-4 dark:text-gray-300 text-gray-700">Are you sure you want to unsuspend this post? It will become publicly visible again.</p>
+                            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                                <button 
+                                    type="button"
+                                    wire:click="closeAdminActionsModal"
+                                    class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="button"
+                                    wire:click="unsuspendPost({{ $adminActionPostId }})"
+                                    wire:loading.attr="disabled"
+                                    wire:target="unsuspendPost"
+                                    class="px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:text-white bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                                    <span wire:loading.remove wire:target="unsuspendPost">Unsuspend Post</span>
+                                    <span wire:loading wire:target="unsuspendPost">Unsuspending...</span>
+                                </button>
+                            </div>
+                        </div>
+                    @elseif($adminActionType === 'delete')
+                        <div class="dark:bg-gray-900 bg-white px-6 py-4">
+                            <p class="mb-4 dark:text-red-400 text-red-600 font-semibold">Warning: This action cannot be undone!</p>
+                            <p class="mb-4 dark:text-gray-300 text-gray-700">Are you sure you want to permanently remove this post?</p>
+                            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                                <button 
+                                    type="button"
+                                    wire:click="closeAdminActionsModal"
+                                    class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="button"
+                                    wire:click="deletePostAsAdmin({{ $adminActionPostId }})"
+                                    wire:loading.attr="disabled"
+                                    wire:target="deletePostAsAdmin"
+                                    class="px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 dark:text-white bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                                    <span wire:loading.remove wire:target="deletePostAsAdmin">Remove Post</span>
+                                    <span wire:loading wire:target="deletePostAsAdmin">Removing...</span>
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Suspend Post Modal (Legacy - keeping for backward compatibility) -->
+    @if ($showSuspendModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity dark:bg-gray-900 bg-gray-900 bg-opacity-75" wire:click="closeSuspendModal"></div>
+
+                <div class="inline-block align-bottom dark:bg-gray-900 bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border dark:border-gray-800 border-gray-200" wire:click.stop>
+                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-b dark:border-gray-800 border-gray-200">
+                        <h3 class="text-lg font-semibold dark:text-white text-gray-900">Suspend Post</h3>
+                    </div>
+                    
+                    <form wire:submit.prevent="suspendPost" class="dark:bg-gray-900 bg-white px-6 py-4">
+                        <div class="mb-4">
+                            <label for="suspendReason" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Suspension Reason *</label>
+                            <textarea
+                                wire:model="suspendReason"
+                                id="suspendReason"
+                                rows="3"
+                                class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                                placeholder="Enter the reason for suspending this post..."></textarea>
+                            @error('suspendReason')
+                                <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="suspendExpiresAt" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Expires At (Optional)</label>
+                            <input
+                                type="datetime-local"
+                                wire:model="suspendExpiresAt"
+                                id="suspendExpiresAt"
+                                min="{{ now()->format('Y-m-d\TH:i') }}"
+                                class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Leave empty for permanent suspension</p>
+                            @error('suspendExpiresAt')
+                                <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                            <button 
+                                type="button"
+                                wire:click="closeSuspendModal"
+                                class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button 
+                                type="submit"
+                                wire:loading.attr="disabled"
+                                wire:target="suspendPost"
+                                class="px-4 py-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:text-white bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                                <span wire:loading.remove wire:target="suspendPost">Suspend Post</span>
+                                <span wire:loading wire:target="suspendPost">Suspending...</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

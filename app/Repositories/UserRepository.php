@@ -18,16 +18,29 @@ class UserRepository
      * @return User
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function findByUsernameWithCounts(string $username): User
+    public function findByUsernameWithCounts(string $username, bool $includeSuspended = false): User
     {
+        $cacheKey = "user:{$username}:with_counts" . ($includeSuspended ? ':with_suspended' : '');
+        
         return Cache::remember(
-            "user:{$username}:with_counts",
+            $cacheKey,
             now()->addMinutes(10),
-            function () use ($username) {
-                return User::with('profile')
+            function () use ($username, $includeSuspended) {
+                $query = User::with(['profile', 'suspension'])
                     ->withCount(['followers', 'following', 'posts'])
-                    ->where('username', $username)
-                    ->firstOrFail();
+                    ->where('username', $username);
+                
+                // Only filter out suspended users if not including them (for admins)
+                if (!$includeSuspended) {
+                    $query->whereDoesntHave('suspension', function($q) {
+                        $q->where(function($query) {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        });
+                    });
+                }
+                
+                return $query->firstOrFail();
             }
         );
     }
@@ -231,6 +244,12 @@ class UserRepository
         $userQuery = User::where(function($q) use ($searchTerm) {
                 $q->where('username', 'like', $searchTerm)
                   ->orWhere('name', 'like', $searchTerm);
+            })
+            ->whereDoesntHave('suspension', function($q) {
+                $q->where(function($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
             });
         
         // Filter out blocked users (bidirectional blocking)

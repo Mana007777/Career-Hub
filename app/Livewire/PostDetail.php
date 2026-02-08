@@ -28,6 +28,9 @@ class PostDetail extends Component
     public $content = '';
     public $replyContent = [];
     public $showLikersModal = false;
+    public $showSuspendModal = false;
+    public $suspendReason = '';
+    public $suspendExpiresAt = null;
     public $cvFile;
     public $cvMessage = '';
     public $showCvUpload = false;
@@ -292,6 +295,167 @@ class PostDetail extends Component
             session()->flash('error', 'You are not authorized to delete this comment.');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to delete comment. Please try again.');
+        }
+    }
+
+    public function openSuspendModal(): void
+    {
+        try {
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
+
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to suspend posts.');
+                return;
+            }
+
+            $this->suspendReason = '';
+            $this->suspendExpiresAt = null;
+            $this->showSuspendModal = true;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to load suspension form. Please try again.');
+        }
+    }
+
+    public function closeSuspendModal(): void
+    {
+        $this->showSuspendModal = false;
+        $this->suspendReason = '';
+        $this->suspendExpiresAt = null;
+    }
+
+    public function suspendPost(): void
+    {
+        try {
+            \Log::info('suspendPost method called (PostDetail)', [
+                'post_id' => $this->post->id ?? null,
+                'admin_id' => Auth::id(),
+                'suspendReason' => $this->suspendReason ?? 'empty',
+                'suspendExpiresAt' => $this->suspendExpiresAt ?? 'empty',
+            ]);
+
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                \Log::error('Post not found in suspendPost (PostDetail)');
+                return;
+            }
+
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to suspend posts.');
+                \Log::error('Not authorized to suspend post (PostDetail)', ['admin_id' => Auth::id()]);
+                return;
+            }
+
+            // Normalize empty string to null for expires_at
+            if (empty($this->suspendExpiresAt) || $this->suspendExpiresAt === '') {
+                $this->suspendExpiresAt = null;
+            }
+
+            $rules = [
+                'suspendReason' => 'required|string|max:1000',
+            ];
+            
+            $messages = [
+                'suspendReason.required' => 'Please provide a reason for suspending this post.',
+                'suspendReason.max' => 'The reason cannot exceed 1000 characters.',
+            ];
+
+            // Only validate expires_at if it's not null
+            if ($this->suspendExpiresAt !== null) {
+                $rules['suspendExpiresAt'] = 'required|date|after:now';
+                $messages['suspendExpiresAt.required'] = 'If provided, expiration date is required.';
+                $messages['suspendExpiresAt.after'] = 'The expiration date must be in the future.';
+            }
+
+            $this->validate($rules, $messages);
+
+            $expiresAt = null;
+            if (!empty($this->suspendExpiresAt)) {
+                try {
+                    // Handle datetime-local format (Y-m-d\TH:i)
+                    $expiresAt = \Carbon\Carbon::createFromFormat('Y-m-d\TH:i', $this->suspendExpiresAt);
+                } catch (\Exception $e) {
+                    // Try alternative format
+                    try {
+                        $expiresAt = \Carbon\Carbon::parse($this->suspendExpiresAt);
+                    } catch (\Exception $e2) {
+                        \Log::error('Failed to parse expiration date', [
+                            'date' => $this->suspendExpiresAt,
+                            'error' => $e2->getMessage(),
+                        ]);
+                        throw new \Exception('Invalid expiration date format.');
+                    }
+                }
+            }
+
+            $suspension = \App\Models\PostSuspension::updateOrCreate(
+                ['post_id' => $this->post->id],
+                [
+                    'reason' => trim($this->suspendReason),
+                    'expires_at' => $expiresAt,
+                ]
+            );
+
+            \Log::info('Post suspension created (PostDetail)', [
+                'suspension_id' => $suspension->post_id,
+                'reason' => $suspension->reason,
+                'expires_at' => $suspension->expires_at,
+            ]);
+
+            // Log admin action
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Suspended post: ' . ($this->post->title ?: 'Post #' . $this->post->id) . ' - Reason: ' . $this->suspendReason,
+                'target_type' => \App\Models\Post::class,
+                'target_id' => $this->post->id,
+            ]);
+
+            session()->flash('success', 'Post suspended successfully!');
+            $this->closeSuspendModal();
+            $this->post->refresh();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in suspendPost (PostDetail)', [
+                'errors' => $e->errors(),
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Error in suspendPost (PostDetail): ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            session()->flash('error', 'Failed to suspend post: ' . $e->getMessage());
+        }
+    }
+
+    public function unsuspendPost(): void
+    {
+        try {
+            if (!$this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
+
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to unsuspend posts.');
+                return;
+            }
+
+            $this->post->suspension?->delete();
+
+            // Log admin action
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Unsuspended post: ' . ($this->post->title ?: 'Post #' . $this->post->id),
+                'target_type' => \App\Models\Post::class,
+                'target_id' => $this->post->id,
+            ]);
+
+            session()->flash('success', 'Post unsuspended successfully!');
+            $this->post->refresh();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to unsuspend post. Please try again.');
         }
     }
 

@@ -23,13 +23,20 @@ class UserSuspensionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
+                Forms\Components\Select::make('user_id')
+                    ->label('User')
+                    ->relationship('user', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 Forms\Components\Textarea::make('reason')
                     ->required()
-                    ->columnSpanFull(),
-                Forms\Components\DateTimePicker::make('expires_at'),
+                    ->columnSpanFull()
+                    ->label('Suspension Reason'),
+                Forms\Components\DateTimePicker::make('expires_at')
+                    ->label('Expires At (Optional)')
+                    ->helperText('Leave empty for permanent suspension')
+                    ->minDate(now()),
             ]);
     }
 
@@ -39,11 +46,26 @@ class UserSuspensionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('user_id')
                     ->numeric()
+                    ->sortable()
+                    ->label('User ID'),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('User Name')
+                    ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('user.email')
+                    ->label('User Email')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('reason')
+                    ->label('Reason')
+                    ->limit(50)
+                    ->tooltip(fn ($record) => $record->reason),
                 Tables\Columns\TextColumn::make('expires_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Expires At')
+                    ->placeholder('Permanent'),
             ])
+            ->defaultSort('user_id', 'asc')
             ->filters([
                 //
             ])

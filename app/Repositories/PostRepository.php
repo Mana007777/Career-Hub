@@ -26,8 +26,23 @@ class PostRepository
             'specialties' => function($query) {
                 $query->with('subSpecialties');
             },
-            'tags'
-        ]);
+            'tags',
+            'suspension'
+        ])
+        ->whereDoesntHave('suspension', function($q) {
+            $q->where(function($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
+        })
+        ->whereHas('user', function($q) {
+            $q->whereDoesntHave('suspension', function($sq) {
+                $sq->where(function($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+            });
+        });
         
         // Filter out posts from blocked users (bidirectional blocking)
         if ($userId) {
@@ -93,6 +108,12 @@ class PostRepository
     public function getByUserId(int $userId, int $perPage = 10): LengthAwarePaginator
     {
         return Post::where('user_id', $userId)
+            ->whereDoesntHave('suspension', function($q) {
+                $q->where(function($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+            })
             ->with([
                 'user',
                 'likes',
@@ -101,7 +122,8 @@ class PostRepository
                 'specialties' => function($query) {
                     $query->with('subSpecialties');
                 },
-                'tags'
+                'tags',
+                'suspension'
             ])
             ->latest()
             ->paginate($perPage);

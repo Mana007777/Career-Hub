@@ -95,6 +95,30 @@
                 </div>
             </div>
 
+            <!-- Suspended Items Card (Only for admins) -->
+            @if(auth()->check() && auth()->user()->isAdmin())
+            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-orange-600/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 dark:text-orange-400 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Suspended Items</h3>
+                            <p class="text-sm dark:text-gray-400 text-gray-600">Manage suspended users and posts</p>
+                        </div>
+                    </div>
+                    <button 
+                        wire:click="openSuspendedItemsModal"
+                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
+                        View Suspended Items
+                    </button>
+                </div>
+            </div>
+            @endif
+
             <!-- My Reports Card (Only for non-admin users) -->
             @if(auth()->check() && !auth()->user()->isAdmin())
             <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
@@ -584,6 +608,134 @@
                         <p class="dark:text-gray-400 text-gray-600">You haven't submitted any reports yet.</p>
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Suspended Items Modal (Only for admins) -->
+    @if($showSuspendedItemsModal && auth()->check() && auth()->user()->isAdmin())
+    <div 
+        class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm"
+        wire:click="closeSuspendedItemsModal"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+    >
+        <div 
+            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col mx-4"
+            wire:click.stop
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+        >
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b dark:border-gray-800 border-gray-200">
+                <h2 class="text-2xl font-bold dark:text-white text-gray-900">Suspended Items</h2>
+                <button 
+                    wire:click="closeSuspendedItemsModal"
+                    class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Suspended Users -->
+                    <div>
+                        <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-4">Suspended Users ({{ $suspendedUsers->count() }})</h3>
+                        @if($suspendedUsers->count() > 0)
+                            <div class="space-y-3">
+                                @foreach($suspendedUsers as $suspendedUser)
+                                    <div class="dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-start justify-between mb-3">
+                                            <div class="flex-1">
+                                                <p class="font-semibold dark:text-white text-gray-900">{{ $suspendedUser->name }}</p>
+                                                <p class="text-sm dark:text-gray-400 text-gray-600">{{ $suspendedUser->email }}</p>
+                                                @if($suspendedUser->suspension)
+                                                    <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
+                                                        <span class="font-medium">Reason:</span> {{ $suspendedUser->suspension->reason }}
+                                                    </p>
+                                                    @if($suspendedUser->suspension->expires_at)
+                                                        <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
+                                                            <span class="font-medium">Expires:</span> {{ $suspendedUser->suspension->expires_at->format('M d, Y \a\t g:i A') }}
+                                                        </p>
+                                                    @else
+                                                        <p class="text-xs dark:text-red-400 text-red-600 mt-1 font-medium">Permanent Suspension</p>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                            <button 
+                                                wire:click="unsuspendUser({{ $suspendedUser->id }})"
+                                                wire:confirm="Are you sure you want to unsuspend this user?"
+                                                class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-green-600 dark:hover:bg-green-700 dark:text-white bg-green-600 hover:bg-green-700 text-white text-sm">
+                                                Unsuspend
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="p-8 text-center dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg">
+                                <p class="dark:text-gray-400 text-gray-600">No suspended users</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Suspended Posts -->
+                    <div>
+                        <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-4">Suspended Posts ({{ $suspendedPosts->count() }})</h3>
+                        @if($suspendedPosts->count() > 0)
+                            <div class="space-y-3">
+                                @foreach($suspendedPosts as $suspendedPost)
+                                    <div class="dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-start justify-between mb-3">
+                                            <div class="flex-1">
+                                                <p class="font-semibold dark:text-white text-gray-900">
+                                                    Post by: {{ $suspendedPost->user->name ?? 'Unknown' }}
+                                                </p>
+                                                <p class="text-sm dark:text-gray-400 text-gray-600 mt-1">
+                                                    {{ Str::limit($suspendedPost->content ?? 'No content', 100) }}
+                                                </p>
+                                                @if($suspendedPost->suspension)
+                                                    <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
+                                                        <span class="font-medium">Reason:</span> {{ $suspendedPost->suspension->reason }}
+                                                    </p>
+                                                    @if($suspendedPost->suspension->expires_at)
+                                                        <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
+                                                            <span class="font-medium">Expires:</span> {{ $suspendedPost->suspension->expires_at->format('M d, Y \a\t g:i A') }}
+                                                        </p>
+                                                    @else
+                                                        <p class="text-xs dark:text-red-400 text-red-600 mt-1 font-medium">Permanent Suspension</p>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                            <button 
+                                                wire:click="unsuspendPost({{ $suspendedPost->id }})"
+                                                wire:confirm="Are you sure you want to unsuspend this post?"
+                                                class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-green-600 dark:hover:bg-green-700 dark:text-white bg-green-600 hover:bg-green-700 text-white text-sm">
+                                                Unsuspend
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="p-8 text-center dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg">
+                                <p class="dark:text-gray-400 text-gray-600">No suspended posts</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

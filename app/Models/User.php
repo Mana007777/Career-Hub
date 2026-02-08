@@ -315,6 +315,25 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if the user is currently suspended
+     */
+    public function isSuspended(): bool
+    {
+        if (!$this->suspension) {
+            return false;
+        }
+
+        // Check if suspension has expired
+        if ($this->suspension->expires_at && $this->suspension->expires_at->isPast()) {
+            // Auto-delete expired suspension
+            $this->suspension->delete();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Determine if the user can access the Filament admin panel.
      * ONLY test@example.com with admin role can access the admin dashboard.
      */

@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Models\AdminLog;
 use App\Models\User;
+use App\Models\UserSuspension;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -114,6 +116,12 @@ class UserResource extends Resource
                     ->counts('posts')
                     ->label('Posts')
                     ->sortable(),
+                Tables\Columns\IconColumn::make('suspension')
+                    ->label('Suspended')
+                    ->boolean()
+                    ->getStateUsing(fn ($record) => $record->suspension !== null)
+                    ->color(fn ($record) => $record->suspension ? 'danger' : 'success')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -142,7 +150,83 @@ class UserResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Remove')
+                        ->requiresConfirmation()
+                        ->modalHeading('Remove User')
+                        ->modalDescription('Are you sure you want to remove this user? This action cannot be undone.')
+                        ->action(function (User $record) {
+                            // Log admin action
+                            AdminLog::create([
+                                'admin_id' => auth()->id(),
+                                'action' => 'Removed user: ' . $record->name,
+                                'target_type' => User::class,
+                                'target_id' => $record->id,
+                            ]);
+                            
+                            $record->delete();
+                        }),
+                    Tables\Actions\Action::make('suspend')
+                        ->label('Suspend')
+                        ->icon('heroicon-o-lock-closed')
+                        ->color('warning')
+                        ->form([
+                            Forms\Components\Textarea::make('reason')
+                                ->label('Suspension Reason')
+                                ->required()
+                                ->rows(3)
+                                ->placeholder('Enter the reason for suspending this user...'),
+                            Forms\Components\DateTimePicker::make('expires_at')
+                                ->label('Expires At (Optional)')
+                                ->helperText('Leave empty for permanent suspension')
+                                ->minDate(now()),
+                        ])
+                        ->modalHeading('Suspend User')
+                        ->modalDescription('Suspend this user from the platform. They will not be able to access their account.')
+                        ->action(function (User $record, array $data) {
+                            UserSuspension::updateOrCreate(
+                                ['user_id' => $record->id],
+                                [
+                                    'reason' => $data['reason'],
+                                    'expires_at' => $data['expires_at'] ?? null,
+                                ]
+                            );
+
+                            // Log admin action
+                            AdminLog::create([
+                                'admin_id' => auth()->id(),
+                                'action' => 'Suspended user: ' . $record->name . ' - Reason: ' . $data['reason'],
+                                'target_type' => User::class,
+                                'target_id' => $record->id,
+                            ]);
+                        })
+                        ->successNotificationTitle('User suspended successfully'),
+                    Tables\Actions\Action::make('unsuspend')
+                        ->label('Unsuspend')
+                        ->icon('heroicon-o-lock-open')
+                        ->color('success')
+                        ->visible(fn (User $record) => $record->suspension !== null)
+                        ->requiresConfirmation()
+                        ->modalHeading('Unsuspend User')
+                        ->modalDescription('Remove the suspension from this user. They will regain access to their account.')
+                        ->action(function (User $record) {
+                            $record->suspension?->delete();
+
+                            // Log admin action
+                            AdminLog::create([
+                                'admin_id' => auth()->id(),
+                                'action' => 'Unsuspended user: ' . $record->name,
+                                'target_type' => User::class,
+                                'target_id' => $record->id,
+                            ]);
+                        })
+                        ->successNotificationTitle('User unsuspended successfully'),
+                ])
+                    ->label('Actions')
+                    ->icon('heroicon-o-ellipsis-vertical')
+                    ->color('gray')
+                    ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

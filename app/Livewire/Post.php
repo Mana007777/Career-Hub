@@ -50,7 +50,14 @@ class Post extends Component
     public $showCreateForm = false;
     public $showEditModal = false;
     public $showDeleteModal = false;
+    public $showSuspendModal = false;
+    public $showAdminActionsModal = false;
+    public $adminActionType = ''; // 'suspend', 'unsuspend', 'delete'
+    public $adminActionPostId = null;
     public $postToDelete = null;
+    public $postToSuspend = null;
+    public $suspendReason = '';
+    public $suspendExpiresAt = null;
     public $feedMode = 'new'; // new, popular, following
     
     // Filter properties
@@ -239,6 +246,167 @@ class Post extends Component
     {
         $this->showDeleteModal = false;
         $this->postToDelete = null;
+    }
+
+    public function openSuspendModal(int $postId, AuthorizePostAction $authorizePostAction, PostRepository $postRepository): void
+    {
+        try {
+            $post = $postRepository->findById($postId);
+            
+            // Only admins can suspend
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to suspend posts.');
+                return;
+            }
+
+            $this->postToSuspend = $postId;
+            $this->suspendReason = '';
+            $this->suspendExpiresAt = null;
+            $this->showSuspendModal = true;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to load post. Please try again.');
+        }
+    }
+
+    public function closeSuspendModal(): void
+    {
+        $this->showSuspendModal = false;
+        $this->postToSuspend = null;
+        $this->suspendReason = '';
+        $this->suspendExpiresAt = null;
+    }
+
+    public function suspendPost(): void
+    {
+        try {
+            \Log::info('suspendPost method called', [
+                'post_id' => $this->postToSuspend ?? null,
+                'admin_id' => Auth::id(),
+                'suspendReason' => $this->suspendReason ?? 'empty',
+                'suspendExpiresAt' => $this->suspendExpiresAt ?? 'empty',
+            ]);
+
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to suspend posts.');
+                \Log::error('Not authorized to suspend post', ['admin_id' => Auth::id()]);
+                return;
+            }
+
+            if (!$this->postToSuspend) {
+                session()->flash('error', 'Post not found.');
+                \Log::error('Post ID not set in suspendPost');
+                return;
+            }
+
+            // Normalize empty string to null for expires_at
+            if (empty($this->suspendExpiresAt) || $this->suspendExpiresAt === '') {
+                $this->suspendExpiresAt = null;
+            }
+
+            $rules = [
+                'suspendReason' => 'required|string|max:1000',
+            ];
+            
+            $messages = [
+                'suspendReason.required' => 'Please provide a reason for suspending this post.',
+                'suspendReason.max' => 'The reason cannot exceed 1000 characters.',
+            ];
+
+            // Only validate expires_at if it's not null
+            if ($this->suspendExpiresAt !== null) {
+                $rules['suspendExpiresAt'] = 'required|date|after:now';
+                $messages['suspendExpiresAt.required'] = 'If provided, expiration date is required.';
+                $messages['suspendExpiresAt.after'] = 'The expiration date must be in the future.';
+            }
+
+            $this->validate($rules, $messages);
+
+            $post = \App\Models\Post::findOrFail($this->postToSuspend);
+            
+            $expiresAt = null;
+            if (!empty($this->suspendExpiresAt)) {
+                try {
+                    // Handle datetime-local format (Y-m-d\TH:i)
+                    $expiresAt = \Carbon\Carbon::createFromFormat('Y-m-d\TH:i', $this->suspendExpiresAt);
+                } catch (\Exception $e) {
+                    // Try alternative format
+                    try {
+                        $expiresAt = \Carbon\Carbon::parse($this->suspendExpiresAt);
+                    } catch (\Exception $e2) {
+                        \Log::error('Failed to parse expiration date', [
+                            'date' => $this->suspendExpiresAt,
+                            'error' => $e2->getMessage(),
+                        ]);
+                        throw new \Exception('Invalid expiration date format.');
+                    }
+                }
+            }
+
+            $suspension = \App\Models\PostSuspension::updateOrCreate(
+                ['post_id' => $post->id],
+                [
+                    'reason' => trim($this->suspendReason),
+                    'expires_at' => $expiresAt,
+                ]
+            );
+
+            \Log::info('Post suspension created', [
+                'suspension_id' => $suspension->post_id,
+                'reason' => $suspension->reason,
+                'expires_at' => $suspension->expires_at,
+            ]);
+
+            // Log admin action
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Suspended post: ' . ($post->title ?: 'Post #' . $post->id) . ' - Reason: ' . $this->suspendReason,
+                'target_type' => \App\Models\Post::class,
+                'target_id' => $post->id,
+            ]);
+
+            session()->flash('success', 'Post suspended successfully!');
+            $this->closeAdminActionsModal();
+            $this->resetPage();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in suspendPost', [
+                'errors' => $e->errors(),
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Error in suspendPost: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            session()->flash('error', 'Failed to suspend post: ' . $e->getMessage());
+        }
+    }
+
+    public function unsuspendPost(int $postId): void
+    {
+        try {
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to unsuspend posts.');
+                return;
+            }
+
+            $post = \App\Models\Post::findOrFail($postId);
+            $post->suspension?->delete();
+
+            // Log admin action
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Unsuspended post: ' . ($post->title ?: 'Post #' . $post->id),
+                'target_type' => \App\Models\Post::class,
+                'target_id' => $post->id,
+            ]);
+
+            session()->flash('success', 'Post unsuspended successfully!');
+            $this->closeAdminActionsModal();
+            $this->resetPage();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to unsuspend post. Please try again.');
+            $this->closeAdminActionsModal();
+        }
     }
 
     public function addSpecialty(): void
@@ -488,13 +656,22 @@ class Post extends Component
             $deletePostAction->delete($post);
 
             session()->flash('success', 'Post deleted successfully!');
-            $this->closeDeleteModal();
+            $this->closeAdminActionsModal();
             $this->resetPage();
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             session()->flash('error', 'You are not authorized to delete this post.');
+            $this->closeAdminActionsModal();
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to delete post. Please try again.');
+            $this->closeAdminActionsModal();
         }
+    }
+
+    public function deletePostAsAdmin(int $postId): void
+    {
+        $this->adminActionPostId = $postId;
+        $this->postToDelete = $postId;
+        $this->delete(app(DeletePost::class), app(AuthorizePostAction::class), app(PostRepository::class));
     }
 
     public function getMediaUrl(PostModel $post): ?string

@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
+use App\Models\AdminLog;
 use App\Models\Post;
+use App\Models\PostSuspension;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -116,6 +118,13 @@ class PostResource extends Resource
                     ->counts('comments')
                     ->label('Comments')
                     ->sortable(),
+                Tables\Columns\IconColumn::make('suspension')
+                    ->label('Suspended')
+                    ->boolean()
+                    ->getStateUsing(fn ($record) => $record->suspension !== null)
+                    ->color(fn ($record) => $record->suspension ? 'danger' : 'success')
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -164,7 +173,83 @@ class PostResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Remove')
+                        ->requiresConfirmation()
+                        ->modalHeading('Remove Post')
+                        ->modalDescription('Are you sure you want to remove this post? This action cannot be undone.')
+                        ->action(function (Post $record) {
+                            // Log admin action
+                            AdminLog::create([
+                                'admin_id' => auth()->id(),
+                                'action' => 'Removed post: ' . ($record->title ?: 'Post #' . $record->id),
+                                'target_type' => Post::class,
+                                'target_id' => $record->id,
+                            ]);
+                            
+                            $record->delete();
+                        }),
+                    Tables\Actions\Action::make('suspend')
+                        ->label('Suspend')
+                        ->icon('heroicon-o-lock-closed')
+                        ->color('warning')
+                        ->form([
+                            Forms\Components\Textarea::make('reason')
+                                ->label('Suspension Reason')
+                                ->required()
+                                ->rows(3)
+                                ->placeholder('Enter the reason for suspending this post...'),
+                            Forms\Components\DateTimePicker::make('expires_at')
+                                ->label('Expires At (Optional)')
+                                ->helperText('Leave empty for permanent suspension')
+                                ->minDate(now()),
+                        ])
+                        ->modalHeading('Suspend Post')
+                        ->modalDescription('Suspend this post. It will be hidden from public view.')
+                        ->action(function (Post $record, array $data) {
+                            PostSuspension::updateOrCreate(
+                                ['post_id' => $record->id],
+                                [
+                                    'reason' => $data['reason'],
+                                    'expires_at' => $data['expires_at'] ?? null,
+                                ]
+                            );
+
+                            // Log admin action
+                            AdminLog::create([
+                                'admin_id' => auth()->id(),
+                                'action' => 'Suspended post: ' . ($record->title ?: 'Post #' . $record->id) . ' - Reason: ' . $data['reason'],
+                                'target_type' => Post::class,
+                                'target_id' => $record->id,
+                            ]);
+                        })
+                        ->successNotificationTitle('Post suspended successfully'),
+                    Tables\Actions\Action::make('unsuspend')
+                        ->label('Unsuspend')
+                        ->icon('heroicon-o-lock-open')
+                        ->color('success')
+                        ->visible(fn (Post $record) => $record->suspension !== null)
+                        ->requiresConfirmation()
+                        ->modalHeading('Unsuspend Post')
+                        ->modalDescription('Remove the suspension from this post. It will be visible to users again.')
+                        ->action(function (Post $record) {
+                            $record->suspension?->delete();
+
+                            // Log admin action
+                            AdminLog::create([
+                                'admin_id' => auth()->id(),
+                                'action' => 'Unsuspended post: ' . ($record->title ?: 'Post #' . $record->id),
+                                'target_type' => Post::class,
+                                'target_id' => $record->id,
+                            ]);
+                        })
+                        ->successNotificationTitle('Post unsuspended successfully'),
+                ])
+                    ->label('Actions')
+                    ->icon('heroicon-o-ellipsis-vertical')
+                    ->color('gray')
+                    ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

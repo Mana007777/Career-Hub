@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserSuspension extends Model
+class PostSuspension extends Model
 {
-    protected $table = 'user_suspensions';
+    use HasFactory;
+    
+    protected $table = 'post_suspensions';
 
     public $timestamps = false;
 
-    protected $primaryKey = 'user_id';
+    protected $primaryKey = 'post_id';
 
     public $incrementing = false;
 
     protected $fillable = [
-        'user_id',
+        'post_id',
         'reason',
         'expires_at',
     ];
@@ -27,8 +30,8 @@ class UserSuspension extends Model
         ];
     }
 
-    public function user()
+    public function post()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Post::class);
     }
 }

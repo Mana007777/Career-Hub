@@ -23,6 +23,7 @@ class Settings extends Component
     public $showBlocksModal = false;
     public $showProfileModal = false;
     public $showReportsModal = false;
+    public $showSuspendedItemsModal = false;
     
     // Profile fields
     public $name;
@@ -91,6 +92,17 @@ class Settings extends Component
     public function closeReportsModal(): void
     {
         $this->showReportsModal = false;
+    }
+
+    public function openSuspendedItemsModal(): void
+    {
+        $this->showSuspendedItemsModal = true;
+        $this->resetPage();
+    }
+
+    public function closeSuspendedItemsModal(): void
+    {
+        $this->showSuspendedItemsModal = false;
     }
 
     protected function loadBlockedUsers(): void
@@ -187,15 +199,82 @@ class Settings extends Component
         }
     }
 
+    public function unsuspendUser(int $userId): void
+    {
+        try {
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to perform this action.');
+                return;
+            }
+
+            $user = User::findOrFail($userId);
+            $user->suspension?->delete();
+
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Unsuspended user: ' . $user->name,
+                'target_type' => User::class,
+                'target_id' => $user->id,
+            ]);
+
+            session()->flash('success', 'User unsuspended successfully!');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to unsuspend user. Please try again.');
+        }
+    }
+
+    public function unsuspendPost(int $postId): void
+    {
+        try {
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                session()->flash('error', 'You are not authorized to perform this action.');
+                return;
+            }
+
+            $post = Post::findOrFail($postId);
+            $post->suspension?->delete();
+
+            \App\Models\AdminLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Unsuspended post: ' . ($post->title ?: 'Post #' . $post->id),
+                'target_type' => Post::class,
+                'target_id' => $post->id,
+            ]);
+
+            session()->flash('success', 'Post unsuspended successfully!');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to unsuspend post. Please try again.');
+        }
+    }
+
     public function render(): View
     {
         $reports = collect([]);
+        $suspendedUsers = collect([]);
+        $suspendedPosts = collect([]);
         
         // Only load reports for non-admin users
         if (Auth::check() && !Auth::user()->isAdmin()) {
             $reports = Report::where('reporter_id', Auth::id())
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
+        }
+
+        // Load suspended items for admins
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            $suspendedUsers = User::whereHas('suspension', function($query) {
+                $query->where(function($q) {
+                    $q->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+                });
+            })->with('suspension')->orderBy('created_at', 'desc')->get();
+
+            $suspendedPosts = Post::whereHas('suspension', function($query) {
+                $query->where(function($q) {
+                    $q->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+                });
+            })->with(['suspension', 'user'])->orderBy('created_at', 'desc')->get();
             
             // Load targets for each report
             foreach ($reports as $report) {

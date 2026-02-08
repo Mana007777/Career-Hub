@@ -35,7 +35,21 @@ class PostQueries
         // Get excluded user IDs (both blocked and blocked by) if user is authenticated
         $excludedIds = $userId ? $this->getExcludedUserIds($userId) : [];
 
-        $queryBuilder = Post::with(['user', 'likes', 'stars', 'comments', 'specialties', 'tags'])
+        $queryBuilder = Post::with(['user', 'likes', 'stars', 'comments', 'specialties', 'tags', 'suspension'])
+            ->whereDoesntHave('suspension', function($q) {
+                $q->where(function($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+            })
+            ->whereHas('user', function($q) {
+                $q->whereDoesntHave('suspension', function($sq) {
+                    $sq->where(function($query) {
+                        $query->whereNull('expires_at')
+                            ->orWhere('expires_at', '>', now());
+                    });
+                });
+            })
             ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties, $hasTitleColumn) {
                 // Prefer searching by title when the column exists; fall back to content otherwise
                 if ($hasTitleColumn) {
@@ -94,6 +108,20 @@ class PostQueries
 
         $query = Post::whereIn('user_id', $followingIds)
             ->whereNotIn('user_id', $excludedIds)
+            ->whereDoesntHave('suspension', function($q) {
+                $q->where(function($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+            })
+            ->whereHas('user', function($q) {
+                $q->whereDoesntHave('suspension', function($sq) {
+                    $sq->where(function($query) {
+                        $query->whereNull('expires_at')
+                            ->orWhere('expires_at', '>', now());
+                    });
+                });
+            })
             ->with([
                 'user',
                 'likes',
@@ -102,7 +130,8 @@ class PostQueries
                 'specialties' => function($query) {
                     $query->with('subSpecialties');
                 },
-                'tags'
+                'tags',
+                'suspension'
             ]);
         
         // Apply filters
@@ -137,8 +166,23 @@ class PostQueries
                 'specialties' => function($query) {
                     $query->with('subSpecialties');
                 },
-                'tags'
+                'tags',
+                'suspension'
             ])
+            ->whereDoesntHave('suspension', function($q) {
+                $q->where(function($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+            })
+            ->whereHas('user', function($q) {
+                $q->whereDoesntHave('suspension', function($sq) {
+                    $sq->where(function($query) {
+                        $query->whereNull('expires_at')
+                            ->orWhere('expires_at', '>', now());
+                    });
+                });
+            })
             ->withCount(['likes', 'stars']);
         
         if (!empty($excludedIds)) {
@@ -237,7 +281,14 @@ class PostQueries
                             $query->with('subSpecialties');
                         },
                         'tags',
+                        'suspension',
                     ])
+                    ->whereDoesntHave('suspension', function($q) {
+                        $q->where(function($query) {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        });
+                    })
                     ->find($id);
             }
         );
