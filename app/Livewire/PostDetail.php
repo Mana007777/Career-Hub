@@ -66,6 +66,21 @@ class PostDetail extends Component
             abort(404, 'Post not found');
         }
 
+        // Ensure suspension relationship is loaded
+        if (!$this->post->relationLoaded('suspension')) {
+            $this->post->load('suspension');
+        }
+
+        // If post is suspended and current user is not admin, show 404
+        if ($this->post->isSuspended() && (!Auth::check() || !Auth::user()->isAdmin())) {
+            abort(404, 'Post not found');
+        }
+
+        // If post author is suspended and current user is not admin, show 404
+        if ($this->post->user && $this->post->user->isSuspended() && (!Auth::check() || !Auth::user()->isAdmin())) {
+            abort(404, 'Post not found');
+        }
+
         // Check if current user has already uploaded a CV for this post
         if (Auth::check() && $this->post->job_type) {
             $this->hasUploadedCv = $postCvRepository->hasUserUploadedCv($this->post->id, Auth::id());

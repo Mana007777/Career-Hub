@@ -1035,7 +1035,7 @@
                     : 0;
             @endphp
             <button 
-                wire:click="$dispatch('openNotifications')"
+                onclick="if (window.openNotifications) window.openNotifications()"
                 data-tooltip-target="tooltip-notifications" 
                 type="button"
                 class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
@@ -1198,5 +1198,7 @@
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
         </div>
+
+        {{-- User notifications are mounted globally in the dashboard layout --}}
     </div>
 </div>

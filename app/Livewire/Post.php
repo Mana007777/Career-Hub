@@ -242,6 +242,37 @@ class Post extends Component
         }
     }
 
+    public function openAdminActionsModal(string $action, int $postId): void
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            session()->flash('error', 'You are not authorized to perform this action.');
+            return;
+        }
+
+        $this->adminActionType = $action;
+        $this->adminActionPostId = $postId;
+
+        if ($action === 'suspend') {
+            $this->postToSuspend = $postId;
+            $this->suspendReason = '';
+            $this->suspendExpiresAt = null;
+            $this->showSuspendModal = true;
+        } elseif ($action === 'unsuspend') {
+            $this->unsuspendPost($postId);
+        } elseif ($action === 'delete') {
+            try {
+                $post = app(PostRepository::class)->findById($postId);
+                $this->authorize('delete', $post);
+                $this->postToDelete = $postId;
+                $this->showDeleteModal = true;
+            } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+                session()->flash('error', 'You are not authorized to delete this post.');
+            } catch (\Exception $e) {
+                session()->flash('error', 'Failed to load post. Please try again.');
+            }
+        }
+    }
+
     public function closeDeleteModal()
     {
         $this->showDeleteModal = false;
@@ -407,6 +438,19 @@ class Post extends Component
             session()->flash('error', 'Failed to unsuspend post. Please try again.');
             $this->closeAdminActionsModal();
         }
+    }
+
+    public function closeAdminActionsModal(): void
+    {
+        $this->showAdminActionsModal = false;
+        $this->adminActionType = '';
+        $this->adminActionPostId = null;
+        $this->postToDelete = null;
+        $this->postToSuspend = null;
+        $this->suspendReason = '';
+        $this->suspendExpiresAt = null;
+        $this->showSuspendModal = false;
+        $this->showDeleteModal = false;
     }
 
     public function addSpecialty(): void

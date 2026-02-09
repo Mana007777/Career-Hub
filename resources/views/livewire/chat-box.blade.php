@@ -13,8 +13,6 @@
             this.$watch('chatId', (newChatId) => {
                 if (newChatId && newChatId !== lastChatId) {
                     lastChatId = newChatId;
-                    console.log('🔄 Chat ID changed, setting up listener for:', newChatId);
-                    // Dispatch event for chat.js to set up Echo listener
                     window.dispatchEvent(new CustomEvent('chat-opened', {
                         detail: { chatId: newChatId }
                     }));
@@ -23,49 +21,28 @@
             
             // Listen for new messages via Echo/Reverb
             const messageHandler = (e) => {
-                console.log('📨 new-message event received:', e.detail);
-                console.log('📨 Full event:', e);
-                
                 const currentChatId = @this.get('chatId');
-                console.log('🔍 Current chatId from Livewire:', currentChatId);
-                console.log('🔍 Event chatId:', e.detail?.chatId);
-                console.log('🔍 Event message:', e.detail?.message);
                 
                 if (e.detail && e.detail.chatId == currentChatId) {
                     // Try to add message directly first
                     if (e.detail.message) {
-                        console.log('➕ Calling addMessage with:', e.detail.message);
                         @this.call('addMessage', e.detail.message)
-                            .then(() => {
-                                console.log('✅ addMessage call completed');
-                            })
                             .catch((error) => {
-                                console.error('❌ addMessage error:', error);
+                                console.error('addMessage error:', error);
                             });
                     } else {
-                        console.log('🔄 No message in detail, refreshing messages');
                         // Fallback to refresh
                         @this.call('refreshMessages');
                     }
-                } else {
-                    console.log('⚠️ Message chatId mismatch:', {
-                        'eventChatId': e.detail?.chatId,
-                        'currentChatId': currentChatId,
-                        'match': e.detail?.chatId == currentChatId
-                    });
                 }
             };
             
             // Listen for message status updates
             const statusHandler = (e) => {
                 if (e.detail && e.detail.messageId && e.detail.status) {
-                    console.log('📬 Message status update received:', e.detail);
                     @this.call('handleStatusUpdate', e.detail.messageId, e.detail.status)
-                        .then(() => {
-                            console.log('✅ Status update handled');
-                        })
                         .catch((error) => {
-                            console.error('❌ Status update error:', error);
+                            console.error('Status update error:', error);
                         });
                 }
             };
@@ -313,7 +290,6 @@
                                                         // Listen for status updates
                                                         const handler = (e) => {
                                                             if (e.detail && parseInt(e.detail.messageId) === {{ $messageId }}) {
-                                                                console.log('Alpine: Updating status for message {{ $messageId }} to', e.detail.status);
                                                                 this.status = e.detail.status;
                                                             }
                                                         };

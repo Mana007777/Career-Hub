@@ -15,7 +15,6 @@ function waitForEcho(callback) {
 function setupChatListener(chatId) {
     // Prevent duplicate subscriptions
     if (currentChatId === chatId && currentChatListener) {
-        console.log('⚠️ Already subscribed to chat:', chatId);
         return;
     }
     
@@ -29,36 +28,21 @@ function setupChatListener(chatId) {
                 } else if (typeof currentChatListener.stopListening === 'function') {
                     currentChatListener.stopListening('message.sent');
                 }
-            } catch (e) {
-                console.warn('Error cleaning up previous listener:', e);
+                } catch (e) {
+                // Ignore cleanup errors
             }
             currentChatListener = null;
             currentChatId = null;
         }
         
         if (chatId && window.Echo) {
-            console.log('Setting up Echo listener for chat:', chatId);
             currentChatId = chatId;
             
             currentChatListener = window.Echo.private(`chat.${chatId}`)
                 .listen('.message.sent', (e) => {
-                    console.log('✅ New message received via Echo:', e);
-                    console.log('📦 Full event object:', JSON.stringify(e, null, 2));
-                    console.log('📦 Event data structure:', {
-                        'e.chat_id': e.chat_id,
-                        'e.chatId': e.chatId,
-                        'e.id': e.id,
-                        'e.sender_id': e.sender_id,
-                        'e.message': e.message,
-                        'e.sender': e.sender,
-                        'e.created_at': e.created_at,
-                        'e.status': e.status
-                    });
-                    
                     // Check if data is nested (sometimes Echo wraps it)
                     let eventData = e;
                     if (e.data) {
-                        console.log('📦 Data is nested in e.data:', e.data);
                         eventData = e.data;
                     }
                     
@@ -76,16 +60,11 @@ function setupChatListener(chatId) {
                             created_at: eventData.created_at
                         }
                     };
-                    
-                    console.log('📤 Dispatching new-message event with data:', messageData);
                     window.dispatchEvent(new CustomEvent('new-message', {
                         detail: messageData
                     }));
                 })
                 .listen('.message.status.updated', (e) => {
-                    console.log('📬 Message status updated event received:', e);
-                    console.log('📬 Full event data:', JSON.stringify(e, null, 2));
-                    
                     // Handle nested data structure
                     let eventData = e;
                     if (e.data) {
@@ -94,23 +73,18 @@ function setupChatListener(chatId) {
                     
                     const messageId = eventData.message_id || eventData.messageId;
                     const status = eventData.status;
-                    
-                    console.log('📬 Extracted data:', { messageId, status });
-                    
                     if (messageId && status) {
                         updateMessageStatus(messageId, status);
                     } else {
-                        console.warn('⚠️ Missing message_id or status in event:', eventData);
+                        // Missing message_id or status in event; ignore
                     }
                 })
                 .subscribed(() => {
-                    console.log(`✅ Successfully subscribed to private channel: chat.${chatId}`);
+                    // Successfully subscribed to private channel
                 })
                 .error((error) => {
                     console.error('❌ Echo subscription error:', error);
                 });
-            
-            console.log(`🔌 Attempting to subscribe to private channel: chat.${chatId}`);
         }
     });
 }
@@ -120,10 +94,7 @@ window.addEventListener('chat-opened', function(event) {
     // Livewire 3 dispatches events with named parameters in event.detail
     const chatId = event.detail?.chatId || event.detail?.[0]?.chatId;
     if (chatId) {
-        console.log('📬 chat-opened event received, chatId:', chatId);
         setupChatListener(chatId);
-    } else {
-        console.warn('⚠️ chat-opened event received but no chatId found:', event.detail);
     }
 });
 
@@ -150,32 +121,24 @@ function setupPresenceListener() {
         if (window.presenceListener) {
             return; // Already set up
         }
-
-        console.log('Setting up presence listener...');
         
         window.presenceListener = window.Echo.join('presence.users')
             .here((users) => {
-                console.log('Users currently online:', users);
                 users.forEach(user => {
                     updateUserStatus(user.id, true);
                 });
             })
             .joining((user) => {
-                console.log('User came online:', user);
                 updateUserStatus(user.id, true);
             })
             .leaving((user) => {
-                console.log('User went offline:', user);
                 updateUserStatus(user.id, false);
             })
             .listen('.user.presence.changed', (e) => {
-                console.log('User presence changed:', e);
                 if (e.user_id) {
                     updateUserStatus(e.user_id, e.is_online);
                 }
             });
-        
-        console.log('✅ Presence listener set up');
     });
 }
 
@@ -204,17 +167,14 @@ function setupMessageStatusListener(chatId) {
         if (!chatId || !window.Echo) {
             return;
         }
-
+        
         const statusListenerKey = `status-${chatId}`;
         if (window[statusListenerKey]) {
             return; // Already listening
         }
-
-        console.log('Setting up message status listener for chat:', chatId);
         
         window[statusListenerKey] = window.Echo.private(`chat.${chatId}`)
             .listen('.message.status.updated', (e) => {
-                console.log('Message status updated:', e);
                 if (e.message_id && e.status) {
                     updateMessageStatus(e.message_id, e.status);
                 }
@@ -224,8 +184,7 @@ function setupMessageStatusListener(chatId) {
 
 // Update message status in the UI
 function updateMessageStatus(messageId, status) {
-    console.log(`🔄 Updating message ${messageId} status to ${status}`);
-    
+    // Dispatch event for Alpine/Livewire listeners
     // First, dispatch custom event for Alpine.js listeners
     window.dispatchEvent(new CustomEvent('message-status-updated', {
         detail: { messageId: parseInt(messageId), status }
@@ -236,7 +195,6 @@ function updateMessageStatus(messageId, status) {
     statusElements.forEach(element => {
         // Try Alpine.js data stack first
         if (element._x_dataStack && element._x_dataStack[0]) {
-            console.log(`✅ Updating Alpine.js status for message ${messageId}`);
             element._x_dataStack[0].status = status;
         } else {
             // Fallback: update text directly
@@ -263,16 +221,9 @@ function updateMessageStatus(messageId, status) {
             if (component && typeof component.call === 'function') {
                 try {
                     component.call('handleStatusUpdate', parseInt(messageId), status)
-                        .then(() => {
-                            console.log('✅ Livewire status update successful for message', messageId);
-                        })
-                        .catch((e) => {
-                            // Component might not have this method, that's okay
-                            console.log('Component does not have handleStatusUpdate method or error:', e);
-                        });
+                        .catch(() => {});
                 } catch (e) {
                     // Ignore errors
-                    console.log('Error calling Livewire method:', e);
                 }
             }
         }
@@ -281,7 +232,6 @@ function updateMessageStatus(messageId, status) {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Chat.js loaded, waiting for Echo...');
     setupPresenceListener();
 });
 

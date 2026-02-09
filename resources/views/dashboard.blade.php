@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="bg-transparent dark:text-white text-gray-900 min-h-screen">
         @livewire('search')
-        @livewire('notifications')
+        @livewire('user-notifications')
         @livewire('chat-box')
         @livewire('chat-list')
 

@@ -1,11 +1,14 @@
 <div 
     x-data="{ 
-        isOpen: @entangle('isOpen'),
+        isOpen: false,
         init() {
-            // Listen for browser event
             const openHandler = () => {
+                // Open on frontend and backend
+                this.isOpen = true;
                 @this.call('open');
             };
+
+            // Listen for browser event
             window.addEventListener('openChatList', openHandler);
             
             // Listen for Livewire event
@@ -31,9 +34,8 @@
     x-transition:leave="transition ease-in duration-200"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    @click.away="isOpen = false"
+    @click.away="isOpen = false; @this.call('close')"
     class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/50 bg-black/50 backdrop-blur-sm"
-    style="display: none;"
 >
     <div 
         @click.stop
@@ -50,6 +52,7 @@
             <h2 class="text-xl font-bold dark:text-white text-gray-900">Chats</h2>
             <button
                 wire:click="close"
+                @click="isOpen = false"
                 class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                 title="Close"
             >

@@ -458,7 +458,7 @@
                 : 0;
         @endphp
         <button 
-            wire:click="$dispatch('openNotifications')"
+            onclick="if (window.openNotifications) window.openNotifications()"
             data-tooltip-target="tooltip-notifications" 
             type="button"
             class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
@@ -522,12 +522,7 @@
             }
         @endphp
         <button 
-            onclick="
-                window.location.href = '{{ route('dashboard') }}';
-                setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('openChatList'));
-                }, 100);
-            "
+            onclick="window.location.href = '{{ route('dashboard') }}';"
             data-tooltip-target="tooltip-chat" 
             type="button"
             class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">

@@ -30,12 +30,11 @@ if (import.meta.env.VITE_REVERB_APP_KEY) {
     const pusher = window.Echo.connector.pusher;
     
     pusher.connection.bind('connected', () => {
-        console.log('✅ Echo connected to Reverb');
-        console.log('📍 Connection state:', pusher.connection.state);
+        // Echo connected to Reverb
     });
     
     pusher.connection.bind('disconnected', () => {
-        console.log('❌ Echo disconnected from Reverb');
+        // Echo disconnected from Reverb
     });
     
     pusher.connection.bind('error', (error) => {
@@ -43,7 +42,7 @@ if (import.meta.env.VITE_REVERB_APP_KEY) {
     });
     
     pusher.connection.bind('state_change', (states) => {
-        console.log('🔄 Connection state changed:', states.previous, '→', states.current);
+        // Connection state changed
     });
 } else {
     console.warn('⚠️ Reverb not configured. Set VITE_REVERB_APP_KEY in .env');
