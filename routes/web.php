@@ -6,6 +6,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Show suspended account notice (for users whose accounts are suspended)
+Route::get('/account/suspended', function () {
+    return view('auth.suspended');
+})->name('account.suspended');
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

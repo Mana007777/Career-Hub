@@ -296,6 +296,8 @@ class Settings extends Component
 
         return view('livewire.settings', [
             'reports' => $reports,
+            'suspendedUsers' => $suspendedUsers,
+            'suspendedPosts' => $suspendedPosts,
         ]);
     }
 }

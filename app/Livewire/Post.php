@@ -8,9 +8,9 @@ use App\Actions\Post\DeletePost;
 use App\Actions\Post\LikePost;
 use App\Actions\Post\UpdatePost;
 use App\Actions\User\FollowUser;
+use App\Models\UserNotification;
 use App\Livewire\Validations\StorePostValidation;
 use App\Livewire\Validations\UpdatePostValidation;
-use App\Livewire\Listeners\NotificationsUpdatedListener;
 use App\Livewire\Listeners\OpenCreatePostListener;
 use App\Livewire\Listeners\RefreshPostsListener;
 use App\Models\Post as PostModel;
@@ -69,7 +69,6 @@ class Post extends Component
 
     protected $listeners = [
         'refreshPosts' => 'handleRefreshPosts',
-        'notificationsUpdated' => 'handleNotificationsUpdated',
         'openCreatePost' => 'handleOpenCreatePost',
     ];
 
@@ -387,6 +386,9 @@ class Post extends Component
                 'expires_at' => $suspension->expires_at,
             ]);
 
+            // Clear cached detail data for this post so it stops showing on detail page
+            app(\App\Queries\PostQueries::class)->clearPostCache($post->id);
+
             // Log admin action
             \App\Models\AdminLog::create([
                 'admin_id' => Auth::id(),
@@ -394,6 +396,22 @@ class Post extends Component
                 'target_type' => \App\Models\Post::class,
                 'target_id' => $post->id,
             ]);
+
+            // Notify the post owner about the suspension (immediately, no queue required)
+            if ($post->user_id) {
+                UserNotification::create([
+                    'user_id' => $post->user_id,
+                    'source_user_id' => Auth::id(),
+                    'type' => 'post_suspended',
+                    'post_id' => $post->id,
+                    'message' => sprintf(
+                        'Your post "%s" has been suspended by an administrator. Reason: %s',
+                        $post->title ?: 'Post #' . $post->id,
+                        trim($this->suspendReason)
+                    ),
+                    'is_read' => false,
+                ]);
+            }
 
             session()->flash('success', 'Post suspended successfully!');
             $this->closeAdminActionsModal();
@@ -619,7 +637,12 @@ class Post extends Component
 
             session()->flash('success', 'Post created successfully!');
             $this->closeCreateForm();
+            
+            // Reset pagination to page 1 and force refresh to show new post at top
             $this->resetPage();
+            
+            // Force component re-render to fetch fresh data
+            $this->dispatch('$refresh');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to create post. Please try again.');
         }
@@ -787,11 +810,6 @@ class Post extends Component
         app(RefreshPostsListener::class)->handle($this);
     }
 
-    public function handleNotificationsUpdated(): void
-    {
-        app(NotificationsUpdatedListener::class)->handle($this);
-    }
-
     public function handleOpenCreatePost(): void
     {
         app(OpenCreatePostListener::class)->handle($this);
@@ -820,9 +838,9 @@ class Post extends Component
         ];
         
         $posts = match ($this->feedMode) {
-            'popular' => $postService->getPopularPosts(10, $filterParams),
-            'following' => $postService->getFollowingPosts(10, $filterParams),
-            default => $postService->getAllPosts(10, $filterParams),
+            'popular' => $postService->getPopularPosts(9, $filterParams),
+            'following' => $postService->getFollowingPosts(9, $filterParams),
+            default => $postService->getAllPosts(9, $filterParams),
         };
         
         // Get all available tags, specialties, and job types for filter dropdowns

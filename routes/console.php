@@ -78,3 +78,8 @@ Schedule::command('cleanup:admin-logs --days=90')
     ->monthly()
     ->at('03:00')
     ->description('Clean up old admin logs (monthly, keeps 90 days)');
+
+// Notify admins when suspensions reach their end time (runs every minute)
+Schedule::command('notify:expired-suspensions')
+    ->everyMinute()
+    ->description('Notify admins when user/post suspensions reach their end time');

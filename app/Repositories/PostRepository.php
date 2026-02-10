@@ -29,19 +29,11 @@ class PostRepository
             'tags',
             'suspension'
         ])
-        ->whereDoesntHave('suspension', function($q) {
-            $q->where(function($query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
-            });
-        })
+        // Hide any post that currently has a suspension record, regardless of expiry
+        ->whereDoesntHave('suspension')
+        // Also hide posts from users who are currently suspended
         ->whereHas('user', function($q) {
-            $q->whereDoesntHave('suspension', function($sq) {
-                $sq->where(function($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-            });
+            $q->whereDoesntHave('suspension');
         });
         
         // Filter out posts from blocked users (bidirectional blocking)
@@ -60,6 +52,8 @@ class PostRepository
             
             // Combine both arrays
             $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
+            // Never exclude the current user themselves so their own posts still show
+            $excludedIds = array_diff($excludedIds, [$userId]);
             
             if (!empty($excludedIds)) {
                 $query->whereNotIn('user_id', $excludedIds);
@@ -108,12 +102,7 @@ class PostRepository
     public function getByUserId(int $userId, int $perPage = 10): LengthAwarePaginator
     {
         return Post::where('user_id', $userId)
-            ->whereDoesntHave('suspension', function($q) {
-                $q->where(function($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-            })
+            ->whereDoesntHave('suspension')
             ->with([
                 'user',
                 'likes',

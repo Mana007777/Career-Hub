@@ -13,6 +13,7 @@ use App\Models\Comment;
 use App\Models\Post as PostModel;
 use App\Repositories\PostCvRepository;
 use App\Services\PostService;
+use App\Models\UserNotification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
@@ -418,6 +419,25 @@ class PostDetail extends Component
                 'reason' => $suspension->reason,
                 'expires_at' => $suspension->expires_at,
             ]);
+
+            // Clear cached detail data for this post so it stops showing on detail page
+            app(\App\Queries\PostQueries::class)->clearPostCache($this->post->id);
+
+            // Notify the post owner about the suspension (immediately, no queue required)
+            if ($this->post->user_id) {
+                UserNotification::create([
+                    'user_id' => $this->post->user_id,
+                    'source_user_id' => Auth::id(),
+                    'type' => 'post_suspended',
+                    'post_id' => $this->post->id,
+                    'message' => sprintf(
+                        'Your post "%s" has been suspended by an administrator. Reason: %s',
+                        $this->post->title ?: 'Post #' . $this->post->id,
+                        trim($this->suspendReason)
+                    ),
+                    'is_read' => false,
+                ]);
+            }
 
             // Log admin action
             \App\Models\AdminLog::create([

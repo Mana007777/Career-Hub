@@ -29,20 +29,30 @@ class CheckUserSuspension
             return $next($request);
         }
 
-        // Check if user is suspended
+        // Always ensure suspension relation is loaded so isSuspended() has fresh data
+        $user->loadMissing('suspension');
+
+        // Check if user is currently suspended (based on active suspension record)
         if ($user->isSuspended()) {
             // Allow logout and admin routes
             if ($request->routeIs('logout') || $request->is('admin/*')) {
                 return $next($request);
             }
 
-            // Logout the user and redirect with message
-            Auth::logout();
+            // Capture suspension info before logging out
+            $suspension = $user->suspension;
+
+            // Logout the user and reset session
+            // Use the web/session guard explicitly to avoid calling logout on request-based guards
+            Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login')
-                ->with('error', 'Your account has been suspended. Please contact support for more information.');
+            return redirect()->route('account.suspended')
+                ->with([
+                    'suspended_until' => $suspension?->expires_at,
+                    'suspension_reason' => $suspension?->reason,
+                ]);
         }
 
         return $next($request);

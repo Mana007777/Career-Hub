@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Livewire;
+
+use App\Models\Report;
+use App\Services\ChatService;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
+
+class BottomNavigation extends Component
+{
+    public int $totalUnreadMessages = 0;
+    public int $pendingReportsCount = 0;
+
+    protected $listeners = [
+        'unread-counts-updated' => 'loadData',
+    ];
+
+    public function mount(): void
+    {
+        $this->loadData();
+    }
+
+    public function loadData(): void
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            // Load unread chat messages count
+            $chatService = app(ChatService::class);
+            $this->totalUnreadMessages = $chatService->getTotalUnreadCount($user->id);
+
+            // Load pending reports count (admin only)
+            if ($user->isAdmin()) {
+                $this->pendingReportsCount = Report::where('status', 'pending')->count();
+            }
+        }
+    }
+
+    public function render()
+    {
+        return view('livewire.bottom-navigation');
+    }
+}

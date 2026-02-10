@@ -172,7 +172,10 @@
                                                     @foreach($post->specialties as $specialty)
                                                         @php
                                                             $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
-                                                            $subSpecialty = $subSpecialtyId ? \App\Models\SubSpecialty::find($subSpecialtyId) : null;
+                                                            // Use already-loaded subSpecialties collection instead of DB query
+                                                            $subSpecialty = $subSpecialtyId && $specialty->subSpecialties 
+                                                                ? $specialty->subSpecialties->firstWhere('id', $subSpecialtyId) 
+                                                                : null;
                                                         @endphp
                                                         @if($subSpecialty)
                                                             <span class="px-2 py-0.5 bg-blue-600/20 border border-blue-600/40 rounded-lg text-blue-300 text-xs">

@@ -323,10 +323,8 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        // Check if suspension has expired
+        // Consider suspension active only if it has no expiry or the expiry is in the future
         if ($this->suspension->expires_at && $this->suspension->expires_at->isPast()) {
-            // Auto-delete expired suspension
-            $this->suspension->delete();
             return false;
         }
 

@@ -36,19 +36,11 @@ class PostQueries
         $excludedIds = $userId ? $this->getExcludedUserIds($userId) : [];
 
         $queryBuilder = Post::with(['user', 'likes', 'stars', 'comments', 'specialties', 'tags', 'suspension'])
-            ->whereDoesntHave('suspension', function($q) {
-                $q->where(function($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-            })
+            // Hide any posts that currently have a suspension record
+            ->whereDoesntHave('suspension')
+            // And hide posts from users who are currently suspended
             ->whereHas('user', function($q) {
-                $q->whereDoesntHave('suspension', function($sq) {
-                    $sq->where(function($query) {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    });
-                });
+                $q->whereDoesntHave('suspension');
             })
             ->where(function($q) use ($searchTerm, $postIdsWithMatchingSubSpecialties, $hasTitleColumn) {
                 // Prefer searching by title when the column exists; fall back to content otherwise
@@ -108,19 +100,9 @@ class PostQueries
 
         $query = Post::whereIn('user_id', $followingIds)
             ->whereNotIn('user_id', $excludedIds)
-            ->whereDoesntHave('suspension', function($q) {
-                $q->where(function($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-            })
+            ->whereDoesntHave('suspension')
             ->whereHas('user', function($q) {
-                $q->whereDoesntHave('suspension', function($sq) {
-                    $sq->where(function($query) {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    });
-                });
+                $q->whereDoesntHave('suspension');
             })
             ->with([
                 'user',
@@ -169,19 +151,9 @@ class PostQueries
                 'tags',
                 'suspension'
             ])
-            ->whereDoesntHave('suspension', function($q) {
-                $q->where(function($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-            })
+            ->whereDoesntHave('suspension')
             ->whereHas('user', function($q) {
-                $q->whereDoesntHave('suspension', function($sq) {
-                    $sq->where(function($query) {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    });
-                });
+                $q->whereDoesntHave('suspension');
             })
             ->withCount(['likes', 'stars']);
         
@@ -283,12 +255,7 @@ class PostQueries
                         'tags',
                         'suspension',
                     ])
-                    ->whereDoesntHave('suspension', function($q) {
-                        $q->where(function($query) {
-                            $query->whereNull('expires_at')
-                                ->orWhere('expires_at', '>', now());
-                        });
-                    })
+                    ->whereDoesntHave('suspension')
                     ->find($id);
             }
         );
@@ -371,6 +338,8 @@ class PostQueries
     {
         $blockedIds = $this->getBlockedUserIds($userId);
         $blockedByIds = $this->getBlockedByUserIds($userId);
-        return array_unique(array_merge($blockedIds, $blockedByIds));
+        $excluded = array_unique(array_merge($blockedIds, $blockedByIds));
+        // Never exclude the current user so they can always see their own posts
+        return array_diff($excluded, [$userId]);
     }
 }
