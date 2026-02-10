@@ -1,5 +1,29 @@
-<div class="min-h-screen dark:text-white text-gray-900 pb-24" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
-    <div class="w-full px-0 sm:px-2 lg:px-0 py-4">
+<div
+    class="min-h-screen dark:text-white text-gray-900 pb-24"
+    x-data="{ loaded: false }"
+    x-init="
+        // Start in loading state
+        loaded = false;
+
+        const setLoaded = () => { loaded = true };
+        const setLoading = () => { loaded = false };
+
+        // When Livewire finishes initial load / navigation, show real content
+        document.addEventListener('livewire:load', setLoaded);
+        document.addEventListener('livewire:navigated', setLoaded);
+
+        // When Livewire starts navigating, show skeletons
+        document.addEventListener('livewire:navigating', setLoading);
+    "
+>
+    <!-- Skeleton while page / data is loading -->
+    <div x-show="!loaded">
+        <x-skeleton.post-list />
+    </div>
+
+    <!-- Actual content -->
+    <div x-show="loaded" x-cloak>
+        <div class="w-full px-0 sm:px-2 lg:px-0 py-4">
         <!-- Header -->
         <div 
             class="mb-8"
@@ -466,9 +490,18 @@
                                 </span>
                             </div>
                         @endif
-                        <p class="dark:text-gray-200 text-gray-700 leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
+                        <p class="dark:text-gray-200 text-gray-700 leading-relaxed whitespace-pre-wrap text-sm sm:text-base line-clamp-4">
                             {{ $post->content }}
                         </p>
+                        @if(\Illuminate\Support\Str::length($post->content) > 280)
+                            <button
+                                type="button"
+                                wire:click.stop="openInlinePostModal({{ $post->id }})"
+                                class="mt-2 text-sm font-medium dark:text-blue-400 text-blue-600 hover:underline"
+                            >
+                                See more
+                            </button>
+                        @endif
                     </div>
 
                     <!-- Post Media -->
@@ -968,6 +1001,98 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Inline Post Detail Modal (for "See more") -->
+    @if ($showInlinePostModal && $inlinePost)
+        <div class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity dark:bg-gray-900 bg-gray-900 bg-opacity-75" wire:click="closeInlinePostModal"></div>
+
+                <div class="inline-block align-bottom dark:bg-gray-900 bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border dark:border-gray-800 border-gray-200" wire:click.stop>
+                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-b dark:border-gray-800 border-gray-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
+                                @if($inlinePost->user && $inlinePost->user->profile_photo_path)
+                                    <img src="{{ $inlinePost->user->profile_photo_url }}" alt="{{ $inlinePost->user->name }}" class="w-full h-full object-cover">
+                                @else
+                                    <span class="dark:text-gray-300 text-gray-700 font-semibold">
+                                        {{ strtoupper(substr($inlinePost->user->name ?? 'U', 0, 1)) }}
+                                    </span>
+                                @endif
+                            </div>
+                            <div>
+                                <h3 class="text-base font-semibold dark:text-white text-gray-900">
+                                    {{ $inlinePost->title ?: 'Post by ' . ($inlinePost->user->name ?? 'Unknown User') }}
+                                </h3>
+                                <p class="text-xs dark:text-gray-400 text-gray-600">
+                                    {{ $inlinePost->created_at->format('F j, Y \a\t g:i A') }}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            wire:click="closeInlinePostModal"
+                            class="p-2 rounded-lg dark:text-gray-400 text-gray-600 hover:dark:bg-gray-800 hover:bg-gray-100 hover:text-gray-900 dark:hover:text-white transition-colors"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="dark:bg-gray-900 bg-white px-6 py-4 space-y-4">
+                        @if(!empty($inlinePost->title))
+                            <h2 class="text-xl font-bold dark:text-white text-gray-900">
+                                {{ $inlinePost->title }}
+                            </h2>
+                        @endif
+
+                        <p class="dark:text-gray-200 text-gray-700 leading-relaxed whitespace-pre-wrap">
+                            {{ $inlinePost->content }}
+                        </p>
+
+                        @if ($inlinePost->media)
+                            <div class="mt-4 rounded-lg overflow-hidden">
+                                @php
+                                    $mediaUrl = $this->getMediaUrl($inlinePost);
+                                    $isImage = in_array(strtolower(pathinfo($inlinePost->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
+                                @endphp
+                                @if ($isImage)
+                                    <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-auto rounded-lg">
+                                @else
+                                    <div class="dark:bg-gray-800 bg-gray-100 p-4 rounded-lg">
+                                        <a href="{{ $mediaUrl }}" target="_blank" class="flex items-center gap-2 dark:text-blue-400 text-blue-600 dark:hover:text-blue-300 hover:text-blue-700">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span>View attachment</span>
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-t dark:border-gray-800 border-gray-200 flex justify-end">
+                        <button
+                            type="button"
+                            wire:click="closeInlinePostModal"
+                            class="px-4 py-2 rounded-lg dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white transition-colors"
+                        >
+                            Close
+                        </button>
+                        <a
+                            href="{{ route('posts.show', $inlinePost->slug) }}"
+                            class="ml-3 px-4 py-2 rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white transition-colors"
+                            wire:click="closeInlinePostModal"
+                        >
+                            Open full page
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

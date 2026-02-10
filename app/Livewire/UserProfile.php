@@ -32,6 +32,9 @@ class UserProfile extends Component
     public $adminActionType = ''; // 'suspend', 'unsuspend', 'delete'
     public $suspendReason = '';
     public $suspendExpiresAt = null;
+    public $organizationMemberships = [];
+    public $pendingOrganizationInvitationId = null;
+    public bool $viewerCompanyAlreadyMember = false;
 
     public function mount(string $username, FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
@@ -66,6 +69,24 @@ class UserProfile extends Component
         $this->followersCount = $this->user->followers_count;
         $this->followingCount = $this->user->following_count;
         $this->postsCount = $this->user->posts_count;
+        
+        // Preload organizations the user belongs to
+        $this->user->loadMissing(['organizations']);
+        $this->organizationMemberships = $this->user->organizations;
+        
+        // Preload pending invitation for current viewer (if viewer is a company)
+        if (Auth::check() && Auth::user()->isCompany() && Auth::id() !== $this->user->id) {
+            $companyId = Auth::id();
+
+            // Check if this user is already a member of the viewer company
+            $this->viewerCompanyAlreadyMember = $this->organizationMemberships->contains('id', $companyId);
+
+            $pending = \App\Models\OrganizationMembership::where('company_id', $companyId)
+                ->where('user_id', $this->user->id)
+                ->where('status', 'pending')
+                ->first();
+            $this->pendingOrganizationInvitationId = $pending?->id;
+        }
     }
 
     public function toggleFollow(FollowUser $followUserAction): void
@@ -86,6 +107,161 @@ class UserProfile extends Component
             $this->followersCount = $this->user->followers_count;
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update follow status. Please try again.');
+        }
+    }
+
+    /**
+     * Company invites this user to join their organization.
+     */
+    public function inviteToOrganization(): void
+    {
+        if (!Auth::check() || !Auth::user()->isCompany()) {
+            session()->flash('error', 'Only company accounts can send organization invitations.');
+            return;
+        }
+
+        if (!$this->user) {
+            session()->flash('error', 'User not found.');
+            return;
+        }
+
+        if (Auth::id() === $this->user->id) {
+            session()->flash('error', 'You cannot invite yourself.');
+            return;
+        }
+
+        try {
+            $companyId = Auth::id();
+            $membership = \App\Models\OrganizationMembership::firstOrCreate(
+                [
+                    'company_id' => $companyId,
+                    'user_id' => $this->user->id,
+                ],
+                [
+                    'status' => 'pending',
+                    'invited_by' => $companyId,
+                ]
+            );
+
+            // If already accepted, do not change it or resend an invite
+            if ($membership->status === 'accepted') {
+                session()->flash('success', 'This user is already a member of your organization.');
+                $this->viewerCompanyAlreadyMember = true;
+                $this->pendingOrganizationInvitationId = null;
+                return;
+            }
+
+            // If it was previously rejected, reset to pending
+            if ($membership->status !== 'pending') {
+                $membership->status = 'pending';
+                $membership->invited_by = $companyId;
+                $membership->accepted_at = null;
+                $membership->rejected_at = null;
+                $membership->save();
+            }
+
+            $this->pendingOrganizationInvitationId = $membership->id;
+
+            // Notify the user about the invitation
+            \App\Models\UserNotification::create([
+                'user_id' => $this->user->id,
+                'source_user_id' => $companyId,
+                'type' => 'organization_invite',
+                'post_id' => null,
+                'message' => sprintf('%s has invited you to join their organization.', Auth::user()->name),
+                'is_read' => false,
+            ]);
+
+            session()->flash('success', 'Invitation sent successfully.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to send invitation: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * User accepts an organization invitation (from their own profile).
+     */
+    public function acceptOrganizationInvite(int $membershipId): void
+    {
+        if (!Auth::check() || !Auth::user()) {
+            session()->flash('error', 'You must be logged in to accept invitations.');
+            return;
+        }
+
+        try {
+            $membership = \App\Models\OrganizationMembership::where('id', $membershipId)
+                ->where('user_id', Auth::id())
+                ->where('status', 'pending')
+                ->firstOrFail();
+
+            $membership->status = 'accepted';
+            $membership->accepted_at = now();
+            $membership->rejected_at = null;
+            $membership->save();
+
+            // Refresh organizations on profile
+            $this->user->load('organizations');
+            $this->organizationMemberships = $this->user->organizations;
+
+            // Notify the company that user accepted
+            if ($membership->company_id) {
+                \App\Models\UserNotification::create([
+                    'user_id' => $membership->company_id,
+                    'source_user_id' => Auth::id(),
+                    'type' => 'organization_invite_accepted',
+                    'post_id' => null,
+                    'message' => sprintf('%s has accepted your organization invitation.', Auth::user()->name),
+                    'is_read' => false,
+                ]);
+            }
+
+            // Clear pending state for this viewer if relevant
+            if (Auth::user()->isCompany() && Auth::id() === $membership->company_id) {
+                $this->pendingOrganizationInvitationId = null;
+            }
+
+            session()->flash('success', 'Invitation accepted.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to accept invitation: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * User rejects an organization invitation.
+     */
+    public function rejectOrganizationInvite(int $membershipId): void
+    {
+        if (!Auth::check() || !Auth::user()) {
+            session()->flash('error', 'You must be logged in to reject invitations.');
+            return;
+        }
+
+        try {
+            $membership = \App\Models\OrganizationMembership::where('id', $membershipId)
+                ->where('user_id', Auth::id())
+                ->where('status', 'pending')
+                ->firstOrFail();
+
+            $membership->status = 'rejected';
+            $membership->rejected_at = now();
+            $membership->accepted_at = null;
+            $membership->save();
+
+            // Optionally notify the company
+            if ($membership->company_id) {
+                \App\Models\UserNotification::create([
+                    'user_id' => $membership->company_id,
+                    'source_user_id' => Auth::id(),
+                    'type' => 'organization_invite_rejected',
+                    'post_id' => null,
+                    'message' => sprintf('%s has declined your organization invitation.', Auth::user()->name),
+                    'is_read' => false,
+                ]);
+            }
+
+            session()->flash('success', 'Invitation rejected.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to reject invitation: ' . $e->getMessage());
         }
     }
 

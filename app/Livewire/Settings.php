@@ -189,11 +189,36 @@ class Settings extends Component
             
             session()->flash('success', 'Theme preference updated successfully!');
             
-            // Dispatch browser event to update theme immediately
+            // Dispatch browser event so any listeners can react
             $this->dispatch('theme-updated', theme: $this->themePreference);
             
-            // Also dispatch a JavaScript event for immediate update
-            $this->js("window.dispatchEvent(new CustomEvent('theme-updated', { detail: { theme: '{$this->themePreference}' } }))");
+            // Ensure the browser theme updates immediately and consistently
+            $theme = $this->themePreference;
+
+            // 1) Call the global themeManager directly if it's available
+            $this->js("
+                try {
+                    if (window.themeManager && typeof window.themeManager.updateTheme === 'function') {
+                        window.themeManager.updateTheme('{$theme}');
+                    } else {
+                        window.dispatchEvent(new CustomEvent('theme-updated', { detail: { theme: '{$theme}' } }));
+                    }
+                } catch (e) {
+                    window.dispatchEvent(new CustomEvent('theme-updated', { detail: { theme: '{$theme}' } }));
+                }
+            ");
+
+            // 2) Keep the meta tag in sync so future full reloads start with the right theme
+            $this->js("
+                (function () {
+                    try {
+                        var meta = document.querySelector('meta[name=\"theme-preference\"]');
+                        if (meta) {
+                            meta.setAttribute('content', '{$theme}');
+                        }
+                    } catch (e) {}
+                })();
+            ");
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update theme preference: ' . $e->getMessage());
         }

@@ -74,6 +74,14 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    /**
+     * Simple helper to check if user is a company account.
+     */
+    public function isCompany(): bool
+    {
+        return $this->role === 'company';
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
@@ -282,6 +290,48 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sourceNotifications()
     {
         return $this->hasMany(UserNotification::class, 'source_user_id');
+    }
+
+    /**
+     * Organizations (companies) this user is a member of.
+     */
+    public function organizations()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'organization_memberships',
+            'user_id',
+            'company_id'
+        )->withPivot(['status', 'invited_by', 'accepted_at', 'rejected_at'])
+         ->wherePivot('status', 'accepted');
+    }
+
+    /**
+     * Pending organization invitations for this user.
+     */
+    public function organizationInvitations()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'organization_memberships',
+            'user_id',
+            'company_id'
+        )->withPivot(['status', 'invited_by', 'accepted_at', 'rejected_at'])
+         ->wherePivot('status', 'pending');
+    }
+
+    /**
+     * Members (users) of this company account.
+     */
+    public function organizationMembers()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'organization_memberships',
+            'company_id',
+            'user_id'
+        )->withPivot(['status', 'invited_by', 'accepted_at', 'rejected_at'])
+         ->wherePivot('status', 'accepted');
     }
 
     /**

@@ -13,6 +13,42 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
+        <style>[x-cloak]{display:none !important}</style>
+
+        <!-- Inline theme bootstrapping to avoid light flash before JS loads -->
+        <script>
+            (function () {
+                try {
+                    var html = document.documentElement;
+                    var meta = document.querySelector('meta[name="theme-preference"]');
+                    var preference = meta ? (meta.getAttribute('content') || 'system') : 'system';
+
+                    if (!meta) {
+                        try {
+                            var stored = localStorage.getItem('theme-preference');
+                            if (stored) preference = stored;
+                        } catch (e) {}
+                    }
+
+                    var effectiveTheme = preference;
+                    if (preference === 'system') {
+                        var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        effectiveTheme = isDark ? 'dark' : 'light';
+                    }
+
+                    if (effectiveTheme === 'dark') {
+                        html.classList.add('dark');
+                        html.classList.remove('light');
+                    } else {
+                        html.classList.add('light');
+                        html.classList.remove('dark');
+                    }
+                } catch (e) {
+                    // Fail silently - main theme.js will handle it later
+                }
+            })();
+        </script>
+
         @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/chat.js'])
 
         <!-- Styles -->

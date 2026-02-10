@@ -138,10 +138,12 @@
                                         <p class="text-sm text-gray-900 dark:text-white">
                                             {{ $notification->message }}
                                         </p>
-                                        <div class="flex items-center gap-2 mt-2">
+                                        <div class="flex items-center gap-2 mt-2 flex-wrap">
                                             <span class="text-xs text-gray-500 dark:text-gray-400">
                                                 {{ $notification->created_at->diffForHumans() }}
                                             </span>
+
+                                            {{-- Post-related notifications --}}
                                             @if($notification->post)
                                                 <a 
                                                     href="{{ route('posts.show', $notification->post->slug) }}"
@@ -149,6 +151,28 @@
                                                     @click="show = false"
                                                 >
                                                     View post →
+                                                </a>
+                                            @endif
+
+                                            {{-- Organization invite for the current user --}}
+                                            @if($notification->type === 'organization_invite' && auth()->check() && auth()->id() === $notification->user_id)
+                                                <a
+                                                    href="{{ route('user.profile', auth()->user()->username ?? 'me') }}"
+                                                    class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
+                                                    @click="show = false"
+                                                >
+                                                    Review invitation →
+                                                </a>
+                                            @endif
+
+                                            {{-- Organization invite accepted / rejected (for company side) --}}
+                                            @if(in_array($notification->type, ['organization_invite_accepted', 'organization_invite_rejected']) && $notification->sourceUser)
+                                                <a
+                                                    href="{{ route('user.profile', $notification->sourceUser->username ?? 'unknown') }}"
+                                                    class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                                                    @click="show = false"
+                                                >
+                                                    View profile →
                                                 </a>
                                             @endif
                                         </div>

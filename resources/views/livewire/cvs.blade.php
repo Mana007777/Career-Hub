@@ -1,5 +1,24 @@
-<div class="min-h-screen dark:text-white text-gray-900 pb-24" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
-    <div class="max-w-4xl mx-auto px-4 py-8">
+<div
+    class="min-h-screen dark:text-white text-gray-900 pb-24"
+    x-data="{ loaded: false }"
+    x-init="
+        loaded = false;
+
+        const setLoaded = () => { loaded = true };
+        const setLoading = () => { loaded = false };
+
+        document.addEventListener('livewire:load', setLoaded);
+        document.addEventListener('livewire:navigated', setLoaded);
+        document.addEventListener('livewire:navigating', setLoading);
+    "
+>
+    <!-- Skeleton while CVs are loading -->
+    <div x-show="!loaded">
+        <x-skeleton.page-cards />
+    </div>
+
+    <!-- Actual content -->
+    <div class="max-w-4xl mx-auto px-4 py-8" x-show="loaded" x-cloak>
         <!-- Back Button -->
         <div 
             class="mb-6"

@@ -1,5 +1,24 @@
-<div class="min-h-screen dark:text-white text-gray-900 pb-24">
-    <div class="w-full px-0 sm:px-2 lg:px-0 py-4">
+<div
+    class="min-h-screen dark:text-white text-gray-900 pb-24"
+    x-data="{ loaded: false }"
+    x-init="
+        loaded = false;
+
+        const setLoaded = () => { loaded = true };
+        const setLoading = () => { loaded = false };
+
+        document.addEventListener('livewire:load', setLoaded);
+        document.addEventListener('livewire:navigated', setLoaded);
+        document.addEventListener('livewire:navigating', setLoading);
+    "
+>
+    <!-- Skeleton while saved posts are loading -->
+    <div x-show="!loaded">
+        <x-skeleton.page-cards />
+    </div>
+
+    <!-- Actual content -->
+    <div class="w-full px-0 sm:px-2 lg:px-0 py-4" x-show="loaded" x-cloak>
         <!-- Back Button -->
         <div class="mb-6">
             <button 

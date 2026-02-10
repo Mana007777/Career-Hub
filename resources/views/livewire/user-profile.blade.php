@@ -102,30 +102,53 @@
                             </div>
 
                             <!-- Stats -->
-                            <div class="flex gap-6 mb-2">
-                                <div>
+                            <div class="flex flex-wrap items-start gap-8 mb-3">
+                                <div class="flex flex-col gap-1 min-w-[60px]">
                                     <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Posts</span>
                                     <p class="dark:text-white text-gray-900 font-semibold">{{ $postsCount }}</p>
                                 </div>
                                 <button 
                                     type="button"
                                     wire:click="openFollowersModal"
-                                    class="text-left hover:opacity-80 transition-opacity">
+                                    class="text-left hover:opacity-80 transition-opacity flex flex-col gap-1 min-w-[80px]">
                                     <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Followers</span>
                                     <p class="dark:text-white text-gray-900 font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followersCount }}</p>
                                 </button>
                                 <button 
                                     type="button"
                                     wire:click="openFollowingModal"
-                                    class="text-left hover:opacity-80 transition-opacity">
+                                    class="text-left hover:opacity-80 transition-opacity flex flex-col gap-1 min-w-[80px]">
                                     <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Following</span>
                                     <p class="dark:text-white text-gray-900 font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followingCount }}</p>
                                 </button>
+                                
+                                <!-- Organizations the user works in -->
+                                @if($organizationMemberships && count($organizationMemberships) > 0)
+                                    <div class="flex flex-col gap-1 min-w-[120px]">
+                                        <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Organizations</span>
+                                        <div class="flex flex-wrap items-center gap-2 mt-1">
+                                            @foreach($organizationMemberships as $org)
+                                                <a
+                                                    href="{{ route('user.profile', $org->username ?? 'unknown') }}"
+                                                    class="w-8 h-8 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition"
+                                                >
+                                                    @if($org->profile_photo_path)
+                                                        <img src="{{ $org->profile_photo_url }}" alt="{{ $org->name ?? $org->username }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        <span class="text-xs font-semibold dark:text-gray-300 text-gray-700">
+                                                            {{ strtoupper(substr($org->name ?? $org->username ?? 'C', 0, 1)) }}
+                                                        </span>
+                                                    @endif
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3">
-                            <!-- Follow/Unfollow and Block/Unblock Buttons for other users -->
+                        <div class="flex items-center gap-3" x-data="{ openOptions: false }">
+                            <!-- Follow/Unfollow + options for other users -->
                             @if(Auth::check() && Auth::id() !== $user->id)
                                 @if($isBlocked)
                                     <!-- Show blocked message when current user has blocked this user -->
@@ -143,6 +166,7 @@
                                         Unblock
                                     </button>
                                 @else
+                                    <!-- Follow / Unfollow primary button -->
                                     <button 
                                         wire:click="toggleFollow"
                                         class="px-6 py-2 rounded-lg font-medium transition-colors
@@ -157,12 +181,88 @@
                                             Follow
                                         @endif
                                     </button>
-                                    <button 
-                                        wire:click="toggleBlock"
-                                        wire:confirm="Are you sure you want to block this user? You won't be able to see their posts or profile."
-                                        class="px-6 py-2 rounded-lg font-medium transition-colors bg-red-600 hover:bg-red-700 text-white">
-                                        Block
-                                    </button>
+
+                                    <!-- More options dropdown (Block, Invite, Report, etc.) -->
+                                    <div class="relative">
+                                        <button
+                                            type="button"
+                                            @click="openOptions = !openOptions"
+                                            class="inline-flex items-center justify-center w-10 h-10 rounded-lg dark:bg-gray-800 bg-gray-200 dark:hover:bg-gray-700 hover:bg-gray-300 dark:text-gray-200 text-gray-800 transition-colors"
+                                            title="More options"
+                                        >
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01" />
+                                            </svg>
+                                        </button>
+
+                                        <div
+                                            x-show="openOptions"
+                                            @click.away="openOptions = false"
+                                            x-transition:enter="transition ease-out duration-100"
+                                            x-transition:enter-start="opacity-0 scale-95"
+                                            x-transition:enter-end="opacity-100 scale-100"
+                                            x-transition:leave="transition ease-in duration-75"
+                                            x-transition:leave-start="opacity-100 scale-100"
+                                            x-transition:leave-end="opacity-0 scale-95"
+                                            class="absolute right-0 mt-2 w-56 dark:bg-gray-900 bg-white border dark:border-gray-700 border-gray-200 rounded-lg shadow-lg z-40"
+                                            style="display: none;"
+                                        >
+                                            <!-- Block -->
+                                            <button
+                                                type="button"
+                                                wire:click="toggleBlock"
+                                                wire:confirm="Are you sure you want to block this user? You won't be able to see their posts or profile."
+                                                class="w-full flex items-center gap-2 px-4 py-2 text-sm dark:text-red-400 text-red-600 hover:dark:bg-gray-800 hover:bg-gray-50 transition-colors"
+                                                @click="openOptions = false"
+                                            >
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                                </svg>
+                                                <span>Block user</span>
+                                            </button>
+
+                                            <!-- Company: Invite to organization (only if user is not already in viewer's org) -->
+                                            @if(Auth::user()->isCompany() && !$viewerCompanyAlreadyMember)
+                                                <button
+                                                    type="button"
+                                                    wire:click="inviteToOrganization"
+                                                    @if($pendingOrganizationInvitationId) disabled @endif
+                                                    class="w-full flex items-center gap-2 px-4 py-2 text-sm
+                                                        @if($pendingOrganizationInvitationId)
+                                                            dark:text-gray-500 text-gray-400 cursor-not-allowed
+                                                        @else
+                                                            dark:text-emerald-400 text-emerald-600 hover:dark:bg-gray-800 hover:bg-gray-50
+                                                        @endif
+                                                        transition-colors"
+                                                    @click="openOptions = false"
+                                                >
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                                    </svg>
+                                                    @if($pendingOrganizationInvitationId)
+                                                        <span>Invitation sent</span>
+                                                    @else
+                                                        <span>Invite to organization</span>
+                                                    @endif
+                                                </button>
+                                            @endif
+
+                                            <!-- Report -->
+                                            @if(!Auth::user()->isAdmin())
+                                                <button
+                                                    type="button"
+                                                    onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: {{ $user->id }} } }));"
+                                                    class="w-full flex items-center gap-2 px-4 py-2 text-sm dark:text-orange-300 text-orange-700 hover:dark:bg-gray-800 hover:bg-gray-50 transition-colors"
+                                                    @click="openOptions = false"
+                                                >
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                    <span>Report user</span>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
                                 @endif
                             @endif
 
@@ -251,19 +351,6 @@
                                     </div>
                                 </div>
                             @endif
-                            
-                            {{-- Report User Button (Visible to all users except themselves and admins) --}}
-                            @if(Auth::check() && Auth::id() !== $user->id && !Auth::user()->isAdmin())
-                                <button 
-                                    onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: {{ $user->id }} } }));"
-                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg dark:bg-orange-600/20 bg-orange-100 dark:text-orange-400 text-orange-700 dark:hover:bg-orange-600/30 hover:bg-orange-200 dark:border-orange-600/50 border-orange-300 border transition-colors"
-                                    title="Report User">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                    </svg>
-                                    <span>Report</span>
-                                </button>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -280,6 +367,56 @@
                 <p class="text-sm text-gray-500">You cannot see this user's posts or interact with them.</p>
             </div>
         @else
+            {{-- Pending organization invites for the authenticated user (on own profile) --}}
+            @if(Auth::check() && Auth::id() === $user->id && $user->organizationInvitations && $user->organizationInvitations->count() > 0)
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Organization Invitations</h2>
+                    <div class="space-y-3">
+                        @foreach($user->organizationInvitations as $invite)
+                            @php
+                                $membership = \App\Models\OrganizationMembership::where('company_id', $invite->id)
+                                    ->where('user_id', $user->id)
+                                    ->where('status', 'pending')
+                                    ->first();
+                            @endphp
+                            @if($membership)
+                                <div class="flex items-center justify-between px-4 py-3 rounded-lg dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-xs font-semibold dark:text-gray-300 text-gray-700">
+                                            {{ strtoupper(substr($invite->name ?? $invite->username ?? 'C', 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm dark:text-white text-gray-900 font-medium">
+                                                {{ $invite->name ?? $invite->username }}
+                                            </p>
+                                            <p class="text-xs dark:text-gray-400 text-gray-600">
+                                                invited you to join their organization
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            wire:click="acceptOrganizationInvite({{ $membership->id }})"
+                                            class="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+                                        >
+                                            Accept
+                                        </button>
+                                        <button
+                                            type="button"
+                                            wire:click="rejectOrganizationInvite({{ $membership->id }})"
+                                            class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-700 hover:bg-gray-800 text-white transition-colors"
+                                        >
+                                            Decline
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <div class="mb-6">
                 <h2 class="text-xl font-bold dark:text-white text-gray-900 mb-4">Posts</h2>
                 

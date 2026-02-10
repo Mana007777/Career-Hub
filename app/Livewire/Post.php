@@ -61,6 +61,8 @@ class Post extends Component
     public $suspendExpiresAt = null;
     public $feedMode = 'new'; // new, popular, following
     public array $savedPostIds = [];
+    public $showInlinePostModal = false;
+    public ?PostModel $inlinePost = null;
     
     // Filter properties
     public $sortOrder = 'desc'; // desc, asc
@@ -817,6 +819,31 @@ class Post extends Component
         $this->subSpecialtyName = '';
         $this->tags = [];
         $this->tagName = '';
+    }
+
+    public function openInlinePostModal(int $postId, PostRepository $postRepository): void
+    {
+        try {
+            $post = $postRepository->findById($postId);
+            if (! $post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
+
+            // Eager load relationships we might show in the modal
+            $post->loadMissing(['user', 'specialties.subSpecialties', 'tags']);
+
+            $this->inlinePost = $post;
+            $this->showInlinePostModal = true;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to open post. Please try again.');
+        }
+    }
+
+    public function closeInlinePostModal(): void
+    {
+        $this->showInlinePostModal = false;
+        $this->inlinePost = null;
     }
 
     public function render(PostService $postService): View
