@@ -74,13 +74,17 @@
                 </div>
             @endif
 
-            <div class="mt-6">
+            <div class="mt-6 space-y-3">
                 <x-button class="w-full justify-center">
                     {{ __('Create Account') }}
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                 </x-button>
+
+                @if (config('services.github.client_id') && config('services.github.client_secret'))
+                    <livewire:auth.github-login />
+                @endif
             </div>
 
             <div class="mt-6 text-center">

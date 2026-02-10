@@ -47,6 +47,9 @@ Route::middleware([
     })->name('bookmarks');
 });
 
+// GitHub OAuth (manual, without Socialite) using Livewire components
+Route::get('/auth/github/callback', \App\Livewire\Auth\GithubCallback::class)->name('auth.github.callback');
+
 // Development helper: Quick user switch for testing
 if (app()->environment('local')) {
     Route::get('/test/login-as/{userId}', function ($userId) {
