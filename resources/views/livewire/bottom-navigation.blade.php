@@ -13,11 +13,6 @@
             Home
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
-        @php
-            $unreadNotifications = auth()->check()
-                ? auth()->user()->notificationsCustom()->where('is_read', false)->count()
-                : 0;
-        @endphp
         <button 
             onclick="if (window.openNotifications) window.openNotifications()"
             data-tooltip-target="tooltip-notifications" 

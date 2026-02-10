@@ -504,28 +504,7 @@
                         @endif
                     </div>
 
-                    <!-- Post Media -->
-                    @if ($post->media)
-                        <div class="mb-4 rounded-lg overflow-hidden">
-                            @php
-                                $mediaUrl = $this->getMediaUrl($post);
-                                $isImage = in_array(strtolower(pathinfo($post->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
-                            @endphp
-                            
-                            @if ($isImage)
-                                <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-auto rounded-lg">
-                            @else
-                                <div class="dark:bg-gray-800 bg-gray-100 p-4 rounded-lg">
-                                    <a href="{{ $mediaUrl }}" target="_blank" class="flex items-center gap-2 dark:text-blue-400 text-blue-600 dark:hover:text-blue-300 hover:text-blue-700">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                                        </svg>
-                                        <span>View Video</span>
-                                    </a>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
+                    <!-- Post Media hidden on feed; shown only in modal / post detail -->
 
                     <!-- Post Specialties -->
                     @if($post->specialties && $post->specialties->count() > 0)

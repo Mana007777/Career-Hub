@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Report;
 use App\Services\ChatService;
+use App\Repositories\NotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -12,9 +13,11 @@ class BottomNavigation extends Component
     public int $totalUnreadMessages = 0;
     public int $pendingReportsCount = 0;
     public int $savedPostsCount = 0;
+    public int $unreadNotifications = 0;
 
     protected $listeners = [
         'unread-counts-updated' => 'loadData',
+        'notificationsUpdated' => 'loadData',
     ];
 
     public function mount(): void
@@ -22,7 +25,7 @@ class BottomNavigation extends Component
         $this->loadData();
     }
 
-    public function loadData(): void
+    public function loadData(NotificationRepository $notificationRepository = null): void
     {
         $user = Auth::user();
 
@@ -40,6 +43,10 @@ class BottomNavigation extends Component
             if ($user->isAdmin()) {
                 $this->pendingReportsCount = Report::where('status', 'pending')->count();
             }
+
+            // Load unread notifications count
+            $notificationRepository = $notificationRepository ?? app(NotificationRepository::class);
+            $this->unreadNotifications = $notificationRepository->getUnreadCount($user->id);
         }
     }
 
