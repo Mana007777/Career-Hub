@@ -91,8 +91,12 @@
                                     <div class="flex items-start gap-3">
                                         <div class="relative flex-shrink-0">
                                             <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
-                                                <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-sm font-semibold text-gray-100">
-                                                    {{ strtoupper(substr($fromUser->name ?? 'U', 0, 1)) }}
+                                                <div class="w-full h-full rounded-full overflow-hidden bg-gray-900 flex items-center justify-center text-sm font-semibold text-gray-100">
+                                                    @if($fromUser->profile_photo_path)
+                                                        <img src="{{ $fromUser->profile_photo_url }}" alt="{{ $fromUser->name }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        {{ strtoupper(substr($fromUser->name ?? 'U', 0, 1)) }}
+                                                    @endif
                                                 </div>
                                             </div>
                                             <span 
@@ -165,12 +169,17 @@
                         >
                             <button
                                 wire:click="openChat({{ $otherUser->id }})"
+                                @click="isOpen = false"
                                 class="w-full flex items-center gap-3 px-6 py-4 hover:bg-gray-800/50 transition-all duration-300 transform hover:scale-[1.02] text-left group"
                             >
                                 <div class="relative flex-shrink-0">
                                     <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
-                                        <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-lg font-semibold text-gray-100">
-                                            {{ strtoupper(substr($otherUser->name ?? 'U', 0, 1)) }}
+                                        <div class="w-full h-full rounded-full overflow-hidden bg-gray-900 flex items-center justify-center text-lg font-semibold text-gray-100">
+                                            @if($otherUser->profile_photo_path)
+                                                <img src="{{ $otherUser->profile_photo_url }}" alt="{{ $otherUser->name }}" class="w-full h-full object-cover">
+                                            @else
+                                                {{ strtoupper(substr($otherUser->name ?? 'U', 0, 1)) }}
+                                            @endif
                                         </div>
                                     </div>
                                     <span 

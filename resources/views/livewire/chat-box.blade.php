@@ -133,17 +133,21 @@
                 x-transition:enter-end="opacity-100 transform translate-y-0"
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 transform translate-y-0"
-                x-transition:leave-end="opacity-0 transform translate-y-4"
+                x-transition:leave-end="opacity-0 translate-y-4"
                 class="fixed bottom-4 right-4 z-50 w-96 dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg shadow-2xl flex flex-col"
-                style="height: 500px;"
+                x-bind:style="isMinimized ? 'height: 56px;' : 'height: 500px;'"
             >
             <!-- Chat Header -->
             <div class="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700 rounded-t-lg">
                 <div class="flex items-center gap-3 flex-1 min-w-0">
                     <div class="relative flex-shrink-0">
                         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
-                            <div class="w-full h-full rounded-full dark:bg-gray-900 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-100 text-gray-900">
-                                {{ strtoupper(substr($otherUser->name ?? 'U', 0, 1)) }}
+                            <div class="w-full h-full rounded-full overflow-hidden dark:bg-gray-900 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-100 text-gray-900">
+                                @if($otherUser && $otherUser->profile_photo_path)
+                                    <img src="{{ $otherUser->profile_photo_url }}" alt="{{ $otherUser->name }}" class="w-full h-full object-cover">
+                                @else
+                                    {{ strtoupper(substr($otherUser->name ?? 'U', 0, 1)) }}
+                                @endif
                             </div>
                         </div>
                         <span 
@@ -263,6 +267,7 @@
                             $createdAt = is_object($message) ? ($message->created_at ?? null) : ($message['created_at'] ?? null);
                             $status = is_object($message) ? ($message->status ?? 'sent') : ($message['status'] ?? 'sent');
                             $sender = is_object($message) ? ($message->sender ?? null) : ($message['sender'] ?? null);
+                            $attachments = is_object($message) ? ($message->attachments ?? collect()) : collect($message['attachments'] ?? []);
                         @endphp
                         <div class="flex {{ $senderId === auth()->id() ? 'justify-end' : 'justify-start' }}">
                             <div class="flex items-start gap-2 max-w-[75%] {{ $senderId === auth()->id() ? 'flex-row-reverse' : 'flex-row' }}">
@@ -275,7 +280,32 @@
                                 @endif
                                 <div class="flex flex-col {{ $senderId === auth()->id() ? 'items-end' : 'items-start' }}">
                                     <div class="px-4 py-2 rounded-2xl {{ $senderId === auth()->id() ? 'bg-blue-600 text-white rounded-br-sm' : 'dark:bg-gray-800 bg-gray-200 dark:text-gray-100 text-gray-900 rounded-bl-sm' }}">
-                                        <p class="text-sm whitespace-pre-wrap break-words">{{ $messageText }}</p>
+                                        @if($messageText !== '')
+                                            <p class="text-sm whitespace-pre-wrap break-words">{{ $messageText }}</p>
+                                        @endif
+                                        @if($attachments && count($attachments) > 0)
+                                            <div class="mt-2 space-y-1">
+                                                @foreach($attachments as $attachment)
+                                                    @php
+                                                        $fileUrl = is_object($attachment) ? $attachment->file_url : ($attachment['file_url'] ?? '');
+                                                        $fileType = is_object($attachment) ? $attachment->file_type : ($attachment['file_type'] ?? '');
+                                                        $isImage = str_starts_with($fileType, 'image/');
+                                                    @endphp
+                                                    @if($fileUrl)
+                                                        @if($isImage)
+                                                            <img src="{{ $fileUrl }}" alt="Attachment" class="max-w-xs rounded-lg border dark:border-gray-700 border-gray-300">
+                                                        @else
+                                                            <a href="{{ $fileUrl }}" target="_blank" class="inline-flex items-center gap-2 text-xs underline dark:text-blue-300 text-blue-600">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.415-6.586a4 4 0 00-5.657-5.657l-6.586 6.586a6 6 0 108.486 8.486L20.5 13"></path>
+                                                                </svg>
+                                                                <span>Open attachment</span>
+                                                            </a>
+                                                        @endif
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="flex items-center gap-1 mt-1 px-1">
                                         <span class="text-xs dark:text-gray-500 text-gray-600">
@@ -356,6 +386,22 @@
                                     $el.style.height = Math.min($el.scrollHeight, 120) + 'px';
                                 "
                             ></textarea>
+                            <div class="mt-2 flex items-center gap-2 text-xs dark:text-gray-400 text-gray-600">
+                                <label class="inline-flex items-center gap-1 cursor-pointer">
+                                    <input
+                                        type="file"
+                                        wire:model="attachment"
+                                        class="hidden"
+                                    >
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full dark:bg-gray-900 bg-white border dark:border-gray-700 border-gray-300">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.415-6.586a4 4 0 00-5.657-5.657l-6.586 6.586a6 6 0 108.486 8.486L20.5 13"></path>
+                                        </svg>
+                                    </span>
+                                    <span>Attach</span>
+                                </label>
+                                <div wire:loading wire:target="attachment" class="text-xs">Uploading...</div>
+                            </div>
                         </div>
                         <button
                             type="submit"

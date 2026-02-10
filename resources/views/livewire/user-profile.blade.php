@@ -41,8 +41,12 @@
         >
             <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <!-- Profile Photo/Avatar -->
-                <div class="w-24 h-24 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-3xl font-bold dark:text-gray-300 text-gray-700">
-                    {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                <div class="w-24 h-24 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-3xl font-bold dark:text-gray-300 text-gray-700">
+                    @if($user && $user->profile_photo_path)
+                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                    @else
+                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                    @endif
                 </div>
 
                 <!-- User Info -->
@@ -297,10 +301,14 @@
                         <!-- Post Header -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
-                                    <span class="dark:text-gray-300 text-gray-700 font-semibold">
-                                        {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
-                                    </span>
+                                <div class="w-10 h-10 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
+                                    @if($post->user && $post->user->profile_photo_path)
+                                        <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <span class="dark:text-gray-300 text-gray-700 font-semibold">
+                                            {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
+                                        </span>
+                                    @endif
                                 </div>
                                 <div>
                                     <h3 class="font-semibold dark:text-white text-gray-900">{{ $post->user->name ?? 'Unknown User' }}</h3>
@@ -433,8 +441,12 @@
                             <a 
                                 href="{{ route('user.profile', $follower->username ?? 'unknown') }}"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg dark:hover:bg-gray-800/80 hover:bg-gray-100 transition-colors group">
-                                <div class="w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-300 text-gray-700 flex-shrink-0">
-                                    {{ strtoupper(substr($follower->name ?? 'U', 0, 1)) }}
+                                <div class="w-12 h-12 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-300 text-gray-700 flex-shrink-0">
+                                    @if($follower->profile_photo_path)
+                                        <img src="{{ $follower->profile_photo_url }}" alt="{{ $follower->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        {{ strtoupper(substr($follower->name ?? 'U', 0, 1)) }}
+                                    @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-semibold dark:text-white text-gray-900 group-hover:text-blue-400 transition-colors truncate">
@@ -487,8 +499,12 @@
                             <a 
                                 href="{{ route('user.profile', $followedUser->username ?? 'unknown') }}"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg dark:hover:bg-gray-800/80 hover:bg-gray-100 transition-colors group">
-                                <div class="w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-300 text-gray-700 flex-shrink-0">
-                                    {{ strtoupper(substr($followedUser->name ?? 'U', 0, 1)) }}
+                                <div class="w-12 h-12 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-sm font-semibold dark:text-gray-300 text-gray-700 flex-shrink-0">
+                                    @if($followedUser->profile_photo_path)
+                                        <img src="{{ $followedUser->profile_photo_url }}" alt="{{ $followedUser->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        {{ strtoupper(substr($followedUser->name ?? 'U', 0, 1)) }}
+                                    @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-semibold dark:text-white text-gray-900 group-hover:text-blue-400 transition-colors truncate">

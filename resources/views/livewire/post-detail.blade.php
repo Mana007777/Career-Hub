@@ -29,10 +29,14 @@
                 <!-- Post Header -->
                 <div class="flex items-start justify-between mb-4">
                     <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <div class="w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
-                            <span class="dark:text-gray-300 text-gray-700 font-semibold">
-                                {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
-                            </span>
+                        <div class="w-12 h-12 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
+                            @if($post->user && $post->user->profile_photo_path)
+                                <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover">
+                            @else
+                                <span class="dark:text-gray-300 text-gray-700 font-semibold">
+                                    {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
+                                </span>
+                            @endif
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
@@ -350,8 +354,12 @@
                                 x-transition:enter-end="opacity-100 translate-x-0"
                             >
                                 <div class="flex items-start gap-3">
-                                    <div class="w-8 h-8 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-xs font-semibold dark:text-gray-300 text-gray-700">
-                                        {{ strtoupper(substr($comment->user->name ?? 'U', 0, 1)) }}
+                                    <div class="w-8 h-8 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-xs font-semibold dark:text-gray-300 text-gray-700">
+                                        @if($comment->user && $comment->user->profile_photo_path)
+                                            <img src="{{ $comment->user->profile_photo_url }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            {{ strtoupper(substr($comment->user->name ?? 'U', 0, 1)) }}
+                                        @endif
                                     </div>
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between">

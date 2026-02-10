@@ -1,25 +1,38 @@
-<aside>
-    <div class="px-6 pt-6 pb-4 border-b dark:border-gray-800 border-gray-200">
-        <h2 class="text-lg font-bold dark:text-white text-gray-900">Following</h2>
-        <p class="text-sm dark:text-gray-400 text-gray-600 mt-1">{{ $followingCount }} people</p>
+<aside class="overflow-hidden rounded-2xl dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 shadow-lg shadow-blue-500/5">
+    <div class="px-6 pt-6 pb-4 border-b dark:border-gray-800 border-gray-200 bg-gradient-to-r from-blue-600/10 via-purple-600/5 to-pink-600/10">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 dark:text-blue-300 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a3 3 0 015.356-1.857M15 11a3 3 0 10-6 0 3 3 0 006 0z"/>
+                    </svg>
+                    <h2 class="text-lg font-bold dark:text-white text-gray-900">Following</h2>
+                </div>
+                <p class="text-sm dark:text-gray-400 text-gray-600 mt-1">{{ $followingCount }} people you follow</p>
+            </div>
+        </div>
     </div>
         
     <div class="max-h-[calc(100vh-200px)] overflow-y-auto">
         @if($followingUsers->count() > 0)
-            <div class="divide-y dark:divide-gray-800 divide-gray-200">
+            <div class="space-y-1 py-2">
                 @foreach($followingUsers as $followingUser)
                     @php
                         $isActive = $followingUser->isActive();
                     @endphp
-                    <div class="flex items-center gap-3 px-6 py-4 dark:hover:bg-gray-900/50 hover:bg-gray-100 transition-colors group">
+                    <div class="flex items-center gap-3 px-4 py-3 mx-2 rounded-xl dark:hover:bg-gray-900/60 hover:bg-gray-100 transition-all duration-200 group">
                         <a 
                             href="{{ route('user.profile', $followingUser->username ?? 'unknown') }}"
                             class="flex items-center gap-3 flex-1 min-w-0"
                         >
                             <div class="relative flex-shrink-0">
                                 <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px]">
-                                    <div class="w-full h-full rounded-full dark:bg-gray-900 bg-gray-200 flex items-center justify-center text-lg font-semibold dark:text-gray-100 text-gray-900">
-                                        {{ strtoupper(substr($followingUser->name ?? 'U', 0, 1)) }}
+                                    <div class="w-full h-full rounded-full overflow-hidden dark:bg-gray-900 bg-gray-200 flex items-center justify-center text-lg font-semibold dark:text-gray-100 text-gray-900">
+                                        @if($followingUser->profile_photo_path)
+                                            <img src="{{ $followingUser->profile_photo_url }}" alt="{{ $followingUser->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            {{ strtoupper(substr($followingUser->name ?? 'U', 0, 1)) }}
+                                        @endif
                                     </div>
                                 </div>
                                 <span 

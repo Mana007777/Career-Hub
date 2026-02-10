@@ -71,9 +71,9 @@ class ChatService
     }
 
     /**
-     * Send a message in a chat
+     * Send a message in a chat (optionally with attachments).
      */
-    public function sendMessage(Chat $chat, string $message): Message
+    public function sendMessage(Chat $chat, string $message = '', array $attachments = []): Message
     {
         $currentUser = Auth::user();
         $otherUser = $chat->users->where('id', '!=', $currentUser->id)->first();
@@ -91,6 +91,18 @@ class ChatService
             'message' => $message,
             'status' => $initialStatus,
         ]);
+
+        // Persist any attachments (array of ['file_url' => ..., 'file_type' => ...])
+        foreach ($attachments as $attachment) {
+            if (! isset($attachment['file_url'], $attachment['file_type'])) {
+                continue;
+            }
+
+            $messageModel->attachments()->create([
+                'file_url' => $attachment['file_url'],
+                'file_type' => $attachment['file_type'],
+            ]);
+        }
 
         // Clear unread count cache for the recipient
         $this->messageQueries->clearUnreadCountCache($chat->id, $otherUser->id);

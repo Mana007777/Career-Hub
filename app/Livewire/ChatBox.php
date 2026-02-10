@@ -7,15 +7,19 @@ use App\Models\Chat;
 use App\Repositories\UserRepository;
 use App\Services\ChatService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ChatBox extends Component
 {
+    use WithFileUploads;
     public $chatId = null;
     public $otherUserId = null;
     public $otherUser = null;
     public $messages = [];
     public $newMessage = '';
+    public $attachment = null;
     public $isOpen = false;
     public $chat = null;
     public $isRequest = false;
@@ -145,10 +149,6 @@ class ChatBox extends Component
 
     public function sendMessage()
     {
-        if (empty(trim($this->newMessage))) {
-            return;
-        }
-
         $chatService = app(ChatService::class);
         
         if (!$this->chat) {
@@ -156,11 +156,32 @@ class ChatBox extends Component
             $this->chatId = $this->chat->id;
         }
 
-        $message = $chatService->sendMessage($this->chat, trim($this->newMessage));
+        $text = trim($this->newMessage ?? '');
+        $attachmentsPayload = [];
+
+        // Handle optional attachment upload
+        if ($this->attachment) {
+            $storedPath = $this->attachment->store('chat-attachments', 'public');
+            $fileUrl = Storage::disk('public')->url($storedPath);
+            $fileType = $this->attachment->getMimeType() ?? 'application/octet-stream';
+
+            $attachmentsPayload[] = [
+                'file_url' => $fileUrl,
+                'file_type' => $fileType,
+            ];
+        }
+
+        // Do not send completely empty messages (no text and no file)
+        if ($text === '' && empty($attachmentsPayload)) {
+            return;
+        }
+
+        $message = $chatService->sendMessage($this->chat, $text, $attachmentsPayload);
         
         // Add message immediately to local collection
         $this->messages->push($message);
         $this->newMessage = '';
+        $this->attachment = null;
         
         // Broadcast the message via Reverb (will use BROADCAST_CONNECTION from .env)
         // IMPORTANT: Make sure BROADCAST_CONNECTION=reverb in .env, not 'log'!

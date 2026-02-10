@@ -29,10 +29,14 @@
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex items-center gap-3 flex-1">
                             <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" onclick="event.stopPropagation()" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-                                    <span class="dark:text-gray-300 text-gray-700 font-semibold">
-                                        {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
-                                    </span>
+                                <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                    @if($post->user && $post->user->profile_photo_path)
+                                        <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <span class="dark:text-gray-300 text-gray-700 font-semibold">
+                                            {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
+                                        </span>
+                                    @endif
                                 </div>
                                 <div>
                                     <h3 class="font-semibold dark:text-white text-gray-900">{{ $post->user->name ?? 'Unknown User' }}</h3>

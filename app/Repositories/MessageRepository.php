@@ -31,7 +31,7 @@ class MessageRepository
     public function getMessagesForChat(Chat $chat, int $limit = 100): Collection
     {
         return Message::where('chat_id', $chat->id)
-            ->with('sender')
+            ->with(['sender', 'attachments'])
             ->orderBy('created_at', 'asc')
             ->limit($limit)
             ->get();
