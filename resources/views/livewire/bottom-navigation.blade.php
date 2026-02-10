@@ -1,4 +1,4 @@
-<div class="grid h-full max-w-md grid-cols-8 mx-auto">
+<div class="grid h-full max-w-xl grid-cols-9 gap-2 mx-auto">
         <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
             class="inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors">
             <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
@@ -72,6 +72,28 @@
         <div id="tooltip-search" role="tooltip"
             class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
             Search
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <a 
+            href="{{ route('bookmarks') }}"
+            data-tooltip-target="tooltip-bookmarks"
+            class="relative inline-flex flex-col items-center justify-center p-2 dark:hover:bg-gray-700/80 hover:bg-gray-200 group rounded-lg transition-colors"
+        >
+            <svg class="w-6 h-6 mb-1 dark:text-gray-200 text-gray-700 group-hover:text-blue-400" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z" />
+            </svg>
+            @if($savedPostsCount > 0)
+                <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500 text-white border border-gray-900">
+                    {{ $savedPostsCount > 99 ? '99+' : $savedPostsCount }}
+                </span>
+            @endif
+            <span class="sr-only">Bookmarks</span>
+        </a>
+        <div id="tooltip-bookmarks" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            Bookmarks
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <button 

@@ -41,6 +41,10 @@ Route::middleware([
     Route::get('/settings', function () {
         return view('dashboard', ['showSettings' => true]);
     })->name('settings');
+
+    Route::get('/bookmarks', function () {
+        return view('dashboard', ['showBookmarks' => true]);
+    })->name('bookmarks');
 });
 
 // Development helper: Quick user switch for testing

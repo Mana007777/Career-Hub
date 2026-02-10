@@ -529,6 +529,7 @@
                     @php
                         $hasLikedPost = auth()->check() && $post->likes->contains('user_id', auth()->id());
                         $hasStarredPost = auth()->check() && $post->stars->contains('user_id', auth()->id());
+                        $hasSavedPost = auth()->check() && in_array($post->id, $savedPostIds ?? []);
                     @endphp
                     <div class="flex items-center gap-6 pt-4 border-t dark:border-gray-800 border-gray-200 relative z-10">
                         <button
@@ -548,6 +549,15 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                             </svg>
                             <span>{{ $post->stars->count() }}</span>
+                        </button>
+                        <button
+                            type="button"
+                            wire:click.stop="togglePostSave({{ $post->id }})"
+                            class="flex items-center gap-2 text-sm {{ $hasSavedPost ? 'text-blue-400' : 'dark:text-gray-400 text-gray-600 hover:text-blue-400' }} transition-colors">
+                            <svg class="w-5 h-5" fill="{{ $hasSavedPost ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z"></path>
+                            </svg>
+                            <span>{{ $hasSavedPost ? 'Saved' : 'Save' }}</span>
                         </button>
                         <div class="flex items-center gap-2 text-gray-400 text-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -969,7 +979,7 @@
         </div>
     @endif
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (Home / Posts page only) -->
     <div 
         x-data="{ 
             isVisible: true,
@@ -995,7 +1005,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform translate-y-full"
-        class="fixed bottom-0 z-50 max-w-md w-full -translate-x-1/2 dark:bg-gray-600/60 bg-white backdrop-blur-sm rounded-2xl left-1/2 shadow-lg mb-2 mx-auto px-4 py-2 border dark:border-gray-700 border-gray-200"
+        class="fixed bottom-0 z-50 max-w-xl w-full -translate-x-1/2 dark:bg-gray-600/60 bg-white backdrop-blur-sm rounded-2xl left-1/2 shadow-lg mb-2 mx-auto px-4 py-2 border dark:border-gray-700 border-gray-200"
     >
         <div class="w-full">
             <div class="grid max-w-xs grid-cols-3 gap-1 p-1 mx-auto my-1 dark:bg-gray-700/80 bg-gray-200 rounded-lg" role="group">

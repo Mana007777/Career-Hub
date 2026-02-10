@@ -11,6 +11,7 @@ class BottomNavigation extends Component
 {
     public int $totalUnreadMessages = 0;
     public int $pendingReportsCount = 0;
+    public int $savedPostsCount = 0;
 
     protected $listeners = [
         'unread-counts-updated' => 'loadData',
@@ -29,6 +30,11 @@ class BottomNavigation extends Component
             // Load unread chat messages count
             $chatService = app(ChatService::class);
             $this->totalUnreadMessages = $chatService->getTotalUnreadCount($user->id);
+
+            // Load count of saved posts (bookmarks)
+            $this->savedPostsCount = $user->savedItems()
+                ->where('item_type', \App\Models\Post::class)
+                ->count();
 
             // Load pending reports count (admin only)
             if ($user->isAdmin()) {

@@ -27,6 +27,10 @@
                 <section>
                     <livewire:settings />
                 </section>
+            @elseif(isset($showBookmarks) && $showBookmarks)
+                <section>
+                    <livewire:saved-posts />
+                </section>
             @else
                 <div class="space-y-8">
                     <!-- Main feed (full width) -->

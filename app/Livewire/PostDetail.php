@@ -11,6 +11,8 @@ use App\Livewire\Validations\AddCommentValidation;
 use App\Livewire\Validations\AddReplyValidation;
 use App\Models\Comment;
 use App\Models\Post as PostModel;
+use App\Models\SavedItem;
+use App\Actions\Post\SavePost;
 use App\Repositories\PostCvRepository;
 use App\Services\PostService;
 use App\Models\UserNotification;
@@ -36,6 +38,7 @@ class PostDetail extends Component
     public $cvMessage = '';
     public $showCvUpload = false;
     public $hasUploadedCv = false;
+    public $hasSavedPost = false;
 
     public function mount(string $slug, PostService $postService, PostCvRepository $postCvRepository): void
     {
@@ -86,6 +89,16 @@ class PostDetail extends Component
         if (Auth::check() && $this->post->job_type) {
             $this->hasUploadedCv = $postCvRepository->hasUserUploadedCv($this->post->id, Auth::id());
         }
+
+        // Check if current user has saved this post
+        if (Auth::check()) {
+            $this->hasSavedPost = SavedItem::where('user_id', Auth::id())
+                ->where('item_type', PostModel::class)
+                ->where('item_id', $this->post->id)
+                ->exists();
+        } else {
+            $this->hasSavedPost = false;
+        }
     }
 
     public function getMediaUrl(PostModel $post): ?string
@@ -120,6 +133,21 @@ class PostDetail extends Component
             $this->post->refresh()->loadMissing(['stars.user', 'starredBy']);
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to star post. Please try again.');
+        }
+    }
+
+    public function togglePostSave(SavePost $savePostAction): void
+    {
+        try {
+            if (! $this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
+
+            $saved = $savePostAction->toggle($this->post);
+            $this->hasSavedPost = $saved;
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to save post. Please try again.');
         }
     }
 

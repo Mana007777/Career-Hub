@@ -16,6 +16,8 @@ use App\Livewire\Listeners\RefreshPostsListener;
 use App\Models\Post as PostModel;
 use App\Repositories\PostRepository;
 use App\Repositories\UserRepository;
+use App\Actions\Post\SavePost;
+use App\Models\SavedItem;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -59,6 +61,7 @@ class Post extends Component
     public $suspendReason = '';
     public $suspendExpiresAt = null;
     public $feedMode = 'new'; // new, popular, following
+    public array $savedPostIds = [];
     
     // Filter properties
     public $sortOrder = 'desc'; // desc, asc
@@ -843,6 +846,15 @@ class Post extends Component
             default => $postService->getAllPosts(9, $filterParams),
         };
         
+        // Load IDs of posts the current user has saved (for bookmark state)
+        $this->savedPostIds = [];
+        if (Auth::check()) {
+            $this->savedPostIds = SavedItem::where('user_id', Auth::id())
+                ->where('item_type', PostModel::class)
+                ->pluck('item_id')
+                ->toArray();
+        }
+
         // Get all available tags, specialties, and job types for filter dropdowns
         $allTags = \App\Models\Tag::orderBy('name')->get();
         $allSpecialties = \App\Models\Specialty::with('subSpecialties')->orderBy('name')->get();
@@ -853,6 +865,27 @@ class Post extends Component
             'allTags' => $allTags,
             'allSpecialties' => $allSpecialties,
             'jobTypes' => $jobTypes,
+            'savedPostIds' => $this->savedPostIds,
         ]);
+    }
+
+    public function togglePostSave(int $postId, SavePost $savePostAction, PostRepository $postRepository): void
+    {
+        try {
+            $post = $postRepository->findById($postId);
+            $savePostAction->toggle($post);
+
+            // Refresh saved IDs so UI updates without full page reload
+            if (Auth::check()) {
+                $this->savedPostIds = SavedItem::where('user_id', Auth::id())
+                    ->where('item_type', PostModel::class)
+                    ->pluck('item_id')
+                    ->toArray();
+            } else {
+                $this->savedPostIds = [];
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to save post. Please try again.');
+        }
     }
 }
