@@ -61,10 +61,6 @@ class PostsRelationManager extends RelationManager
                     ->badge()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('likes_count')
-                    ->counts('likes')
-                    ->label('Likes')
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('comments_count')
                     ->counts('comments')
                     ->label('Comments')

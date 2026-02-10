@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class GithubOAuthService
@@ -141,7 +142,45 @@ class GithubOAuthService
             $user->markEmailAsVerified();
         }
 
+        // Try to download and set GitHub avatar as profile photo
+        $this->setGithubAvatar($user, $githubUser);
+
         return $user;
+    }
+
+    protected function setGithubAvatar(User $user, array $githubUser): void
+    {
+        $avatarUrl = $githubUser['avatar_url'] ?? null;
+
+        if (!$avatarUrl) {
+            return;
+        }
+
+        try {
+            $response = Http::get($avatarUrl);
+
+            if (!$response->successful()) {
+                return;
+            }
+
+            $extension = 'jpg';
+            $contentType = $response->header('Content-Type');
+            if (is_string($contentType) && str_contains($contentType, 'png')) {
+                $extension = 'png';
+            }
+
+            $path = 'profile-photos/' . Str::uuid() . '.' . $extension;
+
+            Storage::disk('public')->put($path, $response->body());
+
+            // Use forceFill so we don't depend on fillable
+            $user->forceFill([
+                'profile_photo_path' => $path,
+            ])->save();
+        } catch (\Throwable $e) {
+            // Fail silently; avatar isn't critical
+            report($e);
+        }
     }
 
     public function login(User $user, bool $remember = true)

@@ -19,8 +19,7 @@ class PostRepository
     public function getAll(int $perPage = 10, ?int $userId = null, array $filters = []): LengthAwarePaginator
     {
         $query = Post::with([
-            'user', 
-            'likes',
+            'user',
             'stars',
             'comments',
             'specialties' => function($query) {
@@ -105,7 +104,6 @@ class PostRepository
             ->whereDoesntHave('suspension')
             ->with([
                 'user',
-                'likes',
                 'stars',
                 'comments',
                 'specialties' => function($query) {

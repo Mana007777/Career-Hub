@@ -4,8 +4,7 @@ namespace App\Livewire;
 
 use App\Actions\Comment\AddComment;
 use App\Actions\Comment\AddReply;
-use App\Actions\Comment\LikeComment;
-use App\Actions\Post\LikePost;
+use App\Actions\Comment\ClapComment;
 use App\Actions\Post\UploadPostCv;
 use App\Livewire\Validations\AddCommentValidation;
 use App\Livewire\Validations\AddReplyValidation;
@@ -106,21 +105,6 @@ class PostDetail extends Component
         return app(PostService::class)->getMediaUrl($post);
     }
 
-    public function togglePostLike(LikePost $likePostAction): void
-    {
-        try {
-            if (!$this->post) {
-                session()->flash('error', 'Post not found.');
-                return;
-            }
-
-            $likePostAction->toggle($this->post);
-            $this->post->refresh()->loadMissing(['likes.user', 'likedBy']);
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to like post. Please try again.');
-        }
-    }
-    
     public function togglePostStar(\App\Actions\Post\StarPost $starPostAction): void
     {
         try {
@@ -172,9 +156,9 @@ class PostDetail extends Component
             $this->content = '';
             $this->post->refresh()->loadMissing([
                 'comments.user',
-                'comments.likes',
+                'comments.claps',
                 'comments.replies.user',
-                'comments.replies.likes'
+                'comments.replies.claps',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
@@ -219,9 +203,9 @@ class PostDetail extends Component
             $this->replyContent[$parentId] = '';
             $this->post->refresh()->loadMissing([
                 'comments.user',
-                'comments.likes',
+                'comments.claps',
                 'comments.replies.user',
-                'comments.replies.likes'
+                'comments.replies.claps',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
@@ -230,14 +214,25 @@ class PostDetail extends Component
         }
     }
 
-    public function toggleCommentLike(int $commentId, LikeComment $likeCommentAction): void
+    public function toggleCommentClap(int $commentId, ClapComment $clapCommentAction): void
     {
         try {
+            if (! $this->post) {
+                session()->flash('error', 'Post not found.');
+                return;
+            }
+
             $comment = Comment::findOrFail($commentId);
-            $likeCommentAction->toggle($comment);
-            $this->post->refresh()->loadMissing(['comments.likes', 'comments.replies.likes']);
+            $clapCommentAction->toggle($comment);
+
+            $this->post->refresh()->loadMissing([
+                'comments.user',
+                'comments.claps',
+                'comments.replies.user',
+                'comments.replies.claps',
+            ]);
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to like comment. Please try again.');
+            session()->flash('error', 'Failed to clap comment. Please try again.');
         }
     }
 
@@ -326,12 +321,12 @@ class PostDetail extends Component
             // Delete the comment
             $comment->delete();
             
-            // Refresh the post to update comments
+            // Refresh the post to update comments and claps
             $this->post->refresh()->loadMissing([
                 'comments.user',
-                'comments.likes',
+                'comments.claps',
                 'comments.replies.user',
-                'comments.replies.likes'
+                'comments.replies.claps',
             ]);
             
             session()->flash('success', 'Comment deleted successfully!');

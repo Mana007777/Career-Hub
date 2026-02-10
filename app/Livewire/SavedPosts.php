@@ -45,7 +45,6 @@ class SavedPosts extends Component
             })
             ->with([
                 'user',
-                'likes',
                 'stars',
                 'comments',
                 'specialties' => function ($query) {

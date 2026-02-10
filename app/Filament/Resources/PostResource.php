@@ -110,10 +110,7 @@ class PostResource extends Resource
                     ->label('Has Media')
                     ->boolean()
                     ->getStateUsing(fn ($record) => !empty($record->media)),
-                Tables\Columns\TextColumn::make('likes_count')
-                    ->counts('likes')
-                    ->label('Likes')
-                    ->sortable(),
+                // Likes removed – only show comments and suspension info
                 Tables\Columns\TextColumn::make('comments_count')
                     ->counts('comments')
                     ->label('Comments')
@@ -263,7 +260,6 @@ class PostResource extends Resource
     {
         return [
             RelationManagers\CommentsRelationManager::class,
-            RelationManagers\LikesRelationManager::class,
         ];
     }
 

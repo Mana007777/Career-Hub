@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Actions\Post\AuthorizePostAction;
 use App\Actions\Post\CreatePost;
 use App\Actions\Post\DeletePost;
-use App\Actions\Post\LikePost;
 use App\Actions\Post\UpdatePost;
 use App\Actions\User\FollowUser;
 use App\Models\UserNotification;
@@ -786,17 +785,6 @@ class Post extends Component
         }
     }
 
-    public function togglePostLike(int $postId, LikePost $likePostAction, PostRepository $postRepository): void
-    {
-        try {
-            $post = $postRepository->findById($postId);
-            $likePostAction->toggle($post);
-            $this->dispatch('$refresh');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to like post. Please try again.');
-        }
-    }
-    
     public function togglePostStar(int $postId, \App\Actions\Post\StarPost $starPostAction, PostRepository $postRepository): void
     {
         try {

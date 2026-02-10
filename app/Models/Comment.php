@@ -34,13 +34,14 @@ class Comment extends Model
         return $this->belongsTo(Comment::class, 'parent_id');
     }
 
-    public function likes()
+    public function claps()
     {
-        return $this->hasMany(CommentLike::class);
+        return $this->hasMany(CommentClap::class);
     }
 
-    public function likedBy()
+    public function clappedBy()
     {
-        return $this->belongsToMany(User::class, 'comment_likes');
+        return $this->belongsToMany(User::class, 'comment_claps');
     }
+
 }

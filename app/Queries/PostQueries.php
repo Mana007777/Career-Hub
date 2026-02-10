@@ -35,7 +35,7 @@ class PostQueries
         // Get excluded user IDs (both blocked and blocked by) if user is authenticated
         $excludedIds = $userId ? $this->getExcludedUserIds($userId) : [];
 
-        $queryBuilder = Post::with(['user', 'likes', 'stars', 'comments', 'specialties', 'tags', 'suspension'])
+        $queryBuilder = Post::with(['user', 'stars', 'comments', 'specialties', 'tags', 'suspension'])
             // Hide any posts that currently have a suspension record
             ->whereDoesntHave('suspension')
             // And hide posts from users who are currently suspended
@@ -106,7 +106,6 @@ class PostQueries
             })
             ->with([
                 'user',
-                'likes',
                 'stars',
                 'comments',
                 'specialties' => function($query) {
@@ -142,7 +141,6 @@ class PostQueries
         
         $query = Post::with([
                 'user',
-                'likes',
                 'stars',
                 'comments',
                 'specialties' => function($query) {
@@ -155,7 +153,7 @@ class PostQueries
             ->whereHas('user', function($q) {
                 $q->whereDoesntHave('suspension');
             })
-            ->withCount(['likes', 'stars']);
+            ->withCount(['stars']);
         
         if (!empty($excludedIds)) {
             $query->whereNotIn('user_id', $excludedIds);
@@ -164,9 +162,8 @@ class PostQueries
         // Apply filters
         $this->applyFilters($query, $filters);
         
-        // For popular posts, order by stars_count first (most stars = most popular), then likes_count, then date
+        // For popular posts, order by stars_count (most stars = most popular), then date
         $query->orderByDesc('stars_count')
-              ->orderByDesc('likes_count')
               ->orderByDesc('created_at');
         
         // Only cache if no filters are applied
@@ -238,14 +235,11 @@ class PostQueries
             function () use ($id) {
                 return Post::with([
                         'user',
-                        'likes.user',
-                        'likedBy',
                         'comments' => function ($query) {
                             $query->with([
                                 'user',
-                                'likes.user',
                                 'replies' => function ($replyQuery) {
-                                    $replyQuery->with(['user', 'likes.user']);
+                                    $replyQuery->with(['user']);
                                 },
                             ])->orderBy('created_at', 'asc');
                         },

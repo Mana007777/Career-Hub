@@ -3,7 +3,6 @@
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\CommentLike;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -59,11 +58,4 @@ test('comment has parent comment', function () {
         ->and($reply->parent->id)->toBe($parentComment->id);
 });
 
-test('comment has many likes', function () {
-    $post = Post::factory()->create();
-    $user = User::factory()->create();
-    $comment = Comment::factory()->create(['post_id' => $post->id, 'user_id' => $user->id]);
-    $comment->likedBy()->attach($user->id);
-
-    expect($comment->likedBy)->toHaveCount(1);
-});
+// Likes feature removed: we no longer test comment likes relationships.

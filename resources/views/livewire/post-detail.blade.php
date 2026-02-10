@@ -190,20 +190,10 @@
 
                 <!-- Post Stats -->
                 @php
-                    $hasLikedPost = auth()->check() && $post->likes->contains('user_id', auth()->id());
                     $hasStarredPost = auth()->check() && $post->stars->contains('user_id', auth()->id());
                     $hasSavedPost = auth()->check() && $hasSavedPost;
                 @endphp
                 <div class="flex items-center gap-6 pt-4 border-t dark:border-gray-800 border-gray-200">
-                    <button
-                        type="button"
-                        wire:click="togglePostLike"
-                        class="flex items-center gap-2 text-sm {{ $hasLikedPost ? 'text-red-400' : 'dark:text-gray-400 text-gray-600 hover:text-red-400' }} transition-colors">
-                        <svg class="w-5 h-5" fill="{{ $hasLikedPost ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                        <span>{{ $post->likes->count() }}</span>
-                    </button>
                     <button
                         type="button"
                         wire:click="togglePostStar"
@@ -222,13 +212,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z"></path>
                         </svg>
                         <span>{{ $hasSavedPost ? 'Saved' : 'Save' }}</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        wire:click="toggleLikersModal"
-                        class="text-xs dark:text-gray-400 text-gray-600 hover:text-blue-400 underline-offset-2 hover:underline">
-                        See who liked ({{ $post->likes->count() }})
                     </button>
 
                     <div class="flex items-center gap-2 dark:text-gray-400 text-gray-600 text-sm">
@@ -338,7 +321,7 @@
 
                         @forelse($rootComments as $index => $comment)
                             @php
-                                $hasLikedComment = auth()->check() && $comment->likes->contains('user_id', auth()->id());
+                                $hasClappedComment = auth()->check() && $comment->claps->contains('user_id', auth()->id());
                             @endphp
                             <div 
                                 class="dark:bg-gray-900/60 bg-gray-50 border dark:border-gray-800 border-gray-200 rounded-lg p-4 dark:hover:border-gray-700 hover:border-gray-300 transition-all duration-300 transform hover:scale-[1.01]"
@@ -407,12 +390,13 @@
                                             <div class="flex items-center gap-4 text-xs dark:text-gray-400 text-gray-600">
                                                 <button
                                                     type="button"
-                                                    wire:click="toggleCommentLike({{ $comment->id }})"
-                                                    class="inline-flex items-center gap-1 {{ $hasLikedComment ? 'text-red-400' : 'hover:text-red-400' }} transition-colors">
-                                                    <svg class="w-4 h-4" fill="{{ $hasLikedComment ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                    wire:click="toggleCommentClap({{ $comment->id }})"
+                                                    class="inline-flex items-center gap-1 {{ $hasClappedComment ? 'text-yellow-400' : 'hover:text-yellow-400' }} transition-colors">
+                                                    <svg class="w-4 h-4" fill="{{ $hasClappedComment ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                              d="M7 11l2-2m0 0l2-2m-2 2l2 2m-2-2L7 9m6 2l2-2m0 0l2-2m-2 2l2 2m-2-2l-2 2M5 15a4 4 0 004 4h6a4 4 0 004-4v-1H5v1z" />
                                                     </svg>
-                                                    <span>{{ $comment->likes->count() }}</span>
+                                                    <span>{{ $comment->claps->count() }}</span>
                                                 </button>
 
                                                 @auth
@@ -452,7 +436,7 @@
                                             <div class="mt-4 space-y-3 border-l dark:border-gray-800 border-gray-200 pl-4">
                                                 @foreach($comment->replies as $replyIndex => $reply)
                                                     @php
-                                                        $hasLikedReply = auth()->check() && $reply->likes->contains('user_id', auth()->id());
+                                                        $hasClappedReply = auth()->check() && $reply->claps->contains('user_id', auth()->id());
                                                     @endphp
                                                     <div 
                                                         class="flex items-start gap-3 transition-all duration-300 transform hover:translate-x-1"
@@ -500,12 +484,13 @@
                                                             <div class="mt-2 flex items-center gap-3 text-[11px] dark:text-gray-400 text-gray-600">
                                                                 <button
                                                                     type="button"
-                                                                    wire:click="toggleCommentLike({{ $reply->id }})"
-                                                                    class="inline-flex items-center gap-1 {{ $hasLikedReply ? 'text-red-400' : 'hover:text-red-400' }} transition-colors">
-                                                                    <svg class="w-3.5 h-3.5" fill="{{ $hasLikedReply ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                                    wire:click="toggleCommentClap({{ $reply->id }})"
+                                                                    class="inline-flex items-center gap-1 {{ $hasClappedReply ? 'text-yellow-400' : 'hover:text-yellow-400' }} transition-colors">
+                                                                    <svg class="w-3.5 h-3.5" fill="{{ $hasClappedReply ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                              d="M7 11l2-2m0 0l2-2m-2 2l2 2m-2-2L7 9m6 2l2-2m0 0l2-2m-2 2l2 2m-2-2l-2 2M5 15a4 4 0 004 4h6a4 4 0 004-4v-1H5v1z" />
                                                                     </svg>
-                                                                    <span>{{ $reply->likes->count() }}</span>
+                                                                    <span>{{ $reply->claps->count() }}</span>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -593,39 +578,5 @@
         </div>
     @endif
 
-    @if($post && $showLikersModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl max-w-sm w-full mx-4 p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-semibold text-white">People who liked this post</h3>
-                    <button
-                        type="button"
-                        wire:click="toggleLikersModal"
-                        class="text-gray-400 hover:text-white">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="max-h-64 overflow-y-auto space-y-2">
-                    @forelse($post->likedBy as $user)
-                        <div class="flex items-center gap-3 px-2 py-1 rounded-lg hover:bg-gray-800/80">
-                            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-xs font-semibold text-gray-300">
-                                {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
-                            </div>
-                            <div>
-                                <p class="text-sm text-white">{{ $user->name ?? 'Unknown User' }}</p>
-                                @if(!empty($user->username))
-                                    <p class="text-xs text-gray-400">@{{ $user->username }}</p>
-                                @endif
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-sm text-gray-400">No likes yet.</p>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    @endif
+    {{-- Likes and liker list removed; only stars and comments remain --}}
 </div>

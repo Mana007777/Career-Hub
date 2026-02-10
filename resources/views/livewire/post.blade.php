@@ -531,20 +531,10 @@
 
                     <!-- Post Stats -->
                     @php
-                        $hasLikedPost = auth()->check() && $post->likes->contains('user_id', auth()->id());
                         $hasStarredPost = auth()->check() && $post->stars->contains('user_id', auth()->id());
                         $hasSavedPost = auth()->check() && in_array($post->id, $savedPostIds ?? []);
                     @endphp
                     <div class="flex items-center gap-6 pt-4 border-t dark:border-gray-800 border-gray-200 relative z-10">
-                        <button
-                            type="button"
-                            wire:click.stop="togglePostLike({{ $post->id }})"
-                            class="flex items-center gap-2 text-sm {{ $hasLikedPost ? 'text-red-400' : 'dark:text-gray-400 text-gray-600 hover:text-red-400' }} transition-colors">
-                            <svg class="w-5 h-5" fill="{{ $hasLikedPost ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                            <span>{{ $post->likes->count() }}</span>
-                        </button>
                         <button
                             type="button"
                             wire:click.stop="togglePostStar({{ $post->id }})"

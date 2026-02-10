@@ -88,10 +88,6 @@ class CommentResource extends Resource
                     ->counts('replies')
                     ->label('Replies')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('likes_count')
-                    ->counts('likes')
-                    ->label('Likes')
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

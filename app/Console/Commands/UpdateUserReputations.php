@@ -38,10 +38,6 @@ class UpdateUserReputations extends Command
             // Posts get points
             $score += $user->posts()->count() * 5;
 
-            // Post likes received
-            $postLikes = $user->posts()->withCount('likes')->get()->sum('likes_count');
-            $score += $postLikes * 2;
-
             // Comments get points
             $score += $user->comments()->count() * 3;
 
