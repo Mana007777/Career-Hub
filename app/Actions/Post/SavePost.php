@@ -2,6 +2,7 @@
 
 namespace App\Actions\Post;
 
+use App\Exceptions\AuthenticationRequiredException;
 use App\Models\Post;
 use App\Models\SavedItem;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class SavePost
         $userId = Auth::id();
 
         if (! $userId) {
-            throw new \Exception('You must be logged in to save posts.');
+            throw new AuthenticationRequiredException('You must be logged in to save posts.');
         }
 
         $existing = SavedItem::where('user_id', $userId)

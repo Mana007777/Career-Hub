@@ -2,6 +2,7 @@
 
 namespace App\Actions\User;
 
+use App\Exceptions\UserFollowException;
 use App\Jobs\SendUserNotification;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -16,12 +17,12 @@ class FollowUser
 
         // Prevent users from following themselves
         if ($currentUser->id === $userToFollow->id) {
-            throw new \Exception('You cannot follow yourself.');
+            throw new UserFollowException('You cannot follow yourself.');
         }
 
         // Check if already following
         if ($currentUser->following()->where('following_id', $userToFollow->id)->exists()) {
-            throw new \Exception('You are already following this user.');
+            throw new UserFollowException('You are already following this user.');
         }
 
         // Create follow relationship
@@ -50,7 +51,7 @@ class FollowUser
 
         // Check if actually following
         if (!$currentUser->following()->where('following_id', $userToUnfollow->id)->exists()) {
-            throw new \Exception('You are not following this user.');
+            throw new UserFollowException('You are not following this user.');
         }
 
         // Remove follow relationship

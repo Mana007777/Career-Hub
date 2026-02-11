@@ -2,6 +2,7 @@
 
 namespace App\Actions\Post;
 
+use App\Exceptions\AuthenticationRequiredException;
 use App\Jobs\SendUserNotification;
 use App\Models\Post;
 use App\Queries\PostQueries;
@@ -14,7 +15,7 @@ class StarPost
         $userId = Auth::id();
 
         if (!$userId) {
-            throw new \Exception('You must be logged in to star posts.');
+            throw new AuthenticationRequiredException('You must be logged in to star posts.');
         }
 
         $existing = $post->stars()->where('user_id', $userId)->first();

@@ -2,6 +2,8 @@
 
 namespace App\Actions\Comment;
 
+use App\Exceptions\AuthenticationRequiredException;
+use App\Exceptions\CommentException;
 use App\Jobs\SendUserNotification;
 use App\Models\Comment;
 use App\Models\Post;
@@ -15,7 +17,7 @@ class AddComment
         $userId = Auth::id();
 
         if (!$userId) {
-            throw new \Exception('You must be logged in to comment.');
+            throw new AuthenticationRequiredException('You must be logged in to comment.');
         }
 
         $comment = Comment::create([

@@ -2,6 +2,7 @@
 
 namespace App\Actions\User;
 
+use App\Exceptions\UserBlockException;
 use App\Models\User;
 use App\Queries\ChatQueries;
 use App\Repositories\BlockRepository;
@@ -17,12 +18,12 @@ class BlockUser
 
         // Prevent users from blocking themselves
         if ($currentUser->id === $userToBlock->id) {
-            throw new \Exception('You cannot block yourself.');
+            throw new UserBlockException('You cannot block yourself.');
         }
 
         // Check if already blocked
         if ($currentUser->blockedUsers()->where('blocked_id', $userToBlock->id)->exists()) {
-            throw new \Exception('You have already blocked this user.');
+            throw new UserBlockException('You have already blocked this user.');
         }
 
         DB::transaction(function () use ($currentUser, $userToBlock) {
@@ -55,7 +56,7 @@ class BlockUser
 
         // Check if actually blocked
         if (!$currentUser->blockedUsers()->where('blocked_id', $userToUnblock->id)->exists()) {
-            throw new \Exception('You have not blocked this user.');
+            throw new UserBlockException('You have not blocked this user.');
         }
 
         DB::transaction(function () use ($currentUser, $userToUnblock) {

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Notification;
 
+use App\Exceptions\AuthenticationRequiredException;
 use App\Models\UserNotification;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class MarkNotificationRead
         $user = Auth::user();
 
         if (!$user) {
-            throw new \Exception('User must be authenticated.');
+            throw new AuthenticationRequiredException('User must be authenticated.');
         }
 
         $notification = UserNotification::where('user_id', $user->id)
@@ -29,7 +30,7 @@ class MarkNotificationRead
         $user = Auth::user();
 
         if (!$user) {
-            throw new \Exception('User must be authenticated.');
+            throw new AuthenticationRequiredException('User must be authenticated.');
         }
 
         UserNotification::where('user_id', $user->id)

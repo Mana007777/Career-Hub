@@ -2,6 +2,7 @@
 
 namespace App\Actions\Comment;
 
+use App\Exceptions\AuthenticationRequiredException;
 use App\Jobs\SendUserNotification;
 use App\Models\Comment;
 use App\Models\Post;
@@ -14,7 +15,7 @@ class AddReply
         $userId = Auth::id();
 
         if (!$userId) {
-            throw new \Exception('You must be logged in to reply.');
+            throw new AuthenticationRequiredException('You must be logged in to reply.');
         }
 
         $reply = Comment::create([

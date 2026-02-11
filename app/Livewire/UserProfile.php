@@ -503,7 +503,7 @@ class UserProfile extends Component
                             'date' => $this->suspendExpiresAt,
                             'error' => $e2->getMessage(),
                         ]);
-                        throw new \Exception('Invalid expiration date format.');
+                        throw new \App\Exceptions\InvalidExpirationDateException('Invalid expiration date format.');
                     }
                 }
             }

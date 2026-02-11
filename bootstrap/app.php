@@ -3,6 +3,15 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Exceptions\AuthenticationRequiredException;
+use App\Exceptions\InvalidExpirationDateException;
+use App\Exceptions\ReportException;
+use App\Exceptions\UserFollowException;
+use App\Exceptions\UserBlockException;
+use App\Exceptions\CommentException;
+use App\Exceptions\PostActionException;
+use App\Exceptions\UserNotificationException;
+use App\Exceptions\EmailVerificationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,5 +28,45 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Return clear JSON responses for our domain exceptions on API/JSON requests.
+        // For normal web/Livewire requests we fall back to Laravel's default handling.
+
+        $exceptions->render(function (AuthenticationRequiredException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 401);
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (InvalidExpirationDateException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (
+            ReportException|
+            UserFollowException|
+            UserBlockException|
+            CommentException|
+            PostActionException|
+            UserNotificationException|
+            EmailVerificationException $e,
+            $request
+        ) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return null;
+        });
     })->create();

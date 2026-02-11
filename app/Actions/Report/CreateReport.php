@@ -2,6 +2,7 @@
 
 namespace App\Actions\Report;
 
+use App\Exceptions\ReportException;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -31,17 +32,17 @@ class CreateReport
             ->first();
 
         if ($existingReport) {
-            throw new \Exception('You have already reported this ' . $targetType . '.');
+            throw new ReportException('You have already reported this ' . $targetType . '.');
         }
 
         // Prevent users from reporting themselves
         if ($targetType === 'user' && $targetId === Auth::id()) {
-            throw new \Exception('You cannot report yourself.');
+            throw new ReportException('You cannot report yourself.');
         }
 
         // Prevent admins from reporting
         if (Auth::user()->isAdmin()) {
-            throw new \Exception('Admins cannot submit reports.');
+            throw new ReportException('Admins cannot submit reports.');
         }
 
         return Report::create([

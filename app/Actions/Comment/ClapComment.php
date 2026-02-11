@@ -2,6 +2,7 @@
 
 namespace App\Actions\Comment;
 
+use App\Exceptions\AuthenticationRequiredException;
 use App\Models\Comment;
 use App\Models\CommentClap;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class ClapComment
         $userId = Auth::id();
 
         if (! $userId) {
-            throw new \Exception('You must be logged in to clap comments.');
+            throw new AuthenticationRequiredException('You must be logged in to clap comments.');
         }
 
         $existing = CommentClap::where('comment_id', $comment->id)
