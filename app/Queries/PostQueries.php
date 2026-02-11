@@ -139,6 +139,7 @@ class PostQueries
         // Don't cache when filters are applied as cache keys would be too complex
         $hasFilters = !empty($filters['tags']) || !empty($filters['specialties']) || !empty($filters['jobType']);
         
+        // Build the query - ONLY posts with at least one star, ordered by stars_count DESC
         $query = Post::with([
                 'user',
                 'stars',
@@ -153,29 +154,30 @@ class PostQueries
             ->whereHas('user', function($q) {
                 $q->whereDoesntHave('suspension');
             })
-            ->withCount(['stars']);
+            ->whereHas('stars') // ONLY posts that have at least one star
+            ->withCount(['stars']); // Count stars for ordering
         
         if (!empty($excludedIds)) {
             $query->whereNotIn('user_id', $excludedIds);
         }
         
-        // Apply filters
-        $this->applyFilters($query, $filters);
-        
-        // For popular posts, order by stars_count (most stars = most popular), then date
+        // CRITICAL: Order by stars_count DESC (most stars first), then by date DESC
+        // Do this BEFORE applyFilters to ensure it's not overridden
         $query->orderByDesc('stars_count')
               ->orderByDesc('created_at');
         
+        // Apply filters (after ordering to ensure ordering is preserved)
+        $this->applyFilters($query, $filters);
+        
+        // DISABLE CACHE TEMPORARILY to ensure fresh data
         // Only cache if no filters are applied
         if (!$hasFilters) {
             $cacheKey = "posts:popular:per_page:{$perPage}";
-            return Cache::remember(
-                $cacheKey,
-                now()->addMinutes(10),
-                function () use ($query, $perPage) {
-                    return $query->paginate($perPage);
-                }
-            );
+            // Always clear cache to get fresh data
+            Cache::forget($cacheKey);
+            
+            // Return without caching for now to ensure it works
+            return $query->paginate($perPage);
         }
         
         return $query->paginate($perPage);
@@ -265,8 +267,21 @@ class PostQueries
     public function clearPostCache(int $postId): void
     {
         Cache::forget("post:{$postId}:with_relationships");
-        // Clear popular posts cache as likes/stars/comments affect popularity
-        Cache::forget("posts:popular:per_page:10");
+        // Clear all popular posts caches as likes/stars/comments affect popularity
+        $this->clearPopularCaches();
+    }
+
+    /**
+     * Clear all popular post caches.
+     * 
+     * @return void
+     */
+    public function clearPopularCaches(): void
+    {
+        // Clear all popular posts caches for common per_page values
+        for ($i = 1; $i <= 50; $i++) {
+            Cache::forget("posts:popular:per_page:{$i}");
+        }
     }
 
     /**
@@ -277,8 +292,8 @@ class PostQueries
      */
     public function clearAllPostCaches(): void
     {
-        // Clear popular posts cache
-        Cache::forget("posts:popular:per_page:10");
+        // Clear all popular posts caches
+        $this->clearPopularCaches();
         // Individual post caches will expire via TTL
     }
 

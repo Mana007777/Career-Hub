@@ -28,7 +28,7 @@ class AddComment
         // Clear post cache as comment count changed
         app(PostQueries::class)->clearPostCache($post->id);
 
-        // Notify post owner about a new comment
+        // Notify post owner about a new comment (queued on default queue, e.g. Redis)
         if ($post->user_id !== $userId) {
             SendUserNotification::dispatch([
                 'user_id'        => $post->user_id,
@@ -36,7 +36,7 @@ class AddComment
                 'type'           => 'post_commented',
                 'post_id'        => $post->id,
                 'message'        => Auth::user()->name . ' commented on your post.',
-            ])->onConnection('sync');
+            ]);
         }
 
         return $comment;

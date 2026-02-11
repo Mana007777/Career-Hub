@@ -24,7 +24,7 @@ class AddReply
             'content'   => trim($content),
         ]);
 
-        // Notify parent comment owner about a reply
+        // Notify parent comment owner about a reply (queued on default queue, e.g. Redis)
         $parent = Comment::find($parentId);
         if ($parent && $parent->user_id && $parent->user_id !== $userId) {
             SendUserNotification::dispatch([
@@ -33,7 +33,7 @@ class AddReply
                 'type'           => 'comment_replied',
                 'post_id'        => $post->id,
                 'message'        => Auth::user()->name . ' replied to your comment.',
-            ])->onConnection('sync');
+            ]);
         }
 
         return $reply;

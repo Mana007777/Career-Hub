@@ -32,7 +32,7 @@ class StarPost
             // Clear post cache as star count changed
             app(PostQueries::class)->clearPostCache($post->id);
 
-            // Notify post owner when someone stars their post
+            // Notify post owner when someone stars their post (queued on default queue, e.g. Redis)
             if ($post->user_id !== $userId) {
                 SendUserNotification::dispatch([
                     'user_id'        => $post->user_id,
@@ -40,7 +40,7 @@ class StarPost
                     'type'           => 'post_starred',
                     'post_id'        => $post->id,
                     'message'        => Auth::user()->name . ' starred your post.',
-                ])->onConnection('sync');
+                ]);
             }
 
             return true; // Star

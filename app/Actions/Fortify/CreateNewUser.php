@@ -47,13 +47,13 @@ class CreateNewUser implements CreatesNewUsers
             'user_id' => $user->id,
         ]);
 
-        // Queue a welcome notification for the new user (run on sync connection so it executes immediately)
+        // Queue a welcome notification for the new user (queued on default queue, e.g. Redis)
         SendUserNotification::dispatch([
             'user_id' => $user->id,
             'source_user_id' => $user->id,
             'type' => 'welcome',
             'message' => 'Welcome to CareerOp! Your account has been successfully registered.',
-        ])->onConnection('sync');
+        ]);
 
         return $user;
     }

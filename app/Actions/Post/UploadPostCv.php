@@ -38,7 +38,7 @@ class UploadPostCv
             'message' => $message,
         ]);
 
-        // Send notification to post owner
+        // Send notification to post owner (queued on default queue, e.g. Redis)
         $postOwner = $post->user;
         if ($postOwner && $postOwner->id !== $userId) {
             $applicant = Auth::user();
@@ -48,7 +48,7 @@ class UploadPostCv
                 'type' => 'cv_uploaded',
                 'post_id' => $post->id,
                 'message' => "{$applicant->name} uploaded a CV for your post: {$post->title}",
-            ])->onConnection('sync');
+            ]);
         }
 
         return $postCv;
