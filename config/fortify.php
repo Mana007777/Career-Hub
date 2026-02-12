@@ -149,9 +149,10 @@ return [
         Features::emailVerification(),
         Features::updateProfileInformation(),
         Features::updatePasswords(),
+        // Simplify 2FA flow: no extra password confirmation step when enabling/disabling
         Features::twoFactorAuthentication([
             'confirm' => true,
-            'confirmPassword' => true,
+            'confirmPassword' => false,
             // 'window' => 0,
         ]),
     ],

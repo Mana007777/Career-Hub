@@ -78,46 +78,34 @@
 
         <div class="mt-5">
             @if (! $this->enabled)
-                <x-confirms-password wire:then="enableTwoFactorAuthentication">
-                    <x-button type="button" wire:loading.attr="disabled">
-                        {{ __('Enable') }}
-                    </x-button>
-                </x-confirms-password>
+                {{-- Directly call Livewire action now that confirmPassword is disabled for 2FA --}}
+                <x-button type="button" wire:click="enableTwoFactorAuthentication" wire:loading.attr="disabled">
+                    {{ __('Enable') }}
+                </x-button>
             @else
                 @if ($showingRecoveryCodes)
-                    <x-confirms-password wire:then="regenerateRecoveryCodes">
-                        <x-secondary-button class="me-3">
-                            {{ __('Regenerate Recovery Codes') }}
-                        </x-secondary-button>
-                    </x-confirms-password>
+                    <x-secondary-button class="me-3" wire:click="regenerateRecoveryCodes" wire:loading.attr="disabled">
+                        {{ __('Regenerate Recovery Codes') }}
+                    </x-secondary-button>
                 @elseif ($showingConfirmation)
-                    <x-confirms-password wire:then="confirmTwoFactorAuthentication">
-                        <x-button type="button" class="me-3" wire:loading.attr="disabled">
-                            {{ __('Confirm') }}
-                        </x-button>
-                    </x-confirms-password>
+                    <x-button type="button" class="me-3" wire:click="confirmTwoFactorAuthentication" wire:loading.attr="disabled">
+                        {{ __('Confirm') }}
+                    </x-button>
                 @else
-                    <x-confirms-password wire:then="showRecoveryCodes">
-                        <x-secondary-button class="me-3">
-                            {{ __('Show Recovery Codes') }}
-                        </x-secondary-button>
-                    </x-confirms-password>
+                    <x-secondary-button class="me-3" wire:click="showRecoveryCodes" wire:loading.attr="disabled">
+                        {{ __('Show Recovery Codes') }}
+                    </x-secondary-button>
                 @endif
 
                 @if ($showingConfirmation)
-                    <x-confirms-password wire:then="disableTwoFactorAuthentication">
-                        <x-secondary-button wire:loading.attr="disabled">
-                            {{ __('Cancel') }}
-                        </x-secondary-button>
-                    </x-confirms-password>
+                    <x-secondary-button wire:click="disableTwoFactorAuthentication" wire:loading.attr="disabled">
+                        {{ __('Cancel') }}
+                    </x-secondary-button>
                 @else
-                    <x-confirms-password wire:then="disableTwoFactorAuthentication">
-                        <x-danger-button wire:loading.attr="disabled">
-                            {{ __('Disable') }}
-                        </x-danger-button>
-                    </x-confirms-password>
+                    <x-danger-button wire:click="disableTwoFactorAuthentication" wire:loading.attr="disabled">
+                        {{ __('Disable') }}
+                    </x-danger-button>
                 @endif
-
             @endif
         </div>
     </x-slot>
