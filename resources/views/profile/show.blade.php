@@ -117,6 +117,20 @@
                 </div>
             </div>
 
+            {{-- Special guidance for users who signed in via GitHub in this session --}}
+            @if (session('logged_in_via_github'))
+                <div class="mb-8">
+                    <div class="rounded-xl border border-yellow-300 dark:border-yellow-500/60 bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 text-sm">
+                        <div class="font-semibold text-yellow-800 dark:text-yellow-200 mb-1">
+                            {{ __('You signed in with GitHub') }}
+                        </div>
+                        <p class="text-yellow-900 dark:text-yellow-100">
+                            {{ __('Because you used GitHub to log in, you might not know your account password yet. To use features that ask for your password (like enabling two-factor authentication, logging out other browser sessions, or deleting your account), first go to the login page, click “Forgot password?”, enter this account’s email address, and complete the reset flow to create a password.') }}
+                        </p>
+                    </div>
+                </div>
+            @endif
+
             @if (Laravel\Fortify\Features::canUpdateProfileInformation())
                 @livewire('profile.update-profile-information-form', ['key' => 'update-profile-information-form'])
 

@@ -186,6 +186,10 @@ class GithubOAuthService
     public function login(User $user, bool $remember = true)
     {
         Auth::login($user, $remember);
+
+        // Remember in this session that the user authenticated via GitHub,
+        // so we can show provider-specific guidance in the UI (e.g. on /user/profile)
+        session(['logged_in_via_github' => true]);
     }
 }
 
