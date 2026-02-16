@@ -23,8 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            \App\Http\Middleware\SecureHeaders::class,
             \App\Http\Middleware\EnsureSessionIsolation::class,
             \App\Http\Middleware\CheckUserSuspension::class,
+        ]);
+        $middleware->api(append: [
+            \App\Http\Middleware\SecureHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
