@@ -20,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
+     *
+     * When using Octane (FrankenPHP) the app is long-lived: avoid binding as singleton
+     * anything that holds the current request, container, or config instance.
+     * Use $this->app->bind() for request-scoped services, or inject request/config
+     * via method parameters or the request()/config() helpers at runtime.
      */
     public function register(): void
     {

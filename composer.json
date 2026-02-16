@@ -11,6 +11,7 @@
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.44",
         "laravel/jetstream": "^5.4",
+        "laravel/octane": "^2.13",
         "laravel/reverb": "^1.7",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
@@ -49,6 +50,10 @@
             "npm run build"
         ],
         "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74,#34d399\" \"php artisan octane:start --watch\" \"php artisan reverb:start\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=octane,reverb,queue,logs,vite --kill-others"
+        ],
+        "dev:serve": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74,#34d399\" \"php artisan serve\" \"php artisan reverb:start\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,reverb,queue,logs,vite --kill-others"
         ],
