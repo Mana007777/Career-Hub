@@ -377,14 +377,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Determine if the user can access the Filament admin panel.
-     * App admins (isAdmin) use the main app Reports section and cannot access Filament.
+     * Only app admins (isAdmin) can access Filament.
      */
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        // App admins cannot login to Filament; they use Reports in the main app
-        if ($this->isAdmin()) {
-            return false;
-        }
-        return true;
+        return $this->isAdmin();
     }
 }

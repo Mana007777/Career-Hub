@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class EnsureAdminAccess
 {
     /**
-     * Handle an incoming request.
-     * App admins (isAdmin) cannot access Filament; they use the Reports section in the main app.
-     * Only non-admin users (e.g. super staff) may access the Filament panel.
+     * Only allow app admins (isAdmin) to access the Filament panel.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
@@ -24,14 +22,13 @@ class EnsureAdminAccess
 
         $user = Auth::user();
 
-        // App admins cannot access Filament; redirect them to the main app
-        if ($user->isAdmin()) {
+        if (!$user->isAdmin()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect()->route('filament.admin.auth.login')
-                ->with('error', 'Admins use the Reports section in the app. You cannot access this panel.');
+                ->with('error', 'Only administrators can access this panel.');
         }
 
         return $next($request);
