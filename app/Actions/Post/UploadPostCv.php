@@ -42,7 +42,7 @@ class UploadPostCv
         $postOwner = $post->user;
         if ($postOwner && $postOwner->id !== $userId) {
             $applicant = Auth::user();
-            SendUserNotification::dispatch([
+            SendUserNotification::dispatchSync([
                 'user_id' => $postOwner->id,
                 'source_user_id' => $userId,
                 'type' => 'cv_uploaded',

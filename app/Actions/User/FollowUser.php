@@ -35,7 +35,7 @@ class FollowUser
         $userRepository->clearFollowCache($currentUser->id, $userToFollow->id);
 
         // Queue a notification for the user who was followed (queued on default queue, e.g. Redis)
-        SendUserNotification::dispatch([
+        SendUserNotification::dispatchSync([
             'user_id' => $userToFollow->id,
             'source_user_id' => $currentUser->id,
             'type' => 'follow',

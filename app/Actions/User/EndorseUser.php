@@ -51,7 +51,7 @@ class EndorseUser
             'skill' => $skill,
         ]);
 
-        SendUserNotification::dispatch([
+        SendUserNotification::dispatchSync([
             'user_id' => $userToEndorse->id,
             'source_user_id' => $currentUser->id,
             'type' => 'endorsement',

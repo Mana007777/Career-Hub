@@ -35,7 +35,7 @@ class StarPost
 
             // Notify post owner when someone stars their post (queued on default queue, e.g. Redis)
             if ($post->user_id !== $userId) {
-                SendUserNotification::dispatch([
+                SendUserNotification::dispatchSync([
                     'user_id'        => $post->user_id,
                     'source_user_id' => $userId,
                     'type'           => 'post_starred',

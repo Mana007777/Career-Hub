@@ -48,7 +48,7 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         // Queue a welcome notification for the new user (queued on default queue, e.g. Redis)
-        SendUserNotification::dispatch([
+        SendUserNotification::dispatchSync([
             'user_id' => $user->id,
             'source_user_id' => $user->id,
             'type' => 'welcome',

@@ -4,7 +4,6 @@ namespace App\Actions\Comment;
 
 use App\Exceptions\AuthenticationRequiredException;
 use App\Exceptions\CommentException;
-use App\Jobs\SendUserNotification;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Queries\PostQueries;
@@ -30,16 +29,7 @@ class AddComment
         // Clear post cache as comment count changed
         app(PostQueries::class)->clearPostCache($post->id);
 
-        // Notify post owner about a new comment (queued on default queue, e.g. Redis)
-        if ($post->user_id !== $userId) {
-            SendUserNotification::dispatch([
-                'user_id'        => $post->user_id,
-                'source_user_id' => $userId,
-                'type'           => 'post_commented',
-                'post_id'        => $post->id,
-                'message'        => Auth::user()->name . ' commented on your post.',
-            ]);
-        }
+        // Notification is handled by CommentObserver
 
         return $comment;
     }
