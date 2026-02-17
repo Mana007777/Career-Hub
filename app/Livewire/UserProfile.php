@@ -13,6 +13,7 @@ use App\Services\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -34,6 +35,7 @@ class UserProfile extends Component
     public $adminActionType = ''; // 'suspend', 'unsuspend', 'delete'
     public $suspendReason = '';
     public $suspendExpiresAt = null;
+    /** @var \Illuminate\Support\Collection<int, \App\Models\Organization>|array */
     public $organizationMemberships = [];
     public $pendingOrganizationInvitationId = null;
     public bool $viewerCompanyAlreadyMember = false;
@@ -43,6 +45,15 @@ class UserProfile extends Component
     public $endorsementCount = 0;
     public $selectedSkillToEndorse = '';
     public $customSkill = '';
+
+    /**
+     * @return \App\Models\User|null
+     */
+    private function authUser(): ?\App\Models\User
+    {
+        $user = Auth::user();
+        return $user instanceof \App\Models\User ? $user : null;
+    }
 
     public function mount(string $username, FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
@@ -54,7 +65,7 @@ class UserProfile extends Component
     protected function loadUser(FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
         // Allow admins to see suspended users
-        $includeSuspended = Auth::check() && Auth::user()->isAdmin();
+        $includeSuspended = $this->authUser()?->isAdmin() ?? false;
         $this->user = $userRepository->findByUsernameWithCounts($this->username, $includeSuspended);
         
         // Ensure suspension relationship is loaded
@@ -66,7 +77,7 @@ class UserProfile extends Component
             $this->isBlockedBy = $blockUserAction->isBlockedBy($this->user);
             
             // If the profile owner has blocked the current user, show 404 (unless admin)
-            if ($this->isBlockedBy && !Auth::user()->isAdmin()) {
+            if ($this->isBlockedBy && !$this->authUser()?->isAdmin()) {
                 abort(404, 'User not found');
             }
             
@@ -91,11 +102,12 @@ class UserProfile extends Component
         $this->organizationMemberships = $this->user->organizations;
         
         // Preload pending invitation for current viewer (if viewer is a company)
-        if (Auth::check() && Auth::user()->isCompany() && Auth::id() !== $this->user->id) {
+        $authUser = $this->authUser();
+        if ($authUser && $authUser->isCompany() && $authUser->id !== $this->user->id) {
             $companyId = Auth::id();
 
             // Check if this user is already a member of the viewer company
-            $this->viewerCompanyAlreadyMember = $this->organizationMemberships->contains('id', $companyId);
+            $this->viewerCompanyAlreadyMember = collect($this->organizationMemberships)->contains('id', $companyId);
 
             $pending = \App\Models\OrganizationMembership::where('company_id', $companyId)
                 ->where('user_id', $this->user->id)
@@ -131,7 +143,7 @@ class UserProfile extends Component
      */
     public function inviteToOrganization(): void
     {
-        if (!Auth::check() || !Auth::user()->isCompany()) {
+        if (!$this->authUser()?->isCompany()) {
             session()->flash('error', 'Only company accounts can send organization invitations.');
             return;
         }
@@ -232,7 +244,7 @@ class UserProfile extends Component
             }
 
             // Clear pending state for this viewer if relevant
-            if (Auth::user()->isCompany() && Auth::id() === $membership->company_id) {
+            if ($this->authUser()?->isCompany() && Auth::id() === $membership->company_id) {
                 $this->pendingOrganizationInvitationId = null;
             }
 
@@ -425,7 +437,7 @@ class UserProfile extends Component
 
     public function openAdminActionsModal(string $action): void
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
+        if (!$this->authUser()?->isAdmin()) {
             session()->flash('error', 'You are not authorized to perform this action.');
             return;
         }
@@ -463,66 +475,10 @@ class UserProfile extends Component
         $this->suspendExpiresAt = null;
     }
 
-    public function openSuspendModal(): void
-    {
-        try {
-            if (!Auth::check()) {
-                session()->flash('error', 'You must be logged in to perform this action.');
-                return;
-            }
-
-            if (!Auth::user()->isAdmin()) {
-                session()->flash('error', 'You are not authorized to suspend users.');
-                return;
-            }
-
-            // Reload user to ensure we have fresh data
-            if (!$this->user || !$this->user->id) {
-                $this->loadUser(app(FollowUser::class), app(\App\Actions\User\BlockUser::class), app(UserRepository::class));
-            }
-
-            if (!$this->user) {
-                session()->flash('error', 'User not found.');
-                return;
-            }
-
-            // Ensure user is fresh and load suspension relationship
-            $this->user->refresh();
-            if (!$this->user->relationLoaded('suspension')) {
-                $this->user->load('suspension');
-            }
-
-            $this->suspendReason = '';
-            $this->suspendExpiresAt = null;
-            $this->showSuspendModal = true;
-            
-            // Debug logging
-            \Log::info('Suspend modal opened', [
-                'user_id' => $this->user->id,
-                'admin_id' => Auth::id(),
-                'showSuspendModal' => $this->showSuspendModal,
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Error opening suspend modal: ' . $e->getMessage(), [
-                'exception' => $e,
-                'user_id' => $this->user->id ?? null,
-                'admin_id' => Auth::id(),
-            ]);
-            session()->flash('error', 'Failed to load suspension form. Please try again.');
-        }
-    }
-
-    public function closeSuspendModal(): void
-    {
-        $this->showSuspendModal = false;
-        $this->suspendReason = '';
-        $this->suspendExpiresAt = null;
-    }
-
     public function suspendUser(): void
     {
         try {
-            \Log::info('suspendUser method called', [
+            Log::info('suspendUser method called', [
                 'user_id' => $this->user->id ?? null,
                 'admin_id' => Auth::id(),
                 'suspendReason' => $this->suspendReason,
@@ -531,13 +487,13 @@ class UserProfile extends Component
 
             if (!$this->user) {
                 session()->flash('error', 'User not found.');
-                \Log::error('User not found in suspendUser');
+                Log::error('User not found in suspendUser');
                 return;
             }
 
-            if (!Auth::check() || !Auth::user()->isAdmin()) {
+            if (!$this->authUser()?->isAdmin()) {
                 session()->flash('error', 'You are not authorized to suspend users.');
-                \Log::error('Not authorized to suspend user', ['admin_id' => Auth::id()]);
+                Log::error('Not authorized to suspend user', ['admin_id' => Auth::id()]);
                 return;
             }
 
@@ -574,7 +530,7 @@ class UserProfile extends Component
                     try {
                         $expiresAt = \Carbon\Carbon::parse($this->suspendExpiresAt);
                     } catch (\Exception $e2) {
-                        \Log::error('Failed to parse expiration date', [
+                        Log::error('Failed to parse expiration date', [
                             'date' => $this->suspendExpiresAt,
                             'error' => $e2->getMessage(),
                         ]);
@@ -591,7 +547,7 @@ class UserProfile extends Component
                 ]
             );
 
-            \Log::info('User suspension created', [
+            Log::info('User suspension created', [
                 'suspension_id' => $suspension->user_id,
                 'reason' => $suspension->reason,
                 'expires_at' => $suspension->expires_at,
@@ -609,12 +565,12 @@ class UserProfile extends Component
             $this->closeAdminActionsModal();
             $this->loadUser(app(FollowUser::class), app(\App\Actions\User\BlockUser::class), app(UserRepository::class));
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation error in suspendUser', [
+            Log::error('Validation error in suspendUser', [
                 'errors' => $e->errors(),
             ]);
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Error in suspendUser: ' . $e->getMessage(), [
+            Log::error('Error in suspendUser: ' . $e->getMessage(), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -630,7 +586,7 @@ class UserProfile extends Component
                 return;
             }
 
-            if (!Auth::check() || !Auth::user()->isAdmin()) {
+            if (!$this->authUser()?->isAdmin()) {
                 session()->flash('error', 'You are not authorized to unsuspend users.');
                 return;
             }
