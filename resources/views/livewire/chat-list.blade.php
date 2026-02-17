@@ -66,14 +66,14 @@
         <!-- Chat List -->
         <div class="flex-1 overflow-y-auto">
             <!-- Pending Requests Section -->
-            @if(count($requests) > 0)
-                <div class="px-6 py-3 border-b dark:border-gray-800 border-gray-200 dark:bg-blue-600/10 bg-blue-50">
+                @if(count($requests) > 0)
+                    <div class="px-6 py-3 border-b dark:border-gray-800 border-gray-200 dark:bg-blue-600/10 bg-blue-50">
                     <h3 class="text-xs font-semibold dark:text-blue-400 text-blue-600 uppercase tracking-wider mb-3">Chat Requests</h3>
                     <div class="space-y-2">
                         @foreach($requests as $index => $request)
                             @php
-                                $fromUser = $request->fromUser;
-                                $requestMessage = $request->message;
+                                $fromUser = $request->fromUser ?? null;
+                                $requestMessage = $request->message ?? null;
                             @endphp
                             @if($fromUser)
                                 <div 
@@ -107,13 +107,13 @@
                                             ></span>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-semibold text-white mb-1">{{ $fromUser->name }}</p>
-                                            @if($requestMessage)
-                                                <p class="text-xs text-gray-400 mb-2 line-clamp-2">
+                                            <p class="text-sm font-semibold dark:text-white text-gray-900 mb-1">{{ $fromUser->name }}</p>
+                                            @if($requestMessage && $requestMessage->message !== null && $requestMessage->message !== '')
+                                                <p class="text-xs dark:text-gray-400 text-gray-600 mb-2 line-clamp-2">
                                                     {{ \Illuminate\Support\Str::limit($requestMessage->message, 60) }}
                                                 </p>
                                             @else
-                                                <p class="text-xs text-gray-500 mb-2">Sent a chat request</p>
+                                                <p class="text-xs dark:text-gray-500 text-gray-500 mb-2">Sent a chat request</p>
                                             @endif
                                             <div class="flex items-center gap-2">
                                                 <button
@@ -141,11 +141,11 @@
             <!-- Regular Chats Section -->
             @if(count($chats) > 0)
                 @if(count($requests) > 0)
-                    <div class="px-6 py-3 border-b border-gray-800">
-                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Your Chats</h3>
+                    <div class="px-6 py-3 border-b dark:border-gray-800 border-gray-200">
+                        <h3 class="text-xs font-semibold dark:text-gray-400 text-gray-600 uppercase tracking-wider">Your Chats</h3>
                     </div>
                 @endif
-                <div class="divide-y divide-gray-800">
+                <div class="divide-y dark:divide-gray-800 divide-gray-200">
                     @foreach($chats as $index => $chat)
                         @php
                             $otherUser = $chat->other_user ?? null;
@@ -191,7 +191,7 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between gap-2 mb-1">
-                                        <p class="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+                                        <p class="text-sm font-semibold dark:text-white text-gray-900 group-hover:text-blue-400 transition-colors truncate">
                                             {{ $otherUser->name }}
                                         </p>
                                         @if($lastMessage)
@@ -201,11 +201,11 @@
                                         @endif
                                     </div>
                                     @if($lastMessage)
-                                        <p class="text-xs text-gray-400 truncate">
-                                            {{ $lastMessage->sender_id === auth()->id() ? 'You: ' : '' }}{{ \Illuminate\Support\Str::limit($lastMessage->message, 50) }}
+                                        <p class="text-xs dark:text-gray-400 text-gray-600 truncate">
+                                            {{ $lastMessage->sender_id === auth()->id() ? 'You: ' : '' }}{{ \Illuminate\Support\Str::limit($lastMessage->message ?? '', 50) }}
                                         </p>
                                     @else
-                                        <p class="text-xs text-gray-500">No messages yet</p>
+                                        <p class="text-xs dark:text-gray-500 text-gray-500">No messages yet</p>
                                     @endif
                                 </div>
                                 @if($unreadCount > 0)

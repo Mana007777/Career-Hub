@@ -2,10 +2,10 @@
     <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="mb-8">
             <h1 class="text-3xl font-bold dark:text-white text-gray-900 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                Reports Management
+                Reported content
             </h1>
             <p class="mt-2 text-sm dark:text-gray-400 text-gray-600">
-                Review and manage user reports
+                Content that people have reported. Review each item and dismiss the report or delete the reported user or post.
             </p>
         </div>
 

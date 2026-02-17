@@ -11,31 +11,27 @@ class EnsureAdminAccess
 {
     /**
      * Handle an incoming request.
-     * Only allow test@example.com with admin role to access admin panel.
+     * App admins (isAdmin) cannot access Filament; they use the Reports section in the main app.
+     * Only non-admin users (e.g. super staff) may access the Filament panel.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('filament.admin.auth.login');
         }
 
         $user = Auth::user();
-        
-        // Strictly only allow test@example.com with admin role
-        $email = strtolower(trim($user->email ?? ''));
-        $role = $user->role ?? '';
-        
-        if ($email !== 'test@example.com' || $role !== 'admin') {
-            // Log out the user and redirect to login
+
+        // App admins cannot access Filament; redirect them to the main app
+        if ($user->isAdmin()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            
+
             return redirect()->route('filament.admin.auth.login')
-                ->with('error', 'Access denied. Only authorized administrators can access this panel.');
+                ->with('error', 'Admins use the Reports section in the app. You cannot access this panel.');
         }
 
         return $next($request);

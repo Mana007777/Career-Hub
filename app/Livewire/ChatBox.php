@@ -7,6 +7,7 @@ use App\Models\Chat;
 use App\Repositories\UserRepository;
 use App\Services\ChatService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -178,15 +179,15 @@ class ChatBox extends Component
 
         $message = $chatService->sendMessage($this->chat, $text, $attachmentsPayload);
         
-        // Add message immediately to local collection
-        $this->messages->push($message);
+        // Add message immediately to local collection (messages may be array when rehydrated)
+        $this->messages = collect($this->messages)->push($message)->values()->all();
         $this->newMessage = '';
         $this->attachment = null;
         
         // Broadcast the message via Reverb (will use BROADCAST_CONNECTION from .env)
         // IMPORTANT: Make sure BROADCAST_CONNECTION=reverb in .env, not 'log'!
         try {
-            \Log::info('📤 Broadcasting message', [
+            Log::info('📤 Broadcasting message', [
                 'chat_id' => $this->chatId,
                 'message_id' => $message->id,
                 'sender_id' => $message->sender_id,
@@ -197,21 +198,21 @@ class ChatBox extends Component
             $event = new MessageSent($message);
             broadcast($event);
             
-            \Log::info('✅ Message broadcasted successfully', [
+            Log::info('✅ Message broadcasted successfully', [
                 'chat_id' => $this->chatId,
                 'message_id' => $message->id
             ]);
             
             // Debug logging (check storage/logs/laravel.log)
             if (config('broadcasting.default') === 'log') {
-                \Log::warning('⚠️ Broadcasting is set to LOG, not REVERB! Change BROADCAST_CONNECTION=reverb in .env', [
+                Log::warning('⚠️ Broadcasting is set to LOG, not REVERB! Change BROADCAST_CONNECTION=reverb in .env', [
                     'chat_id' => $this->chatId,
                     'message_id' => $message->id,
                     'current_driver' => config('broadcasting.default')
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error('❌ Failed to broadcast message', [
+            Log::error('❌ Failed to broadcast message', [
                 'error' => $e->getMessage(),
                 'chat_id' => $this->chatId,
                 'message_id' => $message->id,
@@ -237,109 +238,62 @@ class ChatBox extends Component
      */
     public function handleStatusUpdate($messageId, $status)
     {
-        // Update status in the collection while preserving Eloquent models
-        if ($this->messages && is_object($this->messages) && method_exists($this->messages, 'map')) {
-            $this->messages = $this->messages->map(function ($message) use ($messageId, $status) {
-                // Handle both Eloquent models and plain objects/arrays
-                $id = is_object($message) 
-                    ? (isset($message->id) ? $message->id : null)
-                    : (isset($message['id']) ? $message['id'] : null);
-                
-                if ($id == $messageId) {
-                    if (is_object($message)) {
-                        // For Eloquent models or objects, update the property
-                        $message->status = $status;
-                    } else {
-                        // For arrays, convert to object or update array
-                        $message['status'] = $status;
-                        // Convert array back to object for consistency
-                        $message = (object) $message;
-                    }
-                }
-                return $message;
-            });
+        // Update status in the collection (messages may be array when rehydrated)
+        if (empty($this->messages)) {
+            return;
         }
+        $this->messages = collect($this->messages)->map(function ($message) use ($messageId, $status) {
+            $id = is_object($message)
+                ? ($message->id ?? null)
+                : ($message['id'] ?? null);
+            if ((int) $id === (int) $messageId) {
+                if (is_object($message)) {
+                    $message->status = $status;
+                } else {
+                    $message['status'] = $status;
+                }
+            }
+            return $message;
+        })->values()->all();
     }
     
     public function addMessage($messageData)
     {
-        // Add a new message to the collection without full refresh
-        \Log::info('addMessage called', [
-            'chatId' => $this->chatId,
-            'messageData' => $messageData,
-            'isCollection' => is_object($this->messages) && method_exists($this->messages, 'push')
-        ]);
-        
-        if (!$this->chatId || !isset($messageData['chat_id'])) {
-            \Log::warning('addMessage: Missing chatId or messageData chat_id', [
-                'chatId' => $this->chatId,
-                'hasChatId' => isset($messageData['chat_id'])
-            ]);
+        // Normalize to array (Livewire can pass object from JS)
+        $messageData = is_array($messageData) ? $messageData : (array) $messageData;
+        $chatIdFromMessage = $messageData['chat_id'] ?? $messageData['chatId'] ?? null;
+
+        if (!$this->chatId || !$chatIdFromMessage || (int) $chatIdFromMessage !== (int) $this->chatId) {
             return;
         }
-        
-        // Ensure messages is a collection
-        if (!is_object($this->messages) || !method_exists($this->messages, 'push')) {
-            $this->messages = collect($this->messages);
+
+        $messages = collect($this->messages);
+        $isFromOtherUser = (int) ($messageData['sender_id'] ?? 0) !== (int) Auth::id();
+        if (!$isFromOtherUser) {
+            return;
         }
-        
-        // Only add if it's for this chat and not from current user (to avoid duplicates)
-        $isForThisChat = $messageData['chat_id'] == $this->chatId;
-        $isFromOtherUser = $messageData['sender_id'] != Auth::id();
-        
-        \Log::info('addMessage: Checking conditions', [
-            'isForThisChat' => $isForThisChat,
-            'isFromOtherUser' => $isFromOtherUser,
-            'messageChatId' => $messageData['chat_id'],
-            'currentChatId' => $this->chatId,
-            'senderId' => $messageData['sender_id'],
-            'authId' => Auth::id()
-        ]);
-        
-        if ($isForThisChat && $isFromOtherUser) {
-            // Check if message already exists
-            $exists = $this->messages->contains('id', $messageData['id']);
-            if (!$exists) {
-                \Log::info('addMessage: Adding new message', [
-                    'messageId' => $messageData['id'],
-                    'messageText' => $messageData['message'],
-                    'senderName' => $messageData['sender']['name'] ?? 'Unknown'
-                ]);
-                
-                // Create message object - ensure it's a proper object
-                $newMessage = new \stdClass();
-                $newMessage->id = $messageData['id'];
-                $newMessage->chat_id = $messageData['chat_id'];
-                $newMessage->sender_id = $messageData['sender_id'];
-                $newMessage->sender = (object) $messageData['sender'];
-                $newMessage->message = $messageData['message'];
-                $newMessage->status = $messageData['status'] ?? 'sent';
-                $newMessage->created_at = $messageData['created_at'];
-                
-                // Add to collection
-                $this->messages->push($newMessage);
-                
-                \Log::info('addMessage: Message added successfully', [
-                    'messageId' => $messageData['id'],
-                    'totalMessages' => $this->messages->count()
-                ]);
-                
-                $this->dispatch('scroll-to-bottom');
-                
-        // Dispatch event to update unread counts in bottom nav and chat list
+
+        $messageId = $messageData['id'] ?? null;
+        if (!$messageId || $messages->contains(fn ($m) => (is_object($m) ? $m->id : $m['id'] ?? null) == $messageId)) {
+            return;
+        }
+
+        $sender = $messageData['sender'] ?? [];
+        $sender = is_array($sender) ? $sender : (array) $sender;
+        $newMessage = [
+            'id' => $messageId,
+            'chat_id' => $chatIdFromMessage,
+            'sender_id' => $messageData['sender_id'] ?? null,
+            'sender' => $sender,
+            'message' => $messageData['message'] ?? '',
+            'status' => $messageData['status'] ?? 'sent',
+            'created_at' => $messageData['created_at'] ?? now()->toIso8601String(),
+            'attachments' => $messageData['attachments'] ?? [],
+        ];
+
+        $this->messages = $messages->push($newMessage)->values()->all();
+        $this->dispatch('scroll-to-bottom');
         $this->dispatch('unread-counts-updated');
-            } else {
-                \Log::info('addMessage: Message already exists', ['messageId' => $messageData['id']]);
-            }
-        } else {
-            \Log::warning('addMessage: Message not added', [
-                'reason' => !$isForThisChat ? 'Wrong chat' : 'From current user',
-                'messageChatId' => $messageData['chat_id'],
-                'currentChatId' => $this->chatId,
-                'isForThisChat' => $isForThisChat,
-                'isFromOtherUser' => $isFromOtherUser
-            ]);
-        }
     }
 
     public function render()

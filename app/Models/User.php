@@ -353,7 +353,9 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isAdmin(): bool
     {
-        return $this->is_admin === true || $this->email === 'test@example.com';
+        $adminEmails = ['test@example.com', 'linus@example.com'];
+        $email = strtolower(trim((string) ($this->email ?? '')));
+        return $this->is_admin === true || in_array($email, $adminEmails, true);
     }
 
     /**
@@ -375,19 +377,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Determine if the user can access the Filament admin panel.
-     * ONLY test@example.com with admin role can access the admin dashboard.
+     * App admins (isAdmin) use the main app Reports section and cannot access Filament.
      */
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        // Strictly only allow test@example.com with admin role
-        if ($this->email === null) {
+        // App admins cannot login to Filament; they use Reports in the main app
+        if ($this->isAdmin()) {
             return false;
         }
-        
-        $email = strtolower(trim($this->email));
-        $role = $this->role ?? '';
-        
-        // Only test@example.com with admin role can access
-        return $email === 'test@example.com' && $role === 'admin';
+        return true;
     }
 }
