@@ -56,9 +56,10 @@
     .dark .auth-form-wrapper input,
     .dark .auth-form-wrapper select,
     .dark .auth-form-wrapper textarea {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border-color: rgba(255, 255, 255, 0.2) !important;
-        color: white !important;
+        /* Darker input background + better contrast in dark mode */
+        background-color: rgba(15, 23, 42, 0.9) !important; /* slate-900 */
+        border-color: rgba(148, 163, 184, 0.9) !important;   /* slate-400 */
+        color: rgb(249, 250, 251) !important;                /* almost white text */
     }
     
     .auth-form-wrapper input::placeholder,
@@ -92,7 +93,9 @@
     .dark .auth-form-wrapper input:-webkit-autofill,
     .dark .auth-form-wrapper input:-webkit-autofill:hover,
     .dark .auth-form-wrapper input:-webkit-autofill:focus {
-        -webkit-text-fill-color: white !important;
-        -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset !important;
+        /* Remove the bright white autofill flash in dark mode */
+        -webkit-text-fill-color: rgb(249, 250, 251) !important;
+        -webkit-box-shadow: 0 0 0px 1000px rgba(15, 23, 42, 0.9) inset !important;
+        transition: background-color 5000s ease-in-out 0s;
     }
 </style>

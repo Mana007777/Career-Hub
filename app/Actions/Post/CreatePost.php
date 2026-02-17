@@ -90,7 +90,7 @@ class CreatePost
         $author = $post->user;
         if ($author && $author->followers && $author->followers->isNotEmpty()) {
             foreach ($author->followers as $follower) {
-                SendUserNotification::dispatchSync([
+                SendUserNotification::dispatch([
                     'user_id' => $follower->id,
                     'source_user_id' => $author->id,
                     'type' => 'new_post_from_following',
