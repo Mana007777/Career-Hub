@@ -269,7 +269,7 @@
                                                 <button
                                                     type="button"
                                                     data-target-id="{{ $user->id }}"
-                                                    @click="openOptions = false; window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: parseInt($el.dataset.targetId) } }))"
+                                                    @click="openOptions = false; window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: parseInt({{ '$el' }}.dataset.targetId) } }))"
                                                     class="w-full flex items-center gap-2 px-4 py-2 text-sm dark:text-orange-300 text-orange-700 hover:dark:bg-gray-800 hover:bg-gray-50 transition-colors"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

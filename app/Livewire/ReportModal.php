@@ -99,8 +99,12 @@ class ReportModal extends Component
             );
 
             session()->flash('success', 'Report submitted successfully. We will review it shortly.');
-            $this->close();
-            $this->dispatch('reportSubmitted');
+            $redirectUrl = request()->header('Referer') ?: url()->previous();
+            // Never redirect to Livewire internal routes (GET would fail)
+            if (str_contains($redirectUrl, '/livewire/update') || str_contains($redirectUrl, '/livewire/message')) {
+                $redirectUrl = url('/');
+            }
+            $this->redirect($redirectUrl);
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
         }

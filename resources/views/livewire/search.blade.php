@@ -19,7 +19,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        @transition:leave-end="document.body.style.overflow = ''"
+        @transitionend="document.body.style.overflow = ''"
         class="fixed inset-0 z-50 dark:bg-gray-900/90 bg-gray-900/90 backdrop-blur-sm"
         @click.self="$wire.closeSearch()"
         @keydown.escape.window="$wire.closeSearch()"
