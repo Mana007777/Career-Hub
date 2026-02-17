@@ -203,6 +203,7 @@ class UserRepository
     public function clearUserCache(User $user): void
     {
         Cache::forget("user:{$user->username}:with_counts");
+        Cache::forget("user:{$user->username}:with_counts:with_suspended");
         Cache::forget("user:{$user->id}:followers:with_profile");
         Cache::forget("user:{$user->id}:followers:with_profile:filtered");
         Cache::forget("user:{$user->id}:following:with_profile");

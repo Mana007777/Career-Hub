@@ -11,8 +11,9 @@
         <!-- Profile Photo -->
         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
             <div x-data="{photoName: null, photoPreview: null}" class="col-span-6 sm:col-span-4">
-                <!-- Profile Photo File Input -->
+                <!-- Profile Photo File Input (JPG, PNG, GIF, WebP – max 2MB) -->
                 <input type="file" id="photo" class="hidden"
+                            accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                             wire:model.live="photo"
                             x-ref="photo"
                             x-on:change="

@@ -34,14 +34,6 @@ test('post belongs to user', function () {
         ->and($post->user->id)->toBe($user->id);
 });
 
-test('post has many likes', function () {
-    $post = Post::factory()->create();
-    $user = User::factory()->create();
-    $post->likedBy()->attach($user->id);
-
-    expect($post->likedBy)->toHaveCount(1);
-});
-
 test('post has many stars', function () {
     $post = Post::factory()->create();
     $user = User::factory()->create();

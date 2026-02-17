@@ -40,9 +40,9 @@
             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
         >
             <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <!-- Profile Photo/Avatar -->
-                <div class="w-24 h-24 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-3xl font-bold dark:text-gray-300 text-gray-700">
-                    @if($user && $user->profile_photo_path)
+                <!-- Profile Photo/Avatar (same approach as post cards - profile_photo_url) -->
+                <div class="relative w-24 h-24 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-3xl font-bold dark:text-gray-300 text-gray-700 shrink-0">
+                    @if($user->profile_photo_path)
                         <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                     @else
                         {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
@@ -121,6 +121,10 @@
                                     <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Following</span>
                                     <p class="dark:text-white text-gray-900 font-semibold cursor-pointer hover:text-blue-400 transition-colors">{{ $followingCount }}</p>
                                 </button>
+                                <div class="flex flex-col gap-1 min-w-[80px]">
+                                    <span class="dark:text-gray-400 text-gray-600 text-xs uppercase tracking-wide">Endorsements</span>
+                                    <p class="dark:text-white text-gray-900 font-semibold">{{ $endorsementCount }}</p>
+                                </div>
                                 
                                 <!-- Organizations the user works in -->
                                 @if($organizationMemberships && count($organizationMemberships) > 0)
@@ -221,6 +225,19 @@
                                                 <span>Block user</span>
                                             </button>
 
+                                            <!-- Endorse -->
+                                            <button
+                                                type="button"
+                                                wire:click="openEndorseModal"
+                                                class="w-full flex items-center gap-2 px-4 py-2 text-sm dark:text-emerald-400 text-emerald-600 hover:dark:bg-gray-800 hover:bg-gray-50 transition-colors"
+                                                @click="openOptions = false"
+                                            >
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                                </svg>
+                                                <span>Endorse skills</span>
+                                            </button>
+
                                             <!-- Company: Invite to organization (only if user is not already in viewer's org) -->
                                             @if(Auth::user()->isCompany() && !$viewerCompanyAlreadyMember)
                                                 <button
@@ -251,9 +268,9 @@
                                             @if(!Auth::user()->isAdmin())
                                                 <button
                                                     type="button"
-                                                    onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: {{ $user->id }} } }));"
+                                                    data-target-id="{{ $user->id }}"
+                                                    @click="openOptions = false; window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: parseInt($el.dataset.targetId) } }))"
                                                     class="w-full flex items-center gap-2 px-4 py-2 text-sm dark:text-orange-300 text-orange-700 hover:dark:bg-gray-800 hover:bg-gray-50 transition-colors"
-                                                    @click="openOptions = false"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -412,6 +429,55 @@
                                     </div>
                                 </div>
                             @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- Endorsements section --}}
+            @if(count($endorsementsBySkill) > 0)
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold dark:text-white text-gray-900 mb-4">Endorsements</h2>
+                    <div class="space-y-4">
+                        @foreach($endorsementsBySkill as $endorsementGroup)
+                            <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium dark:text-white text-gray-900">{{ $endorsementGroup->skill }}</span>
+                                    <span class="text-sm dark:text-gray-400 text-gray-600">{{ $endorsementGroup->count }} endorsement{{ $endorsementGroup->count !== 1 ? 's' : '' }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($endorsementGroup->endorsers as $endorser)
+                                        @if($endorser)
+                                            <a href="{{ route('user.profile', $endorser->username ?? '') }}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors">
+                                                <div class="w-6 h-6 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-300 flex items-center justify-center flex-shrink-0">
+                                                    @if($endorser->profile_photo_path)
+                                                        <img src="{{ $endorser->profile_photo_url }}" alt="" class="w-full h-full object-cover">
+                                                    @else
+                                                        <span class="text-xs font-semibold dark:text-gray-300 text-gray-700">{{ strtoupper(substr($endorser->name ?? 'U', 0, 1)) }}</span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-sm dark:text-gray-200 text-gray-800">{{ $endorser->name ?? $endorser->username ?? 'Unknown' }}</span>
+                                            </a>
+                                        @endif
+                                    @endforeach
+                                </div>
+                                @if(Auth::check() && Auth::id() !== $user->id)
+                                    @php
+                                        $hasEndorsed = \App\Actions\User\EndorseUser::class;
+                                        $endorseAction = app($hasEndorsed);
+                                        $currentUserEndorsed = $endorseAction->hasEndorsed($user, $endorsementGroup->skill);
+                                    @endphp
+                                    @if($currentUserEndorsed)
+                                        <button
+                                            type="button"
+                                            wire:click="removeEndorsement({{ \Illuminate\Support\Js::from($endorsementGroup->skill) }})"
+                                            class="mt-2 text-xs dark:text-gray-400 text-gray-600 hover:dark:text-red-400 hover:text-red-600 transition-colors"
+                                        >
+                                            Remove my endorsement
+                                        </button>
+                                    @endif
+                                @endif
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -661,6 +727,75 @@
                     </div>
                 @endif
             </div>
+        </div>
+    </div>
+@endif
+
+<!-- Endorse Modal -->
+@if($showEndorseModal)
+    <div class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm" wire:click="closeEndorseModal">
+        <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl max-w-md w-full mx-4" wire:click.stop>
+            <div class="flex items-center justify-between p-5 border-b dark:border-gray-800 border-gray-200">
+                <h3 class="text-lg font-semibold dark:text-white text-gray-900">Endorse {{ $user->name ?? $user->username }}</h3>
+                <button
+                    type="button"
+                    wire:click="closeEndorseModal"
+                    class="dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <form wire:submit.prevent="endorseUser" class="p-5 space-y-4">
+                @if(count($endorsableSkills) > 0)
+                    <div>
+                        <label for="selectedSkillToEndorse" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Skill to endorse</label>
+                        <select
+                            wire:model.live="selectedSkillToEndorse"
+                            id="selectedSkillToEndorse"
+                            class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            @foreach($endorsableSkills as $skill)
+                                <option value="{{ $skill }}">{{ $skill }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
+                <div>
+                    <label for="customSkill" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
+                        @if(count($endorsableSkills) > 0)
+                            Or enter a custom skill
+                        @else
+                            Enter skill to endorse
+                        @endif
+                    </label>
+                    <input
+                        type="text"
+                        wire:model="customSkill"
+                        id="customSkill"
+                        placeholder="e.g. Laravel, Project Management"
+                        maxlength="255"
+                        class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button
+                        type="button"
+                        wire:click="closeEndorseModal"
+                        class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        wire:target="endorseUser"
+                        class="px-4 py-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                        <span wire:loading.remove wire:target="endorseUser">Endorse</span>
+                        <span wire:loading wire:target="endorseUser">Endorsing...</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 @endif

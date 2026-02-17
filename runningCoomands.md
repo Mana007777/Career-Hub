@@ -1,5 +1,5 @@
 # PHP app (Octane + FrankenPHP) – use this instead of php artisan serve
-php artisan octane:start --watch
+# php artisan octane:start --watch
 # With project Caddyfile (optional): --caddyfile=./Caddyfile
 
 # You can ignore these warnings:

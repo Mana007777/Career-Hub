@@ -6,10 +6,12 @@ use App\Models\Comment;
 use App\Models\JobApplication;
 use App\Models\Message;
 use App\Models\Post;
+use App\Models\User;
 use App\Observers\CommentObserver;
 use App\Observers\JobApplicationObserver;
 use App\Observers\MessageObserver;
 use App\Observers\PostObserver;
+use App\Observers\UserObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function registerObservers(): void
     {
+        User::observe(UserObserver::class);
         Post::observe(PostObserver::class);
         Comment::observe(CommentObserver::class);
         JobApplication::observe(JobApplicationObserver::class);

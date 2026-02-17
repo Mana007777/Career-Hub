@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use App\Actions\User\BlockUser;
+use App\Actions\User\EndorseUser;
 use App\Actions\User\FollowUser;
 use App\Models\Post as PostModel;
+use App\Repositories\EndorsementRepository;
 use App\Repositories\PostRepository;
 use App\Repositories\UserRepository;
 use App\Services\PostService;
@@ -35,6 +37,12 @@ class UserProfile extends Component
     public $organizationMemberships = [];
     public $pendingOrganizationInvitationId = null;
     public bool $viewerCompanyAlreadyMember = false;
+    public $endorsementsBySkill = [];
+    public $endorsableSkills = [];
+    public $showEndorseModal = false;
+    public $endorsementCount = 0;
+    public $selectedSkillToEndorse = '';
+    public $customSkill = '';
 
     public function mount(string $username, FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
@@ -69,6 +77,14 @@ class UserProfile extends Component
         $this->followersCount = $this->user->followers_count;
         $this->followingCount = $this->user->following_count;
         $this->postsCount = $this->user->posts_count;
+
+        $endorsementRepository = app(EndorsementRepository::class);
+        $this->endorsementsBySkill = $endorsementRepository->getEndorsementsBySkillForUser($this->user)->all();
+        $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
+
+        if (Auth::check() && Auth::id() !== $this->user->id) {
+            $this->endorsableSkills = app(EndorseUser::class)->getEndorsableSkills($this->user)->all();
+        }
         
         // Preload organizations the user belongs to
         $this->user->loadMissing(['organizations']);
@@ -302,6 +318,65 @@ class UserProfile extends Component
     public function closeFollowingModal(): void
     {
         $this->showFollowingModal = false;
+    }
+
+    public function openEndorseModal(EndorseUser $endorseUserAction): void
+    {
+        if (!Auth::check() || Auth::id() === $this->user->id) {
+            return;
+        }
+        $this->endorsableSkills = $endorseUserAction->getEndorsableSkills($this->user)->all();
+        $this->selectedSkillToEndorse = $this->endorsableSkills[0] ?? '';
+        $this->customSkill = '';
+        $this->showEndorseModal = true;
+    }
+
+    public function closeEndorseModal(): void
+    {
+        $this->showEndorseModal = false;
+        $this->selectedSkillToEndorse = '';
+        $this->customSkill = '';
+    }
+
+    public function endorseUser(EndorseUser $endorseUserAction, EndorsementRepository $endorsementRepository): void
+    {
+        try {
+            if (!Auth::check() || Auth::id() === $this->user->id) {
+                session()->flash('error', 'You cannot endorse yourself.');
+                return;
+            }
+            $skill = trim($this->customSkill ?: $this->selectedSkillToEndorse ?: ($this->endorsableSkills[0] ?? ''));
+            if (empty($skill)) {
+                session()->flash('error', 'Please select or enter a skill to endorse.');
+                return;
+            }
+            $endorseUserAction->endorse($this->user, $skill);
+            $this->endorsementsBySkill = $endorsementRepository->getEndorsementsBySkillForUser($this->user)->all();
+            $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
+            $this->endorsableSkills = $endorseUserAction->getEndorsableSkills($this->user)->all();
+            $this->customSkill = '';
+            $this->closeEndorseModal();
+            session()->flash('success', "You endorsed {$this->user->name} for {$skill}.");
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
+    }
+
+    public function removeEndorsement(string $skill, EndorseUser $endorseUserAction, EndorsementRepository $endorsementRepository): void
+    {
+        try {
+            if (!Auth::check()) {
+                session()->flash('error', 'You must be logged in to remove an endorsement.');
+                return;
+            }
+            $endorseUserAction->removeEndorsement($this->user, $skill);
+            $this->endorsementsBySkill = $endorsementRepository->getEndorsementsBySkillForUser($this->user)->all();
+            $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
+            $this->endorsableSkills = $endorseUserAction->getEndorsableSkills($this->user)->all();
+            session()->flash('success', "Endorsement for {$skill} removed.");
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     public function toggleBlock(BlockUser $blockUserAction): void

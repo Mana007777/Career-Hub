@@ -43,7 +43,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'bio' => ['nullable', 'string', 'max:1000'],
                 'location' => ['nullable', 'string', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
-                'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
+                'photo' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
             ],
         )->validateWithBag('updateProfileInformation');
 

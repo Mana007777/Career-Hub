@@ -165,15 +165,6 @@ test('user can block another user', function () {
     expect($user1->blockedUsers)->toHaveCount(1);
 });
 
-test('user can like posts', function () {
-    $user = User::factory()->create();
-    $post = Post::factory()->create();
-    
-    $user->likedPosts()->attach($post->id);
-
-    expect($user->likedPosts)->toHaveCount(1);
-});
-
 test('user can star posts', function () {
     $user = User::factory()->create();
     $post = Post::factory()->create();

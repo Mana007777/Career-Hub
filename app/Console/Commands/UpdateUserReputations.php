@@ -45,7 +45,7 @@ class UpdateUserReputations extends Command
             $score += $user->followers()->count() * 10;
 
             // Endorsements received
-            $score += $user->endorsedBy()->count() * 15;
+            $score += $user->endorsements()->count() * 15;
 
             // Job applications (shows activity)
             $score += $user->jobApplications()->count() * 2;

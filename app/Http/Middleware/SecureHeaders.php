@@ -37,7 +37,7 @@ class SecureHeaders
 
         // Restricts where content can be loaded from. Reduces XSS and data injection.
         // Allows: Bunny Fonts (fonts.bunny.net), inline scripts/styles (theme, Livewire/Alpine), Vite dev server in local.
-        $response->headers->set('Content-Security-Policy', $this->buildCsp());
+        $response->headers->set('Content-Security-Policy', $this->buildCsp($request));
 
         // Prevents the page from being embedded in iframes on other sites (clickjacking).
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
@@ -61,7 +61,7 @@ class SecureHeaders
      * Build the Content-Security-Policy value.
      * Allows Bunny Fonts, inline script/style (theme, Livewire), and Vite dev server when not in production.
      */
-    private function buildCsp(): string
+    private function buildCsp(Request $request): string
     {
         $isLocal = app()->environment('local');
 
@@ -80,12 +80,19 @@ class SecureHeaders
         // font-src: fonts from same origin and Bunny Fonts
         $fontSrc = "'self' https://fonts.bunny.net";
 
-        // connect-src: same origin + Vite HMR websocket in local
-        $connectSrc = "'self'";
-        if ($isLocal) {
-            $connectSrc .= ' ws://localhost:5173 ws://127.0.0.1:5173';
+        // img-src: same origin, data, blob, ui-avatars (Jetstream default), app URL (storage uses APP_URL; covers localhost vs 127.0.0.1)
+        $appUrl = rtrim(config('app.url'), '/');
+        $imgSrc = "'self' data: blob: https://ui-avatars.com " . $appUrl;
+        if ($request->getSchemeAndHttpHost() !== $appUrl) {
+            $imgSrc .= ' ' . $request->getSchemeAndHttpHost();
         }
 
-        return "default-src 'self'; script-src {$scriptSrc}; style-src {$styleSrc}; font-src {$fontSrc}; connect-src {$connectSrc}";
+        // connect-src: same origin + Vite HMR websocket + Laravel Echo/Pusher in local
+        $connectSrc = "'self'";
+        if ($isLocal) {
+            $connectSrc .= ' ws://localhost:5173 ws://127.0.0.1:5173 ws://localhost:8080 wss://localhost:8080 ws://127.0.0.1:8080 wss://127.0.0.1:8080';
+        }
+
+        return "default-src 'self'; script-src {$scriptSrc}; style-src {$styleSrc}; font-src {$fontSrc}; img-src {$imgSrc}; connect-src {$connectSrc}";
     }
 }

@@ -8,6 +8,7 @@ use App\Exceptions\InvalidExpirationDateException;
 use App\Exceptions\ReportException;
 use App\Exceptions\UserFollowException;
 use App\Exceptions\UserBlockException;
+use App\Exceptions\EndorsementException;
 use App\Exceptions\CommentException;
 use App\Exceptions\PostActionException;
 use App\Exceptions\UserNotificationException;
@@ -59,6 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ReportException|
             UserFollowException|
             UserBlockException|
+            EndorsementException|
             CommentException|
             PostActionException|
             UserNotificationException|
