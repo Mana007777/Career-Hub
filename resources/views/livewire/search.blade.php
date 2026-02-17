@@ -44,6 +44,27 @@
                         </button>
                     </div>
                     
+                    <!-- Result Type Tabs (URL filter: ?type=users|posts|all) -->
+                    @if($query && strlen(trim($query)) > 0)
+                    <div class="flex gap-2 mb-4">
+                        <button 
+                            wire:click="setResultType('all')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'all' ? 'dark:bg-blue-600 bg-blue-600 dark:text-white text-white' : 'dark:bg-gray-700 bg-gray-200 dark:hover:bg-gray-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
+                            All
+                        </button>
+                        <button 
+                            wire:click="setResultType('users')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'users' ? 'dark:bg-blue-600 bg-blue-600 dark:text-white text-white' : 'dark:bg-gray-700 bg-gray-200 dark:hover:bg-gray-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
+                            Users
+                        </button>
+                        <button 
+                            wire:click="setResultType('posts')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'posts' ? 'dark:bg-blue-600 bg-blue-600 dark:text-white text-white' : 'dark:bg-gray-700 bg-gray-200 dark:hover:bg-gray-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
+                            Posts
+                        </button>
+                    </div>
+                    @endif
+
                     <!-- Search Input -->
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -68,7 +89,7 @@
                 <div class="dark:bg-gray-800 bg-white rounded-b-xl max-h-[60vh] overflow-y-auto">
                     @if($query && strlen(trim($query)) > 0)
                         <!-- Users Results -->
-                        @if($users->count() > 0)
+                        @if(in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0)
                             <div class="p-4 border-b dark:border-gray-700 border-gray-200">
                                 <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-3">Users</h3>
                                 <div class="space-y-3">
@@ -125,8 +146,8 @@
                         @endif
                         
                         <!-- Posts Results -->
-                        @if($posts->count() > 0)
-                            <div class="p-4 {{ $users->count() > 0 ? 'border-t dark:border-gray-700 border-gray-200' : '' }}">
+                        @if(in_array($resultType ?? 'all', ['all', 'posts']) && $posts->count() > 0)
+                            <div class="p-4 {{ (in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0) ? 'border-t dark:border-gray-700 border-gray-200' : '' }}">
                                 <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-3">Posts</h3>
                                 <div class="space-y-4">
                                     @foreach($posts as $index => $post)
@@ -224,7 +245,7 @@
                         @endif
                         
                         <!-- No Results -->
-                        @if($posts->count() === 0 && $users->count() === 0)
+                        @if((($resultType ?? 'all') === 'all' && $posts->count() === 0 && $users->count() === 0) || (($resultType ?? 'all') === 'users' && $users->count() === 0) || (($resultType ?? 'all') === 'posts' && $posts->count() === 0))
                             <div class="p-8 text-center">
                                 <svg class="mx-auto h-12 w-12 dark:text-gray-600 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -235,6 +256,15 @@
                         @endif
                     @else
                         <div class="p-8 text-center">
+                            <a 
+                                href="{{ route('explore.users') }}"
+                                wire:click="closeSearch"
+                                class="inline-flex items-center gap-2 px-4 py-2 dark:bg-blue-600 bg-blue-600 dark:text-white text-white rounded-lg text-sm font-medium hover:dark:bg-blue-700 hover:bg-blue-700 transition-colors mb-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Explore all users
+                            </a>
                             <svg class="mx-auto h-12 w-12 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>

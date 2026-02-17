@@ -76,9 +76,66 @@ class Post extends Component
         'openCreatePost' => 'handleOpenCreatePost',
     ];
 
+    /**
+     * Sync filter state with URL for shareable/bookmarkable links.
+     * ?feed=new|popular|following&sort=asc|desc&tags=1,2&specialties=3&job=remote
+     */
+    protected $queryString = [
+        'feedMode' => ['except' => 'new', 'as' => 'feed'],
+        'sortOrder' => ['except' => 'desc', 'as' => 'sort'],
+        'selectedTags' => ['except' => '', 'as' => 'tags'],
+        'selectedSpecialties' => ['except' => '', 'as' => 'specialties'],
+        'selectedJobType' => ['except' => '', 'as' => 'job'],
+    ];
+
     public function mount(): void
     {
+        $this->hydrateFiltersFromUrl();
         $this->resetForm();
+    }
+
+    /**
+     * Ensure filter params from URL are valid before rendering.
+     */
+    protected function hydrateFiltersFromUrl(): void
+    {
+        $this->feedMode = $this->validateEnumParam($this->feedMode ?? 'new', ['new', 'popular', 'following'], 'new');
+        $this->sortOrder = $this->validateEnumParam($this->sortOrder ?? 'desc', ['asc', 'desc'], 'desc');
+        $allowedJobs = ['full-time', 'part-time', 'contract', 'freelance', 'internship', 'remote'];
+        if (!empty($this->selectedJobType) && !in_array($this->selectedJobType, $allowedJobs, true)) {
+            $this->selectedJobType = '';
+        }
+        // For single-select UI: use first ID when URL has comma-separated values
+        if (!empty($this->selectedTags)) {
+            $ids = $this->parseIdList($this->selectedTags);
+            $this->selectedTags = !empty($ids) ? (string) $ids[0] : '';
+        }
+        if (!empty($this->selectedSpecialties)) {
+            $ids = $this->parseIdList($this->selectedSpecialties);
+            $this->selectedSpecialties = !empty($ids) ? (string) $ids[0] : '';
+        }
+    }
+
+    private function validateEnumParam(?string $value, array $allowed, string $default): string
+    {
+        if (empty($value) || !in_array($value, $allowed, true)) {
+            return $default;
+        }
+        return $value;
+    }
+
+    /**
+     * Parse comma-separated IDs from URL/filter string to array.
+     */
+    private function parseIdList(string $value): array
+    {
+        if (empty(trim($value))) {
+            return [];
+        }
+        return array_values(array_filter(
+            array_map('intval', explode(',', $value)),
+            fn (int $id) => $id > 0
+        ));
     }
 
     /**
@@ -849,10 +906,10 @@ class Post extends Component
     public function render(PostService $postService): View
     {
         $filterParams = [
-            'sortOrder' => $this->sortOrder,
-            'tags' => $this->selectedTags ? [$this->selectedTags] : [],
-            'specialties' => $this->selectedSpecialties ? [$this->selectedSpecialties] : [],
-            'jobType' => $this->selectedJobType,
+            'sortOrder' => $this->sortOrder ?? 'desc',
+            'tags' => $this->parseIdList($this->selectedTags ?? ''),
+            'specialties' => $this->parseIdList($this->selectedSpecialties ?? ''),
+            'jobType' => $this->selectedJobType ?? '',
         ];
         
         $posts = match ($this->feedMode) {

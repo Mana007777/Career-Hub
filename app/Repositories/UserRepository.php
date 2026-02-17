@@ -60,12 +60,12 @@ class UserRepository
             now()->addMinutes(5),
             function () use ($user) {
                 // Get excluded user IDs (both blocked and blocked by)
-                $blockedIds = \DB::table('blocks')
+                $blockedIds = DB::table('blocks')
                     ->where('blocker_id', $user->id)
                     ->pluck('blocked_id')
                     ->toArray();
                 
-                $blockedByIds = \DB::table('blocks')
+                $blockedByIds = DB::table('blocks')
                     ->where('blocked_id', $user->id)
                     ->pluck('blocker_id')
                     ->toArray();
@@ -98,12 +98,12 @@ class UserRepository
             now()->addMinutes(5),
             function () use ($user) {
                 // Get excluded user IDs (both blocked and blocked by)
-                $blockedIds = \DB::table('blocks')
+                $blockedIds = DB::table('blocks')
                     ->where('blocker_id', $user->id)
                     ->pluck('blocked_id')
                     ->toArray();
                 
-                $blockedByIds = \DB::table('blocks')
+                $blockedByIds = DB::table('blocks')
                     ->where('blocked_id', $user->id)
                     ->pluck('blocker_id')
                     ->toArray();
@@ -231,52 +231,90 @@ class UserRepository
 
     /**
      * Search users by username or name.
-     * Simple query - kept in repository.
      *
      * @param  string  $query
      * @param  int  $perPage
      * @param  int|null  $currentUserId  Current user ID to filter blocked users
+     * @param  array  $filters  Optional: role, sort (newest|name|username|followers)
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function searchUsers(string $query, int $perPage = 10, ?int $currentUserId = null): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function searchUsers(string $query, int $perPage = 10, ?int $currentUserId = null, array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $searchTerm = '%' . $query . '%';
-        
-        $userQuery = User::where(function($q) use ($searchTerm) {
-                $q->where('username', 'like', $searchTerm)
-                  ->orWhere('name', 'like', $searchTerm);
-            })
-            ->whereDoesntHave('suspension', function($q) {
-                $q->where(function($query) {
+
+        $userQuery = User::where(function ($q) use ($searchTerm) {
+            $q->where('username', 'like', $searchTerm)
+                ->orWhere('name', 'like', $searchTerm);
+        })
+            ->whereDoesntHave('suspension', function ($q) {
+                $q->where(function ($query) {
                     $query->whereNull('expires_at')
                         ->orWhere('expires_at', '>', now());
                 });
             });
-        
-        // Filter out blocked users (bidirectional blocking)
+
+        $this->applyUserFilters($userQuery, $currentUserId, $filters);
+
+        return $userQuery->with('profile')
+            ->paginate($perPage);
+    }
+
+    /**
+     * List users with URL filter support (for Explore page).
+     *
+     * @param  int  $perPage
+     * @param  int|null  $currentUserId  Current user ID to filter blocked users
+     * @param  array  $filters  role, sort, query (search)
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function listUsers(int $perPage = 12, ?int $currentUserId = null, array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        $userQuery = User::query()
+            ->whereDoesntHave('suspension', function ($q) {
+                $q->where(function ($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+            });
+
+        if (!empty($filters['query'])) {
+            $term = '%' . trim($filters['query']) . '%';
+            $userQuery->where(function ($q) use ($term) {
+                $q->where('username', 'like', $term)
+                    ->orWhere('name', 'like', $term);
+            });
+        }
+
+        $this->applyUserFilters($userQuery, $currentUserId, $filters);
+
+        return $userQuery->with('profile')
+            ->paginate($perPage);
+    }
+
+    /**
+     * Apply role filter and sort to user query.
+     */
+    protected function applyUserFilters($userQuery, ?int $currentUserId, array $filters): void
+    {
+        if (!empty($filters['role']) && in_array($filters['role'], ['seeker', 'employer', 'company', 'admin'], true)) {
+            $userQuery->where('role', $filters['role']);
+        }
+
+        $sort = $filters['sort'] ?? 'newest';
+        match ($sort) {
+            'name' => $userQuery->orderBy('name'),
+            'username' => $userQuery->orderBy('username'),
+            'followers' => $userQuery->withCount('followers')->orderByDesc('followers_count'),
+            default => $userQuery->orderByDesc('created_at'),
+        };
+
         if ($currentUserId) {
-            // Users the current user has blocked
-            $blockedIds = DB::table('blocks')
-                ->where('blocker_id', $currentUserId)
-                ->pluck('blocked_id')
-                ->toArray();
-            
-            // Users who have blocked the current user
-            $blockedByIds = DB::table('blocks')
-                ->where('blocked_id', $currentUserId)
-                ->pluck('blocker_id')
-                ->toArray();
-            
-            // Combine both arrays
+            $blockedIds = DB::table('blocks')->where('blocker_id', $currentUserId)->pluck('blocked_id')->toArray();
+            $blockedByIds = DB::table('blocks')->where('blocked_id', $currentUserId)->pluck('blocker_id')->toArray();
             $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
-            
             if (!empty($excludedIds)) {
                 $userQuery->whereNotIn('id', $excludedIds);
             }
         }
-        
-        return $userQuery->with('profile')
-            ->orderBy('username')
-            ->paginate($perPage);
     }
 }

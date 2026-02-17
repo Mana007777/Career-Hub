@@ -16,11 +16,42 @@ class Search extends Component
     public $query = '';
     public $showSearch = false;
 
+    /** Filter to users, posts, or both. */
+    public $resultType = 'all'; // all, users, posts
+
     protected $listeners = ['openSearch' => 'handleOpenSearch'];
 
-    public function mount(): void
-    {
-        $this->resetSearch();
+    /**
+     * Sync search state with URL for shareable links.
+     * ?search=1&q=john&type=users
+     */
+    protected $queryString = [
+        'query' => ['except' => '', 'as' => 'q'],
+        'showSearch' => ['except' => false, 'as' => 'search'],
+        'resultType' => ['except' => 'all', 'as' => 'type'],
+    ];
+
+    public function mount(
+        bool $openSearchFromRoute = false,
+        ?string $initialQuery = null,
+        ?string $initialType = null,
+    ): void {
+        $q = $initialQuery ?? request()->query('q');
+        $openSearch = $openSearchFromRoute || filter_var(request()->query('search'), FILTER_VALIDATE_BOOLEAN);
+
+        if ($q !== null) {
+            $this->query = trim((string) $q);
+        }
+        if ($openSearch || !empty($this->query)) {
+            $this->showSearch = true;
+        }
+
+        $type = $initialType ?? request()->query('type');
+        if (in_array($type, ['users', 'posts', 'all'], true)) {
+            $this->resultType = $type;
+        }
+
+        $this->resetPage();
     }
 
     public function toggleSearch(): void
@@ -35,10 +66,19 @@ class Search extends Component
     {
         $this->showSearch = false;
         $this->resetSearch();
+        $this->resultType = 'all';
         // Force unlock body scroll
         $this->dispatch('search-closed');
         // Use JavaScript to ensure body scroll is unlocked
         $this->js('document.body.style.overflow = "";');
+    }
+
+    public function setResultType(string $type): void
+    {
+        if (in_array($type, ['all', 'users', 'posts'], true)) {
+            $this->resultType = $type;
+            $this->resetPage();
+        }
     }
 
     public function updatedQuery(): void
@@ -59,17 +99,22 @@ class Search extends Component
 
     public function render(PostService $postService, PostRepository $postRepository, \App\Repositories\UserRepository $userRepository): View
     {
-        $posts = $this->query
-            ? $postService->searchPosts($this->query, 10)
+        $searchQuery = trim($this->query ?? '');
+        $showPosts = in_array($this->resultType, ['all', 'posts'], true);
+        $showUsers = in_array($this->resultType, ['all', 'users'], true);
+
+        $posts = ($searchQuery && $showPosts)
+            ? $postService->searchPosts($searchQuery, 10)
             : $postRepository->getEmptyPaginated(10);
-        
-        $users = $this->query
-            ? $userRepository->searchUsers($this->query, 10, auth()->id())
+
+        $users = ($searchQuery && $showUsers)
+            ? $userRepository->searchUsers($searchQuery, 10, auth()->id())
             : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
 
         return view('livewire.search', [
             'posts' => $posts,
             'users' => $users,
+            'resultType' => $this->resultType,
         ]);
     }
 }

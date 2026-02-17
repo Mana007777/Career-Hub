@@ -1,6 +1,10 @@
 <x-app-layout>
     <div class="bg-transparent dark:text-white text-gray-900 min-h-screen">
-        @livewire('search')
+        @livewire('search', [
+            'openSearchFromRoute' => $openSearch ?? false,
+            'initialQuery' => $q ?? request()->query('q'),
+            'initialType' => $type ?? request()->query('type'),
+        ])
         @livewire('user-notifications')
         @livewire('chat-box')
         @livewire('chat-list')
@@ -30,6 +34,10 @@
             @elseif(isset($showBookmarks) && $showBookmarks)
                 <section>
                     <livewire:saved-posts />
+                </section>
+            @elseif(isset($showExploreUsers) && $showExploreUsers)
+                <section>
+                    <livewire:explore-users />
                 </section>
             @else
                 <div class="space-y-8">

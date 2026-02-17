@@ -45,6 +45,18 @@ Route::middleware([
     Route::get('/bookmarks', function () {
         return view('dashboard', ['showBookmarks' => true]);
     })->name('bookmarks');
+
+    Route::get('/search', function () {
+        return view('dashboard', [
+            'openSearch' => true,
+            'q' => request()->query('q'),
+            'type' => request()->query('type'),
+        ]);
+    })->name('search');
+
+    Route::get('/explore/users', function () {
+        return view('dashboard', ['showExploreUsers' => true]);
+    })->name('explore.users');
 });
 
 // GitHub OAuth (manual, without Socialite) using Livewire components
