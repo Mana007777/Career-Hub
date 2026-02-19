@@ -29,7 +29,7 @@ class RefreshJobRecommendations extends Command
         $days = (int) $this->option('days');
         $cutoffDate = now()->subDays($days);
 
-        // Delete old recommendations
+       
         $deleted = JobRecommendation::where('created_at', '<', $cutoffDate)->delete();
 
         $this->info("Cleaned up {$deleted} old job recommendations (older than {$days} days).");

@@ -27,15 +27,13 @@ class UpdatePost
     {
         $this->authorize($post);
 
-        // Handle media update
+
         if ($data->media) {
-            // Delete old media if exists
             if ($post->media) {
                 Storage::disk('public')->delete($post->media);
             }
             $mediaPath = $this->storeMedia($data->media);
         } else {
-            // If media is not being updated, keep the existing one
             $mediaPath = $post->media;
         }
 
@@ -46,12 +44,9 @@ class UpdatePost
             'job_type' => $data->jobType,
         ]);
 
-        // Update specialties
         if (!empty($data->specialties)) {
-            // Detach all existing specialties
             $post->specialties()->detach();
             
-            // Attach new specialties
             foreach ($data->specialties as $specialtyData) {
                 $specialty = Specialty::firstOrCreate(
                     ['name' => trim($specialtyData['specialty_name'])]
@@ -70,7 +65,6 @@ class UpdatePost
             }
         }
 
-        // Update tags
         if (!empty($data->tags)) {
             $tagIds = [];
             foreach ($data->tags as $tagData) {
@@ -80,7 +74,6 @@ class UpdatePost
             $post->tags()->sync($tagIds);
         }
 
-        // Clear post cache as post was updated
         app(PostQueries::class)->clearPostCache($post->id);
 
         return $post->fresh()->load(['specialties', 'subSpecialties', 'tags']);

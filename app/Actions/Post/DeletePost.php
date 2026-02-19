@@ -20,7 +20,7 @@ class DeletePost
     {
         $this->authorize($post);
 
-        // Delete associated media if exists
+        
         if ($post->media) {
             Storage::disk('public')->delete($post->media);
         }
@@ -28,16 +28,16 @@ class DeletePost
         $postId = $post->id;
         $userId = $post->user_id;
 
-        // Clear post cache
+        
         app(PostQueries::class)->clearPostCache($postId);
         
-        // Clear user cache as post count changed
+        
         $user = $post->user;
         if ($user) {
             app(UserRepository::class)->clearUserCache($user);
         }
 
-        // Clear popular posts cache
+        
         app(PostQueries::class)->clearAllPostCaches();
 
         return $post->delete();
@@ -52,7 +52,7 @@ class DeletePost
      */
     protected function authorize(Post $post): void
     {
-        // Use policy for authorization (allows admin or post owner)
+        
         \Illuminate\Support\Facades\Gate::authorize('delete', $post);
     }
 }

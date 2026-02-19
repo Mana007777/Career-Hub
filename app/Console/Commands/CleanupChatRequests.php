@@ -29,12 +29,12 @@ class CleanupChatRequests extends Command
         $days = (int) $this->option('days');
         $cutoffDate = now()->subDays($days);
 
-        // Delete old rejected requests
+        
         $rejected = ChatRequest::where('status', 'rejected')
             ->where('created_at', '<', $cutoffDate)
             ->delete();
 
-        // Delete very old pending requests (older than 60 days)
+        
         $oldPending = ChatRequest::where('status', 'pending')
             ->where('created_at', '<', now()->subDays(60))
             ->delete();

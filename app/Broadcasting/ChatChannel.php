@@ -26,7 +26,7 @@ class ChatChannel
             return false;
         }
         
-        // Check if user is a participant in this chat
+       
         return $chat->users->contains($user->id);
     }
 }

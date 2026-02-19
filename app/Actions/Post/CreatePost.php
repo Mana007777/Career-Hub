@@ -41,15 +41,15 @@ class CreatePost
             'job_type' => $data->jobType,
         ]);
 
-        // Attach specialties to the post (find or create)
+        
         if (!empty($data->specialties)) {
             foreach ($data->specialties as $specialtyData) {
-                // Find or create specialty
+                
                 $specialty = Specialty::firstOrCreate(
                     ['name' => trim($specialtyData['specialty_name'])]
                 );
 
-                // Find or create sub-specialty
+                
                 $subSpecialty = SubSpecialty::firstOrCreate(
                     [
                         'specialty_id' => $specialty->id,
@@ -57,7 +57,7 @@ class CreatePost
                     ]
                 );
 
-                // Attach to post (avoid duplicates)
+                
                 if (!$post->specialties()->wherePivot('specialty_id', $specialty->id)
                     ->wherePivot('sub_specialty_id', $subSpecialty->id)->exists()) {
                     $post->specialties()->attach($specialty->id, [
@@ -67,7 +67,7 @@ class CreatePost
             }
         }
 
-        // Attach tags to the post (find or create)
+       
         if (!empty($data->tags)) {
             $tagIds = [];
             foreach ($data->tags as $tagData) {
@@ -79,14 +79,14 @@ class CreatePost
 
         $post->load(['specialties', 'subSpecialties', 'tags', 'user.followers']);
 
-        // Clear user cache as post count changed
+        
         $userRepository = app(UserRepository::class);
         $userRepository->clearUserCache($post->user);
 
-        // Clear popular posts cache as new post affects popularity
+        
         app(PostQueries::class)->clearAllPostCaches();
 
-        // Notify followers that this user has shared a new post
+       
         $author = $post->user;
         if ($author && $author->followers && $author->followers->isNotEmpty()) {
             foreach ($author->followers as $follower) {

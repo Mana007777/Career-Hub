@@ -23,17 +23,17 @@ class StarPost
         if ($existing) {
             $existing->delete();
             
-            // Clear post cache as star count changed
+            
             app(PostQueries::class)->clearPostCache($post->id);
             
-            return false; // Unstar
+            return false; 
         } else {
             $post->stars()->create(['user_id' => $userId]);
 
-            // Clear post cache as star count changed
+            
             app(PostQueries::class)->clearPostCache($post->id);
 
-            // Notify post owner when someone stars their post (queued on default queue, e.g. Redis)
+            
             if ($post->user_id !== $userId) {
                 SendUserNotification::dispatchSync([
                     'user_id'        => $post->user_id,
@@ -44,7 +44,7 @@ class StarPost
                 ]);
             }
 
-            return true; // Star
+            return true; 
         }
     }
 }

@@ -34,7 +34,6 @@ class ClearExpiredSuspensions extends Command
 
         $this->info('Sending notifications for expired user suspensions...');
 
-        // Find suspensions that have just expired in the last few minutes
         $expiredUserSuspensions = UserSuspension::whereNotNull('expires_at')
             ->where('expires_at', '<=', $now)
             ->get();
@@ -53,7 +52,6 @@ class ClearExpiredSuspensions extends Command
             $suspendedUser = $suspension->user;
 
             foreach ($adminRecipients as $admin) {
-                // Avoid duplicate notifications for the same admin + suspension
                     $alreadyNotified = UserNotification::where('user_id', $admin->id)
                     ->where('type', 'suspension_user_expired')
                     ->where('source_user_id', $suspendedUser?->id)

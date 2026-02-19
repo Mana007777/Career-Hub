@@ -35,22 +35,16 @@ class SecureHeaders
     {
         $response = $next($request);
 
-        // Restricts where content can be loaded from. Reduces XSS and data injection.
-        // Allows: Bunny Fonts (fonts.bunny.net), inline scripts/styles (theme, Livewire/Alpine), Vite dev server in local.
+
         $response->headers->set('Content-Security-Policy', $this->buildCsp($request));
 
-        // Prevents the page from being embedded in iframes on other sites (clickjacking).
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
-        // Stops browsers from MIME-sniffing; they must use the declared Content-Type.
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 
-        // Controls how much referrer info is sent on navigation (no-referrer = none).
         $response->headers->set('Referrer-Policy', 'no-referrer');
 
-        // HSTS: only set in production over HTTPS (see class docblock).
         if (app()->environment('production') && $request->secure()) {
-            // Tells browsers to only use HTTPS for this site for the given max-age (1 year).
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         }
 
@@ -65,29 +59,24 @@ class SecureHeaders
     {
         $isLocal = app()->environment('local');
 
-        // script-src: 'self' + inline + eval (Alpine/Livewire modals and directives) + Vite dev in local
         $scriptSrc = "'self' 'unsafe-inline' 'unsafe-eval'";
         if ($isLocal) {
             $scriptSrc .= ' http://localhost:5173 http://127.0.0.1:5173';
         }
 
-        // style-src: 'self' + inline + Bunny Fonts + Vite dev in local
         $styleSrc = "'self' 'unsafe-inline' https://fonts.bunny.net";
         if ($isLocal) {
             $styleSrc .= ' http://localhost:5173 http://127.0.0.1:5173';
         }
 
-        // font-src: fonts from same origin and Bunny Fonts
         $fontSrc = "'self' https://fonts.bunny.net";
 
-        // img-src: same origin, data, blob, ui-avatars (Jetstream default), app URL (storage uses APP_URL; covers localhost vs 127.0.0.1)
         $appUrl = rtrim(config('app.url'), '/');
         $imgSrc = "'self' data: blob: https://ui-avatars.com " . $appUrl;
         if ($request->getSchemeAndHttpHost() !== $appUrl) {
             $imgSrc .= ' ' . $request->getSchemeAndHttpHost();
         }
 
-        // connect-src: same origin + Vite HMR websocket + Laravel Echo/Pusher in local
         $connectSrc = "'self'";
         if ($isLocal) {
             $connectSrc .= ' ws://localhost:5173 ws://127.0.0.1:5173 ws://localhost:8080 wss://localhost:8080 ws://127.0.0.1:8080 wss://127.0.0.1:8080';

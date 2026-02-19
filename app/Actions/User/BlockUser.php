@@ -16,21 +16,21 @@ class BlockUser
     {
         $currentUser = Auth::user();
 
-        // Prevent users from blocking themselves
+        
         if ($currentUser->id === $userToBlock->id) {
             throw new UserBlockException('You cannot block yourself.');
         }
 
-        // Check if already blocked
+        
         if ($currentUser->blockedUsers()->where('blocked_id', $userToBlock->id)->exists()) {
             throw new UserBlockException('You have already blocked this user.');
         }
 
         DB::transaction(function () use ($currentUser, $userToBlock) {
-            // Create block relationship
+            
             $currentUser->blockedUsers()->attach($userToBlock->id);
 
-            // If they were following each other, unfollow
+            
             if ($currentUser->following()->where('following_id', $userToBlock->id)->exists()) {
                 $currentUser->following()->detach($userToBlock->id);
             }

@@ -24,7 +24,7 @@ class AddReply
             'content'   => trim($content),
         ]);
 
-        // Notification is handled by CommentObserver
+        
 
         return $reply;
     }

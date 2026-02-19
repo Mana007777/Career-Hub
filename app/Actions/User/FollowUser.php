@@ -15,26 +15,26 @@ class FollowUser
     {
         $currentUser = Auth::user();
 
-        // Prevent users from following themselves
+       
         if ($currentUser->id === $userToFollow->id) {
             throw new UserFollowException('You cannot follow yourself.');
         }
 
-        // Check if already following
+        
         if ($currentUser->following()->where('following_id', $userToFollow->id)->exists()) {
             throw new UserFollowException('You are already following this user.');
         }
 
-        // Create follow relationship
+        
         $currentUser->following()->attach($userToFollow->id);
 
-        // Clear cache for both users
+        
         $userRepository = app(UserRepository::class);
         $userRepository->clearUserCache($currentUser);
         $userRepository->clearUserCache($userToFollow);
         $userRepository->clearFollowCache($currentUser->id, $userToFollow->id);
 
-        // Queue a notification for the user who was followed (queued on default queue, e.g. Redis)
+        
         SendUserNotification::dispatchSync([
             'user_id' => $userToFollow->id,
             'source_user_id' => $currentUser->id,
@@ -49,15 +49,15 @@ class FollowUser
     {
         $currentUser = Auth::user();
 
-        // Check if actually following
+      
         if (!$currentUser->following()->where('following_id', $userToUnfollow->id)->exists()) {
             throw new UserFollowException('You are not following this user.');
         }
 
-        // Remove follow relationship
+    
         $currentUser->following()->detach($userToUnfollow->id);
 
-        // Clear cache for both users
+        
         $userRepository = app(UserRepository::class);
         $userRepository->clearUserCache($currentUser);
         $userRepository->clearUserCache($userToUnfollow);

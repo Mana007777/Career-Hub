@@ -9,7 +9,7 @@ class AuthorizePostAction
 {
     public function canEdit(Post $post): bool
     {
-        // Allow admins or post owners
+        
         if (Auth::check() && Auth::user()->isAdmin()) {
             return true;
         }

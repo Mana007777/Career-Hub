@@ -132,10 +132,15 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
+        \App\Queries\PostQueries::class,
+        \App\Repositories\PostRepository::class,
+        \App\Services\PostService::class,
+        \Illuminate\Cache\CacheManager::class,
+        \Illuminate\Database\DatabaseManager::class,
     ],
 
     'flush' => [
-        //
+        // Do not persist request-scoped data in long-lived workers
     ],
 
     /*
@@ -206,7 +211,7 @@ return [
     |
     */
 
-    'garbage' => 50,
+    'garbage' => 32,
 
     /*
     |--------------------------------------------------------------------------

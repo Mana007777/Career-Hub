@@ -18,7 +18,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
-        // Convert empty strings to null for nullable fields
+        
         if (isset($input['username']) && $input['username'] === '') {
             $input['username'] = null;
         }
@@ -51,7 +51,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $user->updateProfilePhoto($input['photo']);
         }
 
-        // Update user information
+        
         $userData = [
             'name' => $input['name'],
             'email' => $input['email'],
@@ -68,7 +68,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $user->forceFill($userData)->save();
         }
 
-        // Update or create profile
+        
         $profileData = [
             'bio' => $input['bio'] ?? null,
             'location' => $input['location'] ?? null,

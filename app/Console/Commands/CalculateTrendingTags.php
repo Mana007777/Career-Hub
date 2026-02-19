@@ -33,7 +33,7 @@ class CalculateTrendingTags extends Command
 
         $this->info("Calculating trending tags from the last {$days} days...");
 
-        // Get tags used in the last X days with their usage counts
+        
         $trendingTags = DB::table('post_tags')
             ->join('posts', 'post_tags.post_id', '=', 'posts.id')
             ->join('tags', 'post_tags.tag_id', '=', 'tags.id')
@@ -50,7 +50,7 @@ class CalculateTrendingTags extends Command
             $this->line(($index + 1) . ". {$tag->name} - {$tag->recent_usage} uses");
         }
 
-        // Update tag stats with trending information
+        
         foreach ($trendingTags as $tag) {
             $tagModel = Tag::find($tag->id);
             if ($tagModel) {

@@ -35,22 +35,16 @@ class UpdateUserReputations extends Command
         foreach ($users as $user) {
             $score = 0;
 
-            // Posts get points
             $score += $user->posts()->count() * 5;
 
-            // Comments get points
             $score += $user->comments()->count() * 3;
 
-            // Followers
             $score += $user->followers()->count() * 10;
 
-            // Endorsements received
             $score += $user->endorsements()->count() * 15;
 
-            // Job applications (shows activity)
             $score += $user->jobApplications()->count() * 2;
 
-            // Calculate level based on score
             $level = match (true) {
                 $score >= 1000 => 'Expert',
                 $score >= 500 => 'Advanced',

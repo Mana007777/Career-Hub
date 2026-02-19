@@ -30,7 +30,7 @@ class ArchiveOldNotifications extends Command
         $days = (int) $this->option('days');
         $cutoffDate = now()->subDays($days);
 
-        // Get read notifications older than cutoff date that aren't already archived
+        
         $notifications = UserNotification::where('is_read', true)
             ->where('created_at', '<', $cutoffDate)
             ->whereDoesntHave('archive')

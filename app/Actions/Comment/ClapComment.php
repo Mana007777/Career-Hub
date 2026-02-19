@@ -28,7 +28,7 @@ class ClapComment
 
         if ($existing) {
             $existing->delete();
-            return false; // unclapped
+            return false; 
         }
 
         CommentClap::create([
@@ -36,7 +36,7 @@ class ClapComment
             'user_id' => $userId,
         ]);
 
-        return true; // clapped
+        return true; 
     }
 }
 

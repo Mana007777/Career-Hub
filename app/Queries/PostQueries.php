@@ -101,19 +101,14 @@ class PostQueries
         $query = Post::whereIn('user_id', $followingIds)
             ->whereNotIn('user_id', $excludedIds)
             ->whereDoesntHave('suspension')
-            ->whereHas('user', function($q) {
-                $q->whereDoesntHave('suspension');
-            })
+            ->whereHas('user', fn ($q) => $q->whereDoesntHave('suspension'))
             ->with([
                 'user',
-                'stars',
-                'comments',
-                'specialties' => function($query) {
-                    $query->with('subSpecialties');
-                },
+                'specialties' => fn ($q) => $q->with('subSpecialties'),
                 'tags',
-                'suspension'
-            ]);
+            ])
+            ->withCount(['stars', 'comments'])
+            ->with(['stars' => fn ($q) => $q->where('user_id', $userId)]);
         
         // Apply filters
         $this->applyFilters($query, $filters);
@@ -139,23 +134,16 @@ class PostQueries
         // Don't cache when filters are applied as cache keys would be too complex
         $hasFilters = !empty($filters['tags']) || !empty($filters['specialties']) || !empty($filters['jobType']);
         
-        // Build the query - ONLY posts with at least one star, ordered by stars_count DESC
         $query = Post::with([
                 'user',
-                'stars',
-                'comments',
-                'specialties' => function($query) {
-                    $query->with('subSpecialties');
-                },
+                'specialties' => fn ($q) => $q->with('subSpecialties'),
                 'tags',
-                'suspension'
             ])
+            ->withCount(['stars', 'comments'])
             ->whereDoesntHave('suspension')
-            ->whereHas('user', function($q) {
-                $q->whereDoesntHave('suspension');
-            })
-            ->whereHas('stars') // ONLY posts that have at least one star
-            ->withCount(['stars']); // Count stars for ordering
+            ->whereHas('user', fn ($q) => $q->whereDoesntHave('suspension'))
+            ->whereHas('stars')
+            ->when($userId, fn ($q) => $q->with(['stars' => fn ($sq) => $sq->where('user_id', $userId)]));
         
         if (!empty($excludedIds)) {
             $query->whereNotIn('user_id', $excludedIds);
@@ -339,16 +327,16 @@ class PostQueries
 
     /**
      * Get all user IDs to exclude (both blocked and blocked by).
+     * Public so PostRepository and others can reuse the same cached result.
      *
      * @param  int  $userId
      * @return array
      */
-    private function getExcludedUserIds(int $userId): array
+    public function getExcludedUserIds(int $userId): array
     {
         $blockedIds = $this->getBlockedUserIds($userId);
         $blockedByIds = $this->getBlockedByUserIds($userId);
         $excluded = array_unique(array_merge($blockedIds, $blockedByIds));
-        // Never exclude the current user so they can always see their own posts
-        return array_diff($excluded, [$userId]);
+        return array_values(array_diff($excluded, [$userId]));
     }
 }

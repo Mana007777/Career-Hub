@@ -19,12 +19,12 @@ class CreateReport
      */
     public function create(string $targetType, int $targetId, string $reason): Report
     {
-        // Validate target type
+        
         if (!in_array($targetType, ['post', 'user', 'comment'], true)) {
             throw new \InvalidArgumentException('Invalid target type. Must be post, user, or comment.');
         }
 
-        // Check if user already reported this target
+        
         $existingReport = Report::where('reporter_id', Auth::id())
             ->where('target_type', $targetType)
             ->where('target_id', $targetId)
@@ -35,12 +35,12 @@ class CreateReport
             throw new ReportException('You have already reported this ' . $targetType . '.');
         }
 
-        // Prevent users from reporting themselves
+    
         if ($targetType === 'user' && $targetId === Auth::id()) {
             throw new ReportException('You cannot report yourself.');
         }
 
-        // Prevent admins from reporting
+        
         if (Auth::user()->isAdmin()) {
             throw new ReportException('Admins cannot submit reports.');
         }

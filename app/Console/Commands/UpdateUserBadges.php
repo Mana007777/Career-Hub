@@ -29,7 +29,7 @@ class UpdateUserBadges extends Command
     {
         $this->info('Updating user badges...');
 
-        // Ensure badges exist
+
         $this->ensureBadgesExist();
 
         $users = User::all();
@@ -38,7 +38,6 @@ class UpdateUserBadges extends Command
         foreach ($users as $user) {
             $badgesAwarded = 0;
 
-            // First Post Badge
             if ($user->posts()->count() >= 1) {
                 $badge = Badge::firstOrCreate(['name' => 'First Post'], ['icon' => '📝']);
                 if (!$user->badges()->where('badges.id', $badge->id)->exists()) {
@@ -47,7 +46,6 @@ class UpdateUserBadges extends Command
                 }
             }
 
-            // Active Poster (10+ posts)
             if ($user->posts()->count() >= 10) {
                 $badge = Badge::firstOrCreate(['name' => 'Active Poster'], ['icon' => '✍️']);
                 if (!$user->badges()->where('badges.id', $badge->id)->exists()) {
@@ -56,7 +54,6 @@ class UpdateUserBadges extends Command
                 }
             }
 
-            // Popular (50+ followers)
             if ($user->followers()->count() >= 50) {
                 $badge = Badge::firstOrCreate(['name' => 'Popular'], ['icon' => '⭐']);
                 if (!$user->badges()->where('badges.id', $badge->id)->exists()) {
@@ -65,7 +62,6 @@ class UpdateUserBadges extends Command
                 }
             }
 
-            // Helper (50+ comments)
             if ($user->comments()->count() >= 50) {
                 $badge = Badge::firstOrCreate(['name' => 'Helper'], ['icon' => '💬']);
                 if (!$user->badges()->where('badges.id', $badge->id)->exists()) {
@@ -74,7 +70,6 @@ class UpdateUserBadges extends Command
                 }
             }
 
-            // Job Seeker (10+ applications)
             if ($user->jobApplications()->count() >= 10) {
                 $badge = Badge::firstOrCreate(['name' => 'Job Seeker'], ['icon' => '💼']);
                 if (!$user->badges()->where('badges.id', $badge->id)->exists()) {
@@ -93,9 +88,7 @@ class UpdateUserBadges extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * Ensure default badges exist in the database.
-     */
+    
     private function ensureBadgesExist(): void
     {
         $defaultBadges = [

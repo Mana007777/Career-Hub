@@ -918,18 +918,20 @@ class Post extends Component
             default => $postService->getAllPosts(9, $filterParams),
         };
         
-        // Load IDs of posts the current user has saved (for bookmark state)
-        $this->savedPostIds = [];
-        if (Auth::check()) {
-            $this->savedPostIds = SavedItem::where('user_id', Auth::id())
-                ->where('item_type', PostModel::class)
-                ->pluck('item_id')
-                ->toArray();
-        }
+        $userId = Auth::id();
+        $this->savedPostIds = $userId
+            ? \Illuminate\Support\Facades\Cache::remember(
+                "user:{$userId}:saved_post_ids",
+                now()->addMinutes(5),
+                fn () => SavedItem::where('user_id', $userId)
+                    ->where('item_type', PostModel::class)
+                    ->pluck('item_id')
+                    ->toArray()
+            )
+            : [];
 
-        // Get all available tags, specialties, and job types for filter dropdowns
-        $allTags = \App\Models\Tag::orderBy('name')->get();
-        $allSpecialties = \App\Models\Specialty::with('subSpecialties')->orderBy('name')->get();
+        $allTags = \Illuminate\Support\Facades\Cache::remember('posts:filter:tags', now()->addHour(), fn () => \App\Models\Tag::orderBy('name')->get());
+        $allSpecialties = \Illuminate\Support\Facades\Cache::remember('posts:filter:specialties', now()->addHour(), fn () => \App\Models\Specialty::with('subSpecialties')->orderBy('name')->get());
         $jobTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship', 'remote'];
 
         return view('livewire.post', [
@@ -947,8 +949,8 @@ class Post extends Component
             $post = $postRepository->findById($postId);
             $savePostAction->toggle($post);
 
-            // Refresh saved IDs so UI updates without full page reload
             if (Auth::check()) {
+                \Illuminate\Support\Facades\Cache::forget('user:' . Auth::id() . ':saved_post_ids');
                 $this->savedPostIds = SavedItem::where('user_id', Auth::id())
                     ->where('item_type', PostModel::class)
                     ->pluck('item_id')

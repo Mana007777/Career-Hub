@@ -32,7 +32,7 @@ class UserProfile extends Component
     public $showFollowersModal = false;
     public $showFollowingModal = false;
     public $showAdminActionsModal = false;
-    public $adminActionType = ''; // 'suspend', 'unsuspend', 'delete'
+    public $adminActionType = ''; 
     public $suspendReason = '';
     public $suspendExpiresAt = null;
     /** @var \Illuminate\Support\Collection<int, \App\Models\Organization>|array */
@@ -57,18 +57,15 @@ class UserProfile extends Component
 
     public function mount(string $username, FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
-        // Remove @ if present
         $this->username = ltrim($username, '@');
         $this->loadUser($followUserAction, $blockUserAction, $userRepository);
     }
 
     protected function loadUser(FollowUser $followUserAction, BlockUser $blockUserAction, UserRepository $userRepository): void
     {
-        // Allow admins to see suspended users
         $includeSuspended = $this->authUser()?->isAdmin() ?? false;
         $this->user = $userRepository->findByUsernameWithCounts($this->username, $includeSuspended);
         
-        // Ensure suspension relationship is loaded
         if (!$this->user->relationLoaded('suspension')) {
             $this->user->load('suspension');
         }
@@ -76,7 +73,6 @@ class UserProfile extends Component
         if (Auth::check()) {
             $this->isBlockedBy = $blockUserAction->isBlockedBy($this->user);
             
-            // If the profile owner has blocked the current user, show 404 (unless admin)
             if ($this->isBlockedBy && !$this->authUser()?->isAdmin()) {
                 abort(404, 'User not found');
             }
@@ -97,16 +93,13 @@ class UserProfile extends Component
             $this->endorsableSkills = app(EndorseUser::class)->getEndorsableSkills($this->user)->all();
         }
         
-        // Preload organizations the user belongs to
         $this->user->loadMissing(['organizations']);
         $this->organizationMemberships = $this->user->organizations;
         
-        // Preload pending invitation for current viewer (if viewer is a company)
         $authUser = $this->authUser();
         if ($authUser && $authUser->isCompany() && $authUser->id !== $this->user->id) {
             $companyId = Auth::id();
 
-            // Check if this user is already a member of the viewer company
             $this->viewerCompanyAlreadyMember = collect($this->organizationMemberships)->contains('id', $companyId);
 
             $pending = \App\Models\OrganizationMembership::where('company_id', $companyId)
@@ -130,7 +123,6 @@ class UserProfile extends Component
                 session()->flash('success', 'You are now following ' . $this->user->name);
             }
 
-            // Refresh counts using withCount
             $this->user->loadCount('followers');
             $this->followersCount = $this->user->followers_count;
         } catch (\Exception $e) {
@@ -171,7 +163,6 @@ class UserProfile extends Component
                 ]
             );
 
-            // If already accepted, do not change it or resend an invite
             if ($membership->status === 'accepted') {
                 session()->flash('success', 'This user is already a member of your organization.');
                 $this->viewerCompanyAlreadyMember = true;
@@ -179,7 +170,6 @@ class UserProfile extends Component
                 return;
             }
 
-            // If it was previously rejected, reset to pending
             if ($membership->status !== 'pending') {
                 $membership->status = 'pending';
                 $membership->invited_by = $companyId;
@@ -190,7 +180,6 @@ class UserProfile extends Component
 
             $this->pendingOrganizationInvitationId = $membership->id;
 
-            // Notify the user about the invitation
             \App\Models\UserNotification::create([
                 'user_id' => $this->user->id,
                 'source_user_id' => $companyId,
@@ -227,11 +216,9 @@ class UserProfile extends Component
             $membership->rejected_at = null;
             $membership->save();
 
-            // Refresh organizations on profile
             $this->user->load('organizations');
             $this->organizationMemberships = $this->user->organizations;
 
-            // Notify the company that user accepted
             if ($membership->company_id) {
                 \App\Models\UserNotification::create([
                     'user_id' => $membership->company_id,
@@ -243,7 +230,6 @@ class UserProfile extends Component
                 ]);
             }
 
-            // Clear pending state for this viewer if relevant
             if ($this->authUser()?->isCompany() && Auth::id() === $membership->company_id) {
                 $this->pendingOrganizationInvitationId = null;
             }

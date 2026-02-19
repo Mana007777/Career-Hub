@@ -3,13 +3,22 @@
 namespace App\Repositories;
 
 use App\Models\Post;
+use App\Queries\PostQueries;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class PostRepository
 {
+    protected PostQueries $queries;
+
+    public function __construct(?PostQueries $queries = null)
+    {
+        $this->queries = $queries ?? app(PostQueries::class);
+    }
+
     /**
      * Get all posts with relationships, ordered by latest.
-     * Simple query - kept in repository.
+     * Optimized for Octane: lightweight eager load, withCount for comments/stars,
+     * cached excluded user IDs, no full comment/stars collection load.
      *
      * @param  int  $perPage
      * @param  int|null  $userId  Current user ID to filter blocked users
@@ -18,45 +27,23 @@ class PostRepository
      */
     public function getAll(int $perPage = 10, ?int $userId = null, array $filters = []): LengthAwarePaginator
     {
-        $query = Post::with([
-            'user',
-            'stars',
-            'comments',
-            'specialties' => function($query) {
-                $query->with('subSpecialties');
-            },
-            'tags',
-            'suspension'
-        ])
-        // Hide any post that currently has a suspension record, regardless of expiry
-        ->whereDoesntHave('suspension')
-        // Also hide posts from users who are currently suspended
-        ->whereHas('user', function($q) {
-            $q->whereDoesntHave('suspension');
-        });
-        
-        // Filter out posts from blocked users (bidirectional blocking)
+        $query = Post::query()
+            ->with([
+                'user',
+                'specialties' => fn ($q) => $q->with('subSpecialties'),
+                'tags',
+            ])
+            ->withCount(['stars', 'comments'])
+            ->whereDoesntHave('suspension')
+            ->whereHas('user', fn ($q) => $q->whereDoesntHave('suspension'));
+
         if ($userId) {
-            // Users the current user has blocked
-            $blockedIds = \DB::table('blocks')
-                ->where('blocker_id', $userId)
-                ->pluck('blocked_id')
-                ->toArray();
-            
-            // Users who have blocked the current user
-            $blockedByIds = \DB::table('blocks')
-                ->where('blocked_id', $userId)
-                ->pluck('blocker_id')
-                ->toArray();
-            
-            // Combine both arrays
-            $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
-            // Never exclude the current user themselves so their own posts still show
-            $excludedIds = array_diff($excludedIds, [$userId]);
-            
-            if (!empty($excludedIds)) {
+            $excludedIds = $this->queries->getExcludedUserIds($userId);
+            if ($excludedIds !== []) {
                 $query->whereNotIn('user_id', $excludedIds);
             }
+            // Eager load only current user's star for "did I star this" (at most 1 row per post)
+            $query->with(['stars' => fn ($q) => $q->where('user_id', $userId)]);
         }
         
         // Apply filters

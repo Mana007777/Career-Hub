@@ -35,14 +35,14 @@ class GenerateJobRecommendations extends Command
         $totalGenerated = 0;
 
         foreach ($users as $user) {
-            // Get user's specialties
+            
             $userSpecialtyIds = $user->specialties()->pluck('specialties.id')->toArray();
             
             if (empty($userSpecialtyIds)) {
                 continue;
             }
 
-            // Find jobs matching user's specialties
+            
             $recommendedJobs = CareerJob::whereIn('specialty_id', $userSpecialtyIds)
                 ->whereDoesntHave('recommendations', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
@@ -55,10 +55,10 @@ class GenerateJobRecommendations extends Command
                 ->get();
 
             foreach ($recommendedJobs as $job) {
-                // Calculate recommendation score based on specialty match
+                
                 $score = 100;
                 if ($user->specialties()->where('specialties.id', $job->specialty_id)->exists()) {
-                    $score += 50; // Bonus for exact specialty match
+                    $score += 50; 
                 }
 
                 JobRecommendation::updateOrCreate(

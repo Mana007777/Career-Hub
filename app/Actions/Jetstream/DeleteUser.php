@@ -13,8 +13,7 @@ class DeleteUser implements DeletesUsers
      */
     public function delete(User $user): void
     {
-        // Check if the authenticated user can delete this user
-        // Users can delete themselves, or admins can delete any user
+        
         $authenticatedUser = auth()->user();
         
         if ($authenticatedUser && $authenticatedUser->id !== $user->id) {

@@ -30,8 +30,7 @@ class SavePost
         if ($existing) {
             $existing->delete();
 
-            return false; // unsaved
-        }
+            return false; 
 
         SavedItem::create([
             'user_id' => $userId,
@@ -39,7 +38,7 @@ class SavePost
             'item_id' => $post->id,
         ]);
 
-        return true; // saved
+        return true; 
     }
 }
 

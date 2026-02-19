@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class EndorseUser
 {
-    /**
-     * Endorse a user for a specific skill.
-     */
+    
     public function endorse(User $userToEndorse, string $skill): Endorsement
     {
         $currentUser = Auth::user();
@@ -62,9 +60,7 @@ class EndorseUser
         return $endorsement;
     }
 
-    /**
-     * Remove an endorsement for a specific skill.
-     */
+    
     public function removeEndorsement(User $userToUnendorse, string $skill): bool
     {
         $currentUser = Auth::user();
@@ -81,9 +77,7 @@ class EndorseUser
         return $deleted > 0;
     }
 
-    /**
-     * Check if the current user has endorsed the given user for a specific skill.
-     */
+    
     public function hasEndorsed(User $user, string $skill): bool
     {
         $currentUser = Auth::user();
@@ -98,10 +92,7 @@ class EndorseUser
             ->exists();
     }
 
-    /**
-     * Get skills that can be endorsed for a user.
-     * Uses the user's specialties; also allows custom skills that were already endorsed.
-     */
+   
     public function getEndorsableSkills(User $user): Collection
     {
         $skills = collect();
@@ -120,7 +111,7 @@ class EndorseUser
             }
         }
 
-        // Include skills the user has been endorsed for (in case they're not in specialties)
+        
         $endorsedSkills = Endorsement::where('user_id', $user->id)
             ->distinct()
             ->pluck('skill');

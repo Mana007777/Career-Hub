@@ -34,7 +34,7 @@ class SendJobAlerts extends Command
 
         $this->info("Sending job alerts for jobs posted in the last {$days} day(s)...");
 
-        // Get new jobs
+        
         $newJobs = CareerJob::where('created_at', '>=', $cutoffDate)->get();
 
         if ($newJobs->isEmpty()) {
@@ -52,14 +52,14 @@ class SendJobAlerts extends Command
                 continue;
             }
 
-            // Find matching jobs
+            
             $matchingJobs = $newJobs->filter(function ($job) use ($userSpecialtyIds) {
                 return in_array($job->specialty_id, $userSpecialtyIds);
             });
 
             if ($matchingJobs->isNotEmpty()) {
                 foreach ($matchingJobs as $job) {
-                    // Check if notification already exists
+                    
                     $exists = UserNotification::where('user_id', $user->id)
                         ->where('post_id', null)
                         ->where('type', 'job_alert')

@@ -28,20 +28,16 @@ class EnsureSessionIsolation
 
         $response = $next($request);
 
-        // Prevent caching of authenticated pages to avoid stale session data
         if ($user) {
             $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
             $response->headers->set('Pragma', 'no-cache');
             $response->headers->set('Expires', '0');
             $response->headers->set('X-Content-Type-Options', 'nosniff');
             
-            // Check if user's online status changed
             $isNowOnline = $user->isActive();
             if ($wasOnline !== $isNowOnline) {
-                // Broadcast presence change
                 broadcast(new UserPresenceChanged($user, $isNowOnline));
                 
-                // If user just came online, update sent messages to delivered
                 if ($isNowOnline && !$wasOnline) {
                     app(MessageStatusService::class)->updateSentToDeliveredForUser($user);
                 }

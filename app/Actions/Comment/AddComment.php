@@ -26,10 +26,10 @@ class AddComment
             'content'  => trim($content),
         ]);
 
-        // Clear post cache as comment count changed
+        
         app(PostQueries::class)->clearPostCache($post->id);
 
-        // Notification is handled by CommentObserver
+        
 
         return $comment;
     }

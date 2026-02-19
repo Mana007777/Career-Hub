@@ -25,11 +25,11 @@ class UploadPostCv
     {
         $userId = Auth::id();
 
-        // Store the CV file
+        
         $cvPath = $this->storeCv($cvFile);
         $originalFilename = $cvFile->getClientOriginalName();
 
-        // Create the PostCv record
+        
         $postCv = PostCv::create([
             'post_id' => $post->id,
             'user_id' => $userId,
@@ -38,7 +38,7 @@ class UploadPostCv
             'message' => $message,
         ]);
 
-        // Send notification to post owner (queued on default queue, e.g. Redis)
+            
         $postOwner = $post->user;
         if ($postOwner && $postOwner->id !== $userId) {
             $applicant = Auth::user();

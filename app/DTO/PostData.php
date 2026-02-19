@@ -2,9 +2,7 @@
 
 namespace App\DTO;
 
-/**
- * Data Transfer Object representing the data needed to create or update a post.
- */
+
 class PostData
 {
     /**
