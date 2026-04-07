@@ -63,6 +63,15 @@
             <p class="dark:text-gray-400 text-gray-600">Manage your account settings and preferences</p>
         </div>
 
+        <div
+            x-show="loaded"
+            x-transition:enter="transition ease-out duration-700"
+            x-transition:enter-start="opacity-0 translate-y-8"
+            x-transition:enter-end="opacity-100 translate-y-0"
+        >
+            @livewire('profile.verification-payment')
+        </div>
+
         <!-- Settings Options -->
         <div 
             class="space-y-4"

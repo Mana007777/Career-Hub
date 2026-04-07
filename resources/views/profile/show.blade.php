@@ -7,6 +7,8 @@
 
     <div class="dark:bg-gray-900 bg-white dark:text-white text-gray-900 min-h-screen">
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+            @livewire('profile.verification-payment')
+
             <!-- Profile Information Display -->
             <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 overflow-hidden shadow-xl sm:rounded-lg mb-10">
                 <div class="p-6 sm:p-8">
