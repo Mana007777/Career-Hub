@@ -75,7 +75,11 @@ class VerificationPayment extends Component
             );
 
             if (! $response || ! $response->successful()) {
-                $this->errorMessage = 'Could not create payment right now. Please try again.';
+                $this->errorMessage = sprintf(
+                    'Could not create payment right now. FIB response: %s %s',
+                    (string) $response?->status(),
+                    trim((string) $response?->body())
+                );
 
                 return;
             }
