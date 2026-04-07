@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VerificationPaymentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,6 +58,11 @@ Route::middleware([
     Route::get('/explore/users', function () {
         return view('dashboard', ['showExploreUsers' => true]);
     })->name('explore.users');
+
+    Route::prefix('/verification-payments')->name('verification-payments.')->group(function () {
+        Route::post('/{verification}/checkout', [VerificationPaymentController::class, 'createCheckout'])->name('checkout');
+        Route::get('/{verification}/status', [VerificationPaymentController::class, 'refreshStatus'])->name('status');
+    });
 });
 
 // GitHub OAuth (manual, without Socialite) using Livewire components
