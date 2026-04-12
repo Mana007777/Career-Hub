@@ -367,8 +367,11 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        // Consider suspension active only if it has no expiry or the expiry is in the future
+        // Expired temporary suspensions are treated as inactive; remove the stale row (same as Post).
         if ($this->suspension->expires_at && $this->suspension->expires_at->isPast()) {
+            $this->suspension->delete();
+            $this->unsetRelation('suspension');
+
             return false;
         }
 

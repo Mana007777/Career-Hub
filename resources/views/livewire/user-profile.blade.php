@@ -60,7 +60,7 @@
                                         {{ ucfirst($user->role) }}
                                     </span>
                                 @endif
-                                @if($user->suspension)
+                                @if($user->isSuspended())
                                     <span class="px-3 py-1 text-xs font-medium rounded-full dark:bg-red-600/20 bg-red-100 dark:text-red-400 text-red-700 dark:border-red-600/50 border-red-300 border" title="Suspended">
                                         Suspended
                                     </span>
@@ -335,7 +335,7 @@
                                         x-transition:leave-end="opacity-0 scale-95"
                                         class="absolute right-0 mt-2 w-48 dark:bg-gray-800 bg-white border dark:border-gray-700 border-gray-200 rounded-lg shadow-lg z-50"
                                         style="display: none;">
-                                        @if($user->suspension)
+                                        @if($user->isSuspended())
                                             <button 
                                                 wire:click="openUnsuspendUserModal"
                                                 class="w-full text-left px-4 py-2 text-sm dark:text-green-400 text-green-600 hover:dark:bg-gray-700 hover:bg-gray-50 flex items-center gap-2"
