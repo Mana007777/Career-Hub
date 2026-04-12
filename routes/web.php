@@ -1,7 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VerificationPaymentController;
+use App\Models\Post;
+use App\Models\User;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,14 +24,35 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/posts/{slug}', function ($slug) {
-        return view('dashboard', ['postSlug' => $slug]);
+    Route::get('/posts/{slug}', function (string $slug) {
+        $postPageTitle = 'Post';
+        $parts = explode('-', $slug);
+        $id = end($parts);
+        if (is_numeric($id)) {
+            $headline = Post::query()->whereKey((int) $id)->value('title');
+            if (is_string($headline) && trim($headline) !== '') {
+                $postPageTitle = Str::limit(trim($headline), 72, '…');
+            }
+        }
+
+        return view('dashboard', [
+            'postSlug' => $slug,
+            'postPageTitle' => $postPageTitle,
+        ]);
     })->name('posts.show');
 
-    Route::get('/user/{username}', function ($username) {
-        // Remove @ if present
-        $username = ltrim($username);
-        return view('dashboard', ['profileUsername' => $username]);
+    Route::get('/user/{username}', function (string $username) {
+        $username = ltrim($username, '@');
+        $profilePageTitle = '@'.$username;
+        $profileUser = User::query()->where('username', $username)->first(['name', 'username']);
+        if ($profileUser !== null) {
+            $profilePageTitle = $profileUser->name.' (@'.$profileUser->username.')';
+        }
+
+        return view('dashboard', [
+            'profileUsername' => $username,
+            'profilePageTitle' => $profilePageTitle,
+        ]);
     })->name('user.profile');
 
     Route::get('/cvs', function () {
@@ -48,10 +72,17 @@ Route::middleware([
     })->name('bookmarks');
 
     Route::get('/search', function () {
+        $q = request()->query('q');
+        $searchPageTitle = 'Search';
+        if (is_string($q) && trim($q) !== '') {
+            $searchPageTitle = 'Search: '.Str::limit(trim($q), 48, '…');
+        }
+
         return view('dashboard', [
             'openSearch' => true,
-            'q' => request()->query('q'),
+            'q' => $q,
             'type' => request()->query('type'),
+            'searchPageTitle' => $searchPageTitle,
         ]);
     })->name('search');
 
@@ -73,11 +104,13 @@ if (app()->environment('local')) {
     Route::get('/test/login-as/{userId}', function ($userId) {
         $user = \App\Models\User::findOrFail($userId);
         auth()->login($user);
+
         return redirect()->route('dashboard')->with('success', "Logged in as {$user->name}");
     })->name('test.login-as');
-    
+
     Route::get('/test/users', function () {
         $users = \App\Models\User::select('id', 'name', 'email', 'username')->get();
+
         return view('test.users', ['users' => $users]);
     })->name('test.users');
 }

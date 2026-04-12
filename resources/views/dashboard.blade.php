@@ -1,4 +1,17 @@
-<x-app-layout>
+@php
+    $dashboardTitle = match (true) {
+        !empty($showCvs ?? false) => 'CVs',
+        !empty($showReports ?? false) => 'Reports',
+        isset($profileUsername) => $profilePageTitle ?? ('@'.ltrim((string) $profileUsername, '@')),
+        isset($postSlug) => $postPageTitle ?? 'Post',
+        !empty($showSettings ?? false) => 'Settings',
+        !empty($showBookmarks ?? false) => 'Bookmarks',
+        !empty($showExploreUsers ?? false) => 'Explore people',
+        !empty($openSearch ?? false) => $searchPageTitle ?? 'Search',
+        default => 'Home',
+    };
+@endphp
+<x-app-layout :title="$dashboardTitle">
     <div class="bg-transparent dark:text-white text-gray-900 min-h-screen">
         @livewire('search', [
             'openSearchFromRoute' => $openSearch ?? false,
