@@ -16,8 +16,9 @@ class GithubOAuthService
         $clientId = config('services.github.client_id');
         $redirectUri = config('services.github.redirect');
 
-        $state = Str::random(40);
-        session(['github_oauth_state' => $state]);
+        // Signed state survives GitHub's cross-site redirect without relying on the session
+        // cookie (Strict SameSite, localhost vs 127.0.0.1, etc.).
+        $state = $this->buildSignedOAuthState();
 
         $query = http_build_query([
             'client_id' => $clientId,
@@ -27,15 +28,12 @@ class GithubOAuthService
             'allow_signup' => 'true',
         ]);
 
-        return 'https://github.com/login/oauth/authorize?' . $query;
+        return 'https://github.com/login/oauth/authorize?'.$query;
     }
 
     public function handleCallback(string $code, ?string $stateFromRequest = null): User
     {
-        $expectedState = session('github_oauth_state');
-        session()->forget('github_oauth_state');
-
-        if (!$expectedState || !$stateFromRequest || !hash_equals($expectedState, $stateFromRequest)) {
+        if (! $this->verifySignedOAuthState($stateFromRequest)) {
             abort(403, 'Invalid GitHub OAuth state.');
         }
 
@@ -44,7 +42,7 @@ class GithubOAuthService
         $githubUser = $this->fetchGithubUser($token);
         $email = $this->resolvePrimaryEmail($token, $githubUser);
 
-        if (!$email) {
+        if (! $email) {
             abort(400, 'GitHub did not provide an email address for this account.');
         }
 
@@ -62,13 +60,13 @@ class GithubOAuthService
                 'redirect_uri' => config('services.github.redirect'),
             ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             abort(400, 'Failed to get access token from GitHub.');
         }
 
         $token = $response->json()['access_token'] ?? null;
 
-        if (!$token) {
+        if (! $token) {
             abort(400, 'GitHub did not return an access token.');
         }
 
@@ -81,7 +79,7 @@ class GithubOAuthService
             ->acceptJson()
             ->get('https://api.github.com/user');
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             abort(400, 'Failed to fetch user information from GitHub.');
         }
 
@@ -90,7 +88,7 @@ class GithubOAuthService
 
     protected function resolvePrimaryEmail(string $token, array $githubUser): ?string
     {
-        if (!empty($githubUser['email'])) {
+        if (! empty($githubUser['email'])) {
             return $githubUser['email'];
         }
 
@@ -98,7 +96,7 @@ class GithubOAuthService
             ->acceptJson()
             ->get('https://api.github.com/user/emails');
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
@@ -126,7 +124,7 @@ class GithubOAuthService
         $suffix = 1;
 
         while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . '_' . $suffix++;
+            $username = $baseUsername.'_'.$suffix++;
         }
 
         $user = User::create([
@@ -152,14 +150,14 @@ class GithubOAuthService
     {
         $avatarUrl = $githubUser['avatar_url'] ?? null;
 
-        if (!$avatarUrl) {
+        if (! $avatarUrl) {
             return;
         }
 
         try {
             $response = Http::get($avatarUrl);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return;
             }
 
@@ -169,7 +167,7 @@ class GithubOAuthService
                 $extension = 'png';
             }
 
-            $path = 'profile-photos/' . Str::uuid() . '.' . $extension;
+            $path = 'profile-photos/'.Str::uuid().'.'.$extension;
 
             Storage::disk('public')->put($path, $response->body());
 
@@ -191,5 +189,43 @@ class GithubOAuthService
         // so we can show provider-specific guidance in the UI (e.g. on /user/profile)
         session(['logged_in_via_github' => true]);
     }
-}
 
+    private function buildSignedOAuthState(): string
+    {
+        $expiresAt = now()->addMinutes(10)->getTimestamp();
+        $nonce = Str::random(32);
+        $payload = $expiresAt.'|'.$nonce;
+        $signature = hash_hmac('sha256', $payload, (string) config('app.key'));
+
+        return rtrim(strtr(base64_encode($payload.'|'.$signature), '+/', '-_'), '=');
+    }
+
+    private function verifySignedOAuthState(?string $state): bool
+    {
+        if ($state === null || $state === '') {
+            return false;
+        }
+
+        $decoded = base64_decode(strtr($state, '-_', '+/'), true);
+        if ($decoded === false) {
+            return false;
+        }
+
+        $parts = explode('|', $decoded, 3);
+        if (count($parts) !== 3) {
+            return false;
+        }
+
+        [$expiresAt, $nonce, $signature] = $parts;
+        if (! ctype_digit((string) $expiresAt) || (int) $expiresAt < now()->getTimestamp()) {
+            return false;
+        }
+
+        $payload = $expiresAt.'|'.$nonce;
+
+        return hash_equals(
+            hash_hmac('sha256', $payload, (string) config('app.key')),
+            $signature
+        );
+    }
+}
