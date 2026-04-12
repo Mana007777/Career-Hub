@@ -26,8 +26,11 @@ class GithubCallback extends Component
 
             redirect()->intended(route('dashboard'))->send();
         } catch (\Throwable $e) {
-            $this->error = 'GitHub login failed. Please try again or use email/password.';
             report($e);
+            $this->error = 'GitHub login failed. Please try again or use email/password.';
+            if (app()->environment('local')) {
+                $this->error .= ' Details: '.$e->getMessage();
+            }
         }
     }
 
