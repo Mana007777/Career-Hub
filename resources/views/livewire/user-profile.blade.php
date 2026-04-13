@@ -207,7 +207,8 @@
                     Verified Competencies
                 </h2>
                 <div class="flex flex-wrap gap-4 px-2">
-                    @foreach($endorsementsBySkill as $skill => $endorsements)
+                    @foreach($endorsementsBySkill as $skill => $rawEndorsements)
+                        @php $endorsements = collect(is_object($rawEndorsements) ? (array)$rawEndorsements : $rawEndorsements); @endphp
                         <div class="group relative px-5 py-3 bg-zinc-900/40 border border-zinc-800/50 rounded-2xl flex items-center gap-4 hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all cursor-default backdrop-blur-sm shadow-lg">
                             <span class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest">{{ $skill }}</span>
                             <div class="w-px h-4 bg-zinc-800 group-hover:bg-emerald-500/30 transition-colors"></div>
@@ -217,14 +218,17 @@
                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-max max-w-xs bg-zinc-950 border border-zinc-800/80 rounded-2xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 shadow-2xl backdrop-blur-xl">
                                 <div class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-3 border-b border-zinc-800/50 pb-2 italic">Endorsed By</div>
                                 <div class="flex flex-wrap gap-2">
-                                    @foreach(collect($endorsements)->take(5) as $endorsement)
-                                        @php $endorser = $endorsement->endorser ?? null; @endphp
+                                    @foreach($endorsements->take(5) as $endorsement)
+                                        @php 
+                                            // Handle case where $endorsement itself might be cast as an object/array
+                                            $endorser = is_array($endorsement) ? ($endorsement['endorser'] ?? null) : ($endorsement->endorser ?? null); 
+                                        @endphp
                                         @if($endorser)
-                                            <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner" title="{{ $endorser->name }}">
-                                                @if($endorser->profile_photo_path)
-                                                    <img src="{{ $endorser->profile_photo_url }}" class="w-full h-full object-cover">
+                                            <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner" title="{{ is_array($endorser) ? ($endorser['name'] ?? 'U') : ($endorser->name ?? 'U') }}">
+                                                @if(is_array($endorser) ? !empty($endorser['profile_photo_path']) : !empty($endorser->profile_photo_path))
+                                                    <img src="{{ is_array($endorser) ? ($endorser['profile_photo_url'] ?? '') : ($endorser->profile_photo_url ?? '') }}" class="w-full h-full object-cover">
                                                 @else
-                                                    <div class="w-full h-full flex items-center justify-center text-[10px] font-black text-emerald-500">{{ strtoupper(substr($endorser->name, 0, 1)) }}</div>
+                                                    <div class="w-full h-full flex items-center justify-center text-[10px] font-black text-emerald-500">{{ strtoupper(substr(is_array($endorser) ? ($endorser['name'] ?? 'U') : ($endorser->name ?? 'U'), 0, 1)) }}</div>
                                                 @endif
                                             </div>
                                         @endif
