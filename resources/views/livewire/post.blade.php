@@ -1,18 +1,13 @@
 <div
-    class="min-h-screen dark:text-white text-gray-900 pb-24"
-    x-data="{ loaded: false }"
+    class="min-h-screen text-gray-100 pb-24"
     x-init="
-        // Start in loading state
-        loaded = false;
+        // Default to loaded if no navigation is happening
+        loaded = true;
 
         const setLoaded = () => { loaded = true };
         const setLoading = () => { loaded = false };
 
-        // When Livewire finishes initial load / navigation, show real content
-        document.addEventListener('livewire:load', setLoaded);
         document.addEventListener('livewire:navigated', setLoaded);
-
-        // When Livewire starts navigating, show skeletons
         document.addEventListener('livewire:navigating', setLoading);
     "
 >
@@ -23,13 +18,16 @@
 
     <!-- Actual content -->
     <div x-show="loaded" x-cloak>
-        <!-- Sticky Header Container -->
-        <div class="sticky top-0 z-50 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 py-4 bg-gray-950/60 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
-            <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <!-- Sticky Header with Backdrop Blur -->
+        <div class="sticky top-0 z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-20 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent drop-shadow-sm">
-                        Posts
-                    </h1>
+                    <div class="flex flex-col">
+                        <h1 class="text-2xl font-black text-white tracking-tight leading-none">
+                            Career <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-brand-violet to-brand-purple bg-[length:200%_auto] animate-gradient">Hub</span>
+                        </h1>
+                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mt-1">Community Feed</p>
+                    </div>
                 </div>
                 
                 <div class="flex items-center gap-3">
@@ -41,7 +39,7 @@
                         </svg>
                         <span>Filters</span>
                         @if($selectedJobType || $selectedTags || $selectedSpecialties)
-                            <span class="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                            <span class="flex h-2 w-2 rounded-full bg-brand-purple animate-pulse"></span>
                         @endif
                     </button>
 
@@ -54,7 +52,7 @@
         <!-- Filter Section -->
         @if($showFilters)
         <div 
-            class="mb-8 bg-white/[0.02] border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-2xl"
+            class="mb-8 bg-brand-deep/20 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-2xl"
             x-show="loaded"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 -translate-y-4"
@@ -66,7 +64,7 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Sort Order</label>
                     <select 
                         wire:model.live="sortOrder"
-                        class="w-full px-4 py-2.5 bg-gray-900 border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all appearance-none cursor-pointer">
+                        class="w-full px-4 py-2.5 bg-brand-deep border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-brand-purple/50 transition-all appearance-none cursor-pointer">
                         <option value="desc">Newest First</option>
                         <option value="asc">Oldest First</option>
                     </select>
@@ -77,7 +75,7 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Job Type</label>
                     <select 
                         wire:model.live="selectedJobType"
-                        class="w-full px-4 py-2.5 bg-gray-900 border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all appearance-none cursor-pointer">
+                        class="w-full px-4 py-2.5 bg-brand-deep border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-brand-purple/50 transition-all appearance-none cursor-pointer">
                         <option value="">All Types</option>
                         @foreach($jobTypes as $jobType)
                             <option value="{{ $jobType }}">{{ ucfirst($jobType) }}</option>
@@ -90,7 +88,7 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Tags</label>
                     <select 
                         wire:model.live="selectedTags"
-                        class="w-full px-4 py-2.5 bg-gray-900 border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all appearance-none cursor-pointer">
+                        class="w-full px-4 py-2.5 bg-brand-deep border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-brand-purple/50 transition-all appearance-none cursor-pointer">
                         <option value="">All Tags</option>
                         @foreach($allTags as $tag)
                             <option value="{{ $tag->id }}">#{{ $tag->name }}</option>
@@ -103,7 +101,7 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Specialties</label>
                     <select 
                         wire:model.live="selectedSpecialties"
-                        class="w-full px-4 py-2.5 bg-gray-900 border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all appearance-none cursor-pointer">
+                        class="w-full px-4 py-2.5 bg-brand-deep border border-white/10 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-brand-purple/50 transition-all appearance-none cursor-pointer">
                         <option value="">All Specialties</option>
                         @foreach($allSpecialties as $specialty)
                             <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
@@ -121,7 +119,7 @@
                 </button>
                 <button 
                     wire:click="toggleFilters"
-                    class="px-5 py-2 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 rounded-xl text-sm font-bold transition-all">
+                    class="px-5 py-2 bg-brand-purple/10 hover:bg-brand-purple/20 text-brand-purple rounded-xl text-sm font-bold transition-all">
                     Apply Filters
                 </button>
             </div>
@@ -156,7 +154,7 @@
                             wire:model="title"
                             wire:key="title-input"
                             id="title"
-                            class="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                            class="w-full px-4 py-3 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all font-medium"
                             placeholder="What's the main topic?">
                         @error('title')
                             <span class="text-rose-400 text-xs font-medium mt-1 block ml-1">{{ $message }}</span>
@@ -171,7 +169,7 @@
                             wire:key="content-input"
                             id="content"
                             rows="5"
-                            class="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none shadow-inner"
+                            class="w-full px-4 py-3 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all resize-none shadow-inner"
                             placeholder="Share your thoughts, career updates, or job opportunities..."></textarea>
                         @error('content') 
                             <span class="text-rose-400 text-xs font-medium mt-1 block ml-1">{{ $message }}</span> 
@@ -306,7 +304,7 @@
                 <!-- Post Card -->
                 <article 
                     onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
-                    class="group relative flex flex-col rounded-3xl border border-white/5 bg-gray-900/40 backdrop-blur-md p-6 shadow-2xl hover:bg-gray-900/60 hover:border-white/10 hover:shadow-indigo-500/10 transition-all duration-500 cursor-pointer overflow-hidden"
+                    class="group relative flex flex-col rounded-3xl border border-white/5 bg-white/[0.03] backdrop-blur-md p-6 shadow-2xl hover:bg-white/[0.05] hover:border-brand-purple/20 transition-all duration-500 cursor-pointer overflow-hidden"
                     x-data="{ show: false }"
                     x-init="setTimeout(() => show = true, {{ ($index % 10) * 100 }})"
                     x-show="show"
@@ -414,7 +412,7 @@
                     @endif
 
                     <!-- Interactions -->
-                    <div class="flex items-center justify-between mt-auto pt-6 border-t border-white/5 relative z-10">
+                    <div class="flex items-center justify-between mt-auto pt-6 border-t border-white/10 relative z-10">
                         <div class="flex items-center gap-6">
                             @php
                                 $hasStarred = auth()->check() && $post->relationLoaded('stars') && $post->stars->isNotEmpty();
@@ -423,12 +421,12 @@
                             
                             <button wire:click.stop="togglePostStar({{ $post->id }})" 
                                 class="flex items-center gap-2 group/btn">
-                                <div class="p-2 rounded-xl transition-all duration-300 {{ $hasStarred ? 'bg-amber-500/10 text-amber-500' : 'text-gray-500 group-hover/btn:bg-amber-500/10 group-hover/btn:text-amber-500' }}">
+                                <div class="p-2 rounded-xl transition-all duration-300 {{ $hasStarred ? 'bg-brand-violet/10 text-brand-violet' : 'text-gray-500 group-hover/btn:bg-brand-violet/10 group-hover/btn:text-brand-violet' }}">
                                     <svg class="w-5 h-5" fill="{{ $hasStarred ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                     </svg>
                                 </div>
-                                <span class="text-sm font-bold {{ $hasStarred ? 'text-amber-500' : 'text-gray-500' }}">{{ $post->stars_count ?? $post->stars->count() }}</span>
+                                <span class="text-sm font-bold {{ $hasStarred ? 'text-brand-violet' : 'text-gray-500' }}">{{ $post->stars_count ?? $post->stars->count() }}</span>
                             </button>
 
                             <button onclick="event.stopPropagation()" class="flex items-center gap-2 group/btn">
@@ -443,7 +441,7 @@
 
                         <div class="flex items-center gap-2">
                             <button wire:click.stop="togglePostSave({{ $post->id }})" 
-                                class="p-2 rounded-xl transition-all duration-300 {{ $hasSaved ? 'bg-blue-500/10 text-blue-400' : 'text-gray-500 hover:bg-blue-500/10 hover:text-blue-400' }}">
+                                class="p-2 rounded-xl transition-all duration-300 {{ $hasSaved ? 'bg-brand-violet/10 text-brand-violet' : 'text-gray-500 hover:bg-brand-violet/10 hover:text-brand-violet' }}">
                                 <svg class="w-5 h-5" fill="{{ $hasSaved ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z"></path>
                                 </svg>
@@ -492,8 +490,8 @@
                 <button 
                     wire:click="loadMore"
                     wire:loading.attr="disabled"
-                    class="group relative flex items-center gap-4 text-gray-500 hover:text-indigo-400 transition-all duration-300 font-bold uppercase tracking-[0.2em] text-xs">
-                    <span class="h-px w-24 bg-gray-800 group-hover:bg-indigo-500/50 transition-colors"></span>
+                    class="group relative flex items-center gap-4 text-gray-500 hover:text-brand-violet transition-all duration-300 font-bold uppercase tracking-[0.2em] text-xs">
+                    <span class="h-px w-24 bg-gray-800 group-hover:bg-brand-purple/50 transition-colors"></span>
                     <span class="flex items-center gap-2">
                         <span wire:loading.remove wire:target="loadMore">See more</span>
                         <span wire:loading wire:target="loadMore" class="flex items-center gap-2">
@@ -515,7 +513,7 @@
     @if ($showEditModal)
         <div class="fixed inset-0 z-[60] overflow-y-auto" x-data="{}" x-init="$el.focus()">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity bg-gray-950/80 backdrop-blur-sm" wire:click="closeEditModal"></div>
+                <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeEditModal"></div>
 
                 <div class="inline-block align-bottom bg-gray-900 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-white/5" wire:click.stop>
                     <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
@@ -627,11 +625,11 @@
     @if ($showAdminActionsModal)
         <div class="fixed inset-0 z-50 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity dark:bg-gray-900 bg-gray-900 bg-opacity-75" wire:click="closeAdminActionsModal"></div>
+                <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeAdminActionsModal"></div>
 
-                <div class="inline-block align-bottom dark:bg-gray-900 bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border dark:border-gray-800 border-gray-200" wire:click.stop>
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-b dark:border-gray-800 border-gray-200">
-                        <h3 class="text-lg font-semibold dark:text-white text-gray-900">
+                <div class="inline-block align-bottom bg-black border border-white/5 rounded-[2.5rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" wire:click.stop>
+                    <div class="bg-black px-6 py-6 border-b border-white/5">
+                        <h3 class="text-xl font-black text-white uppercase tracking-tight">
                             @if($adminActionType === 'suspend')
                                 Suspend Post
                             @elseif($adminActionType === 'unsuspend')
@@ -643,15 +641,15 @@
                     </div>
                     
                     @if($adminActionType === 'suspend')
-                        <form wire:submit.prevent="suspendPost" class="dark:bg-gray-900 bg-white px-6 py-4">
+                        <form wire:submit.prevent="suspendPost" class="bg-black px-6 py-6">
                             <div class="mb-4">
-                                <label for="suspendReason" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Suspension Reason *</label>
+                                <label for="suspendReason" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Suspension Reason *</label>
                                 <textarea
                                     wire:model="suspendReason"
                                     id="suspendReason"
                                     rows="3"
-                                    class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
-                                    placeholder="Enter the reason for suspending this post..."></textarea>
+                                    class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all resize-none shadow-inner"
+                                    placeholder="Enter reason..."></textarea>
                                 @error('suspendReason')
                                     <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
                                 @enderror
@@ -671,20 +669,20 @@
                                 @enderror
                             </div>
 
-                            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                            <div class="flex justify-end gap-3 pt-6 border-t border-white/5">
                                 <button 
                                     type="button"
                                     wire:click="closeAdminActionsModal"
-                                    class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    class="px-6 py-2.5 text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit"
                                     wire:loading.attr="disabled"
                                     wire:target="suspendPost"
-                                    class="px-4 py-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:text-white bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50">
-                                    <span wire:loading.remove wire:target="suspendPost">Suspend Post</span>
-                                    <span wire:loading wire:target="suspendPost">Suspending...</span>
+                                    class="px-8 py-2.5 bg-brand-purple hover:bg-brand-violet text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-brand-purple/20 disabled:opacity-50 uppercase tracking-widest">
+                                    <span wire:loading.remove wire:target="suspendPost">Confirm Suspension</span>
+                                    <span wire:loading wire:target="suspendPost">Processing...</span>
                                 </button>
                             </div>
                         </form>
@@ -741,11 +739,11 @@
     @if ($showSuspendModal)
         <div class="fixed inset-0 z-50 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity dark:bg-gray-900 bg-gray-900 bg-opacity-75" wire:click="closeSuspendModal"></div>
+                <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeSuspendModal"></div>
 
-                <div class="inline-block align-bottom dark:bg-gray-900 bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border dark:border-gray-800 border-gray-200" wire:click.stop>
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-b dark:border-gray-800 border-gray-200">
-                        <h3 class="text-lg font-semibold dark:text-white text-gray-900">Suspend Post</h3>
+                <div class="inline-block align-bottom bg-black border border-white/5 rounded-[2.5rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" wire:click.stop>
+                    <div class="bg-black px-6 py-6 border-b border-white/5">
+                        <h3 class="text-xl font-black text-white uppercase tracking-tight">Suspend Post</h3>
                     </div>
                     
                     <form wire:submit.prevent="suspendPost" class="dark:bg-gray-900 bg-white px-6 py-4">
@@ -802,10 +800,10 @@
     @if ($showInlinePostModal && $inlinePost)
         <div class="fixed inset-0 z-50 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity dark:bg-gray-900 bg-gray-900 bg-opacity-75" wire:click="closeInlinePostModal"></div>
+                <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeInlinePostModal"></div>
 
-                <div class="inline-block align-bottom dark:bg-gray-900 bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border dark:border-gray-800 border-gray-200" wire:click.stop>
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-b dark:border-gray-800 border-gray-200 flex items-center justify-between">
+                <div class="inline-block align-bottom bg-black rounded-[2rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-white/5" wire:click.stop>
+                    <div class="bg-black px-6 py-6 border-b border-white/5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
                                 @if($inlinePost->user && $inlinePost->user->profile_photo_path)
@@ -817,11 +815,11 @@
                                 @endif
                             </div>
                             <div>
-                                <h3 class="text-base font-semibold dark:text-white text-gray-900">
-                                    {{ $inlinePost->title ?: 'Post by ' . ($inlinePost->user->name ?? 'Unknown User') }}
+                                <h3 class="text-xl font-black text-white tracking-tight">
+                                    {{ $inlinePost->title ?: 'Post' }}
                                 </h3>
-                                <p class="text-xs dark:text-gray-400 text-gray-600">
-                                    {{ $inlinePost->created_at->format('F j, Y \a\t g:i A') }}
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                                    {{ $inlinePost->created_at->format('F j, Y') }}
                                 </p>
                             </div>
                         </div>
@@ -836,32 +834,32 @@
                         </button>
                     </div>
 
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4 space-y-4">
+                    <div class="bg-black px-6 py-8 space-y-4">
                         @if(!empty($inlinePost->title))
-                            <h2 class="text-xl font-bold dark:text-white text-gray-900">
+                            <h2 class="text-2xl font-black text-white leading-tight">
                                 {{ $inlinePost->title }}
                             </h2>
                         @endif
 
-                        <p class="dark:text-gray-200 text-gray-700 leading-relaxed whitespace-pre-wrap">
+                        <p class="text-gray-300 leading-relaxed whitespace-pre-wrap text-base">
                             {{ $inlinePost->content }}
                         </p>
 
                         @if ($inlinePost->media)
-                            <div class="mt-4 rounded-lg overflow-hidden">
+                            <div class="mt-6 rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
                                 @php
                                     $mediaUrl = $this->getMediaUrl($inlinePost);
                                     $isImage = in_array(strtolower(pathinfo($inlinePost->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
                                 @endphp
                                 @if ($isImage)
-                                    <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-auto rounded-lg">
+                                    <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-auto">
                                 @else
-                                    <div class="dark:bg-gray-800 bg-gray-100 p-4 rounded-lg">
-                                        <a href="{{ $mediaUrl }}" target="_blank" class="flex items-center gap-2 dark:text-blue-400 text-blue-600 dark:hover:text-blue-300 hover:text-blue-700">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="bg-brand-deep/20 p-6 flex items-center justify-center">
+                                        <a href="{{ $mediaUrl }}" target="_blank" class="flex items-center gap-3 text-brand-violet hover:text-brand-purple transition-all font-black uppercase tracking-widest text-xs">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                                             </svg>
-                                            <span>View attachment</span>
+                                            <span>View Attachment</span>
                                         </a>
                                     </div>
                                 @endif
@@ -869,20 +867,20 @@
                         @endif
                     </div>
 
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-t dark:border-gray-800 border-gray-200 flex justify-end">
+                    <div class="bg-black px-6 py-6 border-t border-white/5 flex items-center justify-end gap-3">
                         <button
                             type="button"
                             wire:click="closeInlinePostModal"
-                            class="px-4 py-2 rounded-lg dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white transition-colors"
+                            class="px-6 py-2.5 rounded-xl text-gray-400 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
                         >
                             Close
                         </button>
                         <a
                             href="{{ route('posts.show', $inlinePost->slug) }}"
-                            class="ml-3 px-4 py-2 rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white transition-colors"
+                            class="px-8 py-2.5 rounded-xl bg-brand-purple text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-brand-purple/20"
                             wire:click="closeInlinePostModal"
                         >
-                            Open full page
+                            View Full Details
                         </a>
                     </div>
                 </div>
@@ -916,26 +914,26 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform translate-y-full"
-        class="fixed bottom-0 z-50 max-w-xl w-full -translate-x-1/2 dark:bg-gray-600/60 bg-white backdrop-blur-sm rounded-2xl left-1/2 shadow-lg mb-2 mx-auto px-4 py-2 border dark:border-gray-700 border-gray-200"
+        class="fixed bottom-0 z-50 max-w-xl w-full -translate-x-1/2 bg-black/40 backdrop-blur-2xl rounded-[2rem] left-1/2 shadow-2xl mb-4 mx-auto px-4 py-3 border border-white/10"
     >
-        <div class="w-full">
-            <div class="grid max-w-xs grid-cols-3 gap-1 p-1 mx-auto my-1 dark:bg-gray-700/80 bg-gray-200 rounded-lg" role="group">
+        <div class="w-full mb-2">
+            <div class="grid max-w-xs grid-cols-3 gap-1 p-1 mx-auto bg-white/5 rounded-xl border border-white/5 shadow-inner" role="group">
                 <button
                     type="button"
                     wire:click="setFeedMode('new')"
-                    class="px-5 py-1.5 text-xs font-medium rounded {{ $feedMode === 'new' ? 'dark:text-white text-gray-900 dark:bg-gray-800 bg-gray-300' : 'dark:text-gray-200 text-gray-700 dark:hover:bg-gray-800 hover:bg-gray-300 dark:hover:text-white hover:text-gray-900' }}">
+                    class="px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all {{ $feedMode === 'new' ? 'text-white bg-brand-purple shadow-lg shadow-brand-purple/20' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
                     New
                 </button>
                 <button
                     type="button"
                     wire:click="setFeedMode('popular')"
-                    class="px-5 py-1.5 text-xs font-medium rounded {{ $feedMode === 'popular' ? 'dark:text-white text-gray-900 dark:bg-gray-800 bg-gray-300' : 'dark:text-gray-200 text-gray-700 dark:hover:bg-gray-800 hover:bg-gray-300 dark:hover:text-white hover:text-gray-900' }}">
+                    class="px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all {{ $feedMode === 'popular' ? 'text-white bg-brand-purple shadow-lg shadow-brand-purple/20' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
                     Popular
                 </button>
                 <button
                     type="button"
                     wire:click="setFeedMode('following')"
-                    class="px-5 py-1.5 text-xs font-medium rounded {{ $feedMode === 'following' ? 'dark:text-white text-gray-900 dark:bg-gray-800 bg-gray-300' : 'dark:text-gray-200 text-gray-700 dark:hover:bg-gray-800 hover:bg-gray-300 dark:hover:text-white hover:text-gray-900' }}">
+                    class="px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all {{ $feedMode === 'following' ? 'text-white bg-brand-purple shadow-lg shadow-brand-purple/20' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
                     Following
                 </button>
             </div>

@@ -11,7 +11,9 @@ use Livewire\Component;
 class ChatList extends Component
 {
     public $isOpen = false;
+    public $inline = false;
     public $chats = [];
+
     public $unreadCounts = [];
     public $requests = [];
 
@@ -23,6 +25,9 @@ class ChatList extends Component
 
     public function mount()
     {
+        if ($this->inline) {
+            $this->isOpen = true;
+        }
         $this->loadChats();
     }
 

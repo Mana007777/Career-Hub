@@ -20,7 +20,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         @transitionend="document.body.style.overflow = ''"
-        class="fixed inset-0 z-50 dark:bg-gray-900/90 bg-gray-900/90 backdrop-blur-sm"
+        class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl"
         @click.self="$wire.closeSearch()"
         @keydown.escape.window="$wire.closeSearch()"
         wire:key="search-modal-{{ $showSearch }}"
@@ -32,9 +32,9 @@
         >
             <div class="w-full max-w-2xl">
                 <!-- Search Header -->
-                <div class="dark:bg-gray-800 bg-white rounded-t-xl p-4 border-b dark:border-gray-700 border-gray-200">
+                <div class="bg-black rounded-t-[2.5rem] p-6 border-b border-white/5 shadow-2xl shadow-black/50">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-2xl font-bold dark:text-white text-gray-900">Search</h2>
+                        <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Search</h2>
                         <button 
                             wire:click="closeSearch"
                             class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
@@ -59,7 +59,7 @@
                         </button>
                         <button 
                             wire:click="setResultType('posts')"
-                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'posts' ? 'dark:bg-blue-600 bg-blue-600 dark:text-white text-white' : 'dark:bg-gray-700 bg-gray-200 dark:hover:bg-gray-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'posts' ? 'dark:bg-brand-purple bg-indigo-600 dark:text-white text-white' : 'dark:bg-brand-deep bg-gray-200 dark:hover:bg-brand-purple/20 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
                             Posts
                         </button>
                     </div>
@@ -76,7 +76,7 @@
                             type="text"
                             wire:model.live.debounce.300ms="query"
                             placeholder="Search for posts or users..."
-                            class="w-full pl-12 pr-4 py-3 dark:bg-gray-700 bg-gray-100 border dark:border-gray-600 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-400 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="w-full pl-12 pr-4 py-4 bg-brand-deep/30 border border-white/10 rounded-2xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent transition-all shadow-inner"
                             autofocus>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                     x-data="{ loaded: false }"
                     x-init="setTimeout(() => loaded = true, 200)"
                 >
-                <div class="dark:bg-gray-800 bg-white rounded-b-xl max-h-[60vh] overflow-y-auto">
+                <div class="bg-black rounded-b-[2.5rem] max-h-[60vh] overflow-y-auto border-t border-white/5 shadow-2xl shadow-black/50">
                     @if($query && strlen(trim($query)) > 0)
                         <!-- Users Results -->
                         @if(in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0)
@@ -111,7 +111,7 @@
                                         >
                                             <div class="flex items-center gap-4">
                                                 <!-- User Avatar -->
-                                                <div class="w-12 h-12 rounded-full dark:bg-gray-700 bg-gray-200 flex items-center justify-center text-lg font-semibold dark:text-gray-300 text-gray-700">
+                                                <div class="w-12 h-12 rounded-2xl bg-brand-deep border border-white/5 flex items-center justify-center text-lg font-black text-brand-violet">
                                                     {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                                                 </div>
                                                 

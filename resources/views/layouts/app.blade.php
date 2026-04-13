@@ -18,34 +18,8 @@
         <!-- Inline theme bootstrapping to avoid light flash before JS loads -->
         <script>
             (function () {
-                try {
-                    var html = document.documentElement;
-                    var meta = document.querySelector('meta[name="theme-preference"]');
-                    var preference = meta ? (meta.getAttribute('content') || 'system') : 'system';
-
-                    if (!meta) {
-                        try {
-                            var stored = localStorage.getItem('theme-preference');
-                            if (stored) preference = stored;
-                        } catch (e) {}
-                    }
-
-                    var effectiveTheme = preference;
-                    if (preference === 'system') {
-                        var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                        effectiveTheme = isDark ? 'dark' : 'light';
-                    }
-
-                    if (effectiveTheme === 'dark') {
-                        html.classList.add('dark');
-                        html.classList.remove('light');
-                    } else {
-                        html.classList.add('light');
-                        html.classList.remove('dark');
-                    }
-                } catch (e) {
-                    // Fail silently - main theme.js will handle it later
-                }
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
             })();
         </script>
 
@@ -54,10 +28,14 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased dark:bg-gray-950 dark:text-white bg-gray-50 text-gray-900" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
-        <div class="min-h-screen dark:bg-gradient-to-b dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+    <body class="font-sans antialiased bg-black text-gray-100" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
+        <div class="min-h-screen bg-black relative overflow-hidden">
+            <!-- Background Glows -->
+            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-deep/20 rounded-full blur-[120px] pointer-events-none"></div>
+            <div class="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-brand-violet/10 rounded-full blur-[150px] pointer-events-none"></div>
+
             @if(isset($header))
-                <header class="dark:bg-gray-900 bg-white border-b-2 dark:border-gray-800 border-gray-200 shadow-sm">
+                <header class="bg-black/80 backdrop-blur-xl border-b border-white/5 relative z-10 transition-colors duration-500">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
