@@ -200,12 +200,12 @@
         </div>
 
         <!-- Verified Competencies (Endorsements) -->
-        @if(count($endorsementsBySkill) > 0)
-            <div class="mb-12">
-                <h2 class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] flex items-center gap-4 px-4 italic mb-6">
-                    <span class="w-4 h-px bg-zinc-800"></span>
-                    Verified Competencies
-                </h2>
+        <div class="mb-12">
+            <h2 class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] flex items-center gap-4 px-4 italic mb-6">
+                <span class="w-4 h-px bg-zinc-800"></span>
+                Verified Competencies
+            </h2>
+            @if(count($endorsementsBySkill) > 0)
                 <div class="flex flex-wrap gap-4 px-2">
                     @foreach($endorsementsBySkill as $endorsementData)
                         @php
@@ -250,8 +250,14 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
-        @endif
+            @else
+                <div class="px-4 py-10 rounded-[2rem] border border-dashed border-zinc-800/70 bg-zinc-900/20">
+                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.35em]">
+                        No endorsements yet.
+                    </p>
+                </div>
+            @endif
+        </div>
 
         <!-- Mission Stream -->
         @if($isBlocked)
