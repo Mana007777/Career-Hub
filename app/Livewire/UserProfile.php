@@ -448,9 +448,21 @@ class UserProfile extends Component
         $this->openAdminActionsModal('unsuspend');
     }
 
+    public $showDeleteUserModal = false;
+
     public function openDeleteUserModal(): void
     {
-        $this->openAdminActionsModal('delete');
+        $this->showDeleteUserModal = true;
+    }
+
+    public function closeDeleteUserModal(): void
+    {
+        $this->showDeleteUserModal = false;
+    }
+
+    public function deleteUser(): void
+    {
+        $this->deleteUserAsAdmin($this->user->id);
     }
 
     public function closeAdminActionsModal(): void
