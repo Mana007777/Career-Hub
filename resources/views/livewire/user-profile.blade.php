@@ -213,10 +213,10 @@
                             $endorseCount = data_get($endorsementData, 'count');
                             $endorsersList = collect(data_get($endorsementData, 'endorsers', []));
                         @endphp
-                        <div class="group relative h-10 px-6 bg-zinc-900/40 border border-zinc-800/50 rounded-2xl flex items-center hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all cursor-default backdrop-blur-sm shadow-lg">
-                            <span class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest">{{ $skillName }}</span>
-                            <div class="w-px h-4 bg-zinc-800 mx-4 group-hover:bg-emerald-500/30 transition-colors shrink-0"></div>
-                            <span class="text-[11px] font-black text-emerald-500/80 shrink-0">{{ $endorseCount }}</span>
+                        <div class="group relative h-9 pl-5 {{ Auth::check() && Auth::id() === $user->id ? 'pr-1.5' : 'pr-5' }} bg-zinc-900/40 border border-zinc-800/50 rounded-full flex items-center hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all shadow-md cursor-default">
+                            <span class="text-[10px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest whitespace-nowrap">{{ $skillName }}</span>
+                            <div class="w-px h-3 bg-zinc-800 mx-3 group-hover:bg-emerald-500/30 transition-colors shrink-0"></div>
+                            <span class="text-[10px] font-black text-emerald-500/80 shrink-0">{{ $endorseCount }}</span>
                             
                             <!-- Tooltip showing endorsers -->
                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-max max-w-xs bg-zinc-950 border border-zinc-800/80 rounded-2xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 shadow-2xl backdrop-blur-xl">
@@ -243,9 +243,8 @@
                             
                             <!-- Remove Endorsement Button if owner -->
                             @if(Auth::check() && Auth::id() === $user->id)
-                                <div class="w-px h-4 bg-zinc-800 mx-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"></div>
-                                <button wire:click.stop="removeEndorsement('{{ addslashes($skillName) }}')" class="w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-zinc-600 hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/20 border border-transparent transition-all opacity-0 group-hover:opacity-100" title="Remove Endorsement">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <button wire:click.stop="removeEndorsement('{{ addslashes($skillName) }}')" class="ml-3 w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-zinc-600 hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/10 transition-all opacity-0 group-hover:opacity-100" title="Remove Endorsement">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                 </button>
                             @endif
                         </div>
