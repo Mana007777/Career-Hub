@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-zinc-950 text-white pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 50)">
+<div class="min-h-screen bg-transparent text-white pb-24" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 50)">
     <div class="max-w-4xl mx-auto px-6 py-12">
         <!-- Back Button -->
         <div 

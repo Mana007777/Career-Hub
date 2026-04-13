@@ -39,7 +39,7 @@
 >
     <div 
         @click.stop
-        class="bg-zinc-900 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden transform transition-all duration-700 @if(!($inline ?? false)) w-full max-w-md max-h-[80vh] relative @endif"
+        class="bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden transform transition-all duration-700 backdrop-blur-3xl @if(!($inline ?? false)) w-full max-w-md max-h-[80vh] relative @endif"
     >
         @if(!($inline ?? false))
             <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
@@ -113,8 +113,8 @@
                                 @endif
 
                                 <div class="relative flex-shrink-0">
-                                    <div class="w-16 h-16 rounded-[1.25rem] overflow-hidden border-2 border-transparent group-hover:border-emerald-500/30 transition-all duration-500 bg-zinc-950 p-0.5">
-                                        <div class="w-full h-full rounded-[1rem] overflow-hidden bg-zinc-800">
+                                    <div class="w-16 h-16 rounded-[1.25rem] overflow-hidden border-2 border-transparent group-hover:border-emerald-500/30 transition-all duration-500 bg-zinc-950/40 p-0.5">
+                                        <div class="w-full h-full rounded-[1rem] overflow-hidden bg-zinc-950">
                                             <img src="{{ $otherUser->profile_photo_url }}" class="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
                                         </div>
                                     </div>
@@ -147,7 +147,7 @@
                     </div>
                 @else
                     <div class="py-32 text-center px-12">
-                        <div class="w-20 h-20 bg-zinc-950 border border-zinc-800/50 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner group">
+                        <div class="w-20 h-20 bg-zinc-950/40 border border-zinc-800/50 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner group">
                             <svg class="w-10 h-10 text-zinc-800 group-hover:text-emerald-500/30 transition-all duration-1000" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>

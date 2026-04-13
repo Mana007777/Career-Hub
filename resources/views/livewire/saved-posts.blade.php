@@ -1,5 +1,5 @@
 <div
-    class="min-h-screen bg-zinc-950 text-white pb-24"
+    class="min-h-screen bg-transparent text-white pb-24"
     x-data="{ loaded: false }"
     x-init="setTimeout(() => loaded = true, 50)"
 >
@@ -44,7 +44,7 @@
             @forelse($posts as $index => $post)
                 <article
                     onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
-                    class="group relative h-full flex flex-col bg-zinc-900/40 border border-zinc-800/50 rounded-[2.5rem] p-8 transition-all duration-700 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] shadow-[0_30px_60px_rgba(0,0,0,0.3)] cursor-pointer overflow-hidden"
+                    class="group relative h-full flex flex-col bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] p-8 transition-all duration-700 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] shadow-[0_30px_60px_rgba(0,0,0,0.3)] backdrop-blur-3xl cursor-pointer overflow-hidden"
                     x-show="loaded"
                     x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-700"
                     x-transition:enter-start="opacity-0 translate-y-20 blur-xl scale-95"

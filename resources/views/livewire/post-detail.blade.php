@@ -33,7 +33,7 @@
 
         @if($post)
             <article 
-                class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden"
+                class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden"
                 x-show="loaded"
                 x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-1000"
                 x-transition:enter-start="opacity-0 translate-y-20 scale-95 blur-xl font-bold"
@@ -45,7 +45,7 @@
                 <div class="flex items-start justify-between mb-12">
                     <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-6 group/author">
                         <div class="w-16 h-16 rounded-[1.5rem] bg-zinc-950 border-2 border-zinc-800 overflow-hidden flex items-center justify-center p-0.5 group-hover/author:border-emerald-500/30 transition-all duration-700">
-                             <div class="w-full h-full rounded-[1.2rem] bg-zinc-900 flex items-center justify-center">
+                             <div class="w-full h-full rounded-[1.2rem] bg-zinc-950 flex items-center justify-center">
                                 @if($post->user && $post->user->profile_photo_path)
                                     <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover grayscale opacity-50 group-hover/author:grayscale-0 group-hover/author:opacity-100 transition-all duration-1000">
                                 @else

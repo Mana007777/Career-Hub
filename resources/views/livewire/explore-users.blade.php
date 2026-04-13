@@ -1,4 +1,4 @@
-<div class="space-y-12" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 50)">
+<div class="space-y-12 bg-transparent" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 50)">
     <!-- Header -->
     <div 
         class="flex flex-col gap-4"

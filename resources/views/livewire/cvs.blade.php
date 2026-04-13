@@ -1,5 +1,5 @@
 <div
-    class="min-h-screen bg-zinc-950 text-white pb-24"
+    class="min-h-screen bg-transparent text-white pb-24"
     x-data="{ loaded: false }"
     x-init="setTimeout(() => loaded = true, 50)"
 >

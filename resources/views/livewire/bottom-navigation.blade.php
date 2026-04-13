@@ -1,4 +1,4 @@
-<div class="grid h-full max-w-xl grid-cols-9 gap-1 mx-auto relative px-2">
+<div class="grid h-full max-w-xl grid-cols-10 gap-1 mx-auto relative px-2">
     <!-- Home Sector -->
     <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
         class="inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500 relative">
@@ -128,6 +128,25 @@
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
+    <!-- Personnel Archive -->
+    <a 
+        href="{{ route('explore.users') }}"
+        data-tooltip-target="tooltip-explore"
+        class="inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500"
+    >
+        <svg class="w-6 h-6 text-zinc-600 group-hover:text-emerald-400 transition-all duration-500 transform group-hover:scale-110" aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2m12-10a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm5 5h3m-3-3h3m-3 6h3" />
+        </svg>
+        <span class="sr-only">Network</span>
+    </a>
+    <div id="tooltip-explore" role="tooltip"
+        class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
+        Intelligence Network
+        <div class="tooltip-arrow" data-popper-arrow></div>
+    </div>
+
     @if(auth()->check() && auth()->user()->isAdmin())
         <!-- Overseer Panel -->
         <a 
@@ -137,10 +156,10 @@
         >
             <svg class="w-6 h-6 text-zinc-600 group-hover:text-amber-500 transition-all duration-500 transform group-hover:scale-110" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <path d="M14 2v6h6" />
-                <path d="M8 13h2" />
-                <path d="M8 17h2" />
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M14 2v6h6" />
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M8 13h2" />
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M8 17h2" />
             </svg>
             @if($pendingReportsCount > 0)
                 <span class="absolute top-2 right-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-lg text-[8px] font-black bg-amber-500 text-black border-2 border-zinc-950 shadow-[0_0_15px_rgba(245,158,11,0.4)]">

@@ -70,7 +70,7 @@
             x-transition:leave="transition cubic-bezier(0.16, 1, 0.3, 1) duration-400"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-20 blur-xl"
-            class="fixed bottom-32 right-8 z-[110] w-[400px] bg-zinc-900 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,1)] flex flex-col overflow-hidden backdrop-blur-3xl"
+            class="fixed bottom-32 right-8 z-[110] w-[400px] bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,1)] flex flex-col overflow-hidden backdrop-blur-3xl"
             x-bind:style="isMinimized ? 'height: 80px;' : 'height: 650px;'"
         >
             <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
@@ -80,7 +80,7 @@
                 <div class="flex items-center gap-4 flex-1 min-w-0">
                     <div class="relative flex-shrink-0">
                         <div class="w-12 h-12 rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800/50 p-0.5">
-                            <div class="w-full h-full rounded-xl overflow-hidden bg-zinc-800">
+                            <div class="w-full h-full rounded-xl overflow-hidden bg-zinc-950">
                                 @if($otherUser->profile_photo_path)
                                     <img src="{{ $otherUser->profile_photo_url }}" alt="{{ $otherUser->name }}" class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all">
                                 @else
@@ -112,7 +112,7 @@
             <!-- Messages Stream -->
             @if(!$isFollowing)
                 <div class="flex-1 flex flex-col items-center justify-center p-12 text-center bg-zinc-950/20" x-show="!isMinimized">
-                    <div class="w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
+                    <div class="w-20 h-20 bg-zinc-950/40 border border-zinc-800 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
                         <svg class="w-10 h-10 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                     </div>
                     <h4 class="text-sm font-black text-white uppercase tracking-widest italic mb-4">Encryption Locked</h4>
@@ -180,7 +180,7 @@
                 <!-- Uplink Terminal -->
                 <div class="px-8 py-8 bg-zinc-950/40 border-t border-zinc-800/30" x-show="!isMinimized">
                     @if($pendingRequest && !$isRequest)
-                        <div class="text-center py-4 bg-zinc-900 border border-dashed border-zinc-800 rounded-2xl">
+                        <div class="text-center py-4 bg-zinc-950/40 border border-dashed border-zinc-800 rounded-2xl">
                             <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Awaiting access authorization</p>
                         </div>
                     @else
@@ -190,7 +190,7 @@
                                 wire:keydown.enter.prevent="sendMessage"
                                 rows="1"
                                 placeholder="INITIALIZE BROADCAST..."
-                                class="w-full px-8 py-5 bg-zinc-900 border border-zinc-800 rounded-3xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-xs font-black uppercase resize-none custom-scrollbar"
+                                class="w-full px-8 py-5 bg-zinc-950/40 border border-zinc-800 rounded-3xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-xs font-black uppercase resize-none custom-scrollbar"
                                 style="min-height: 64px; max-height: 160px;"
                                 x-on:input="$el.style.height = 'auto'; $el.style.height = Math.min($el.scrollHeight, 160) + 'px';"
                             ></textarea>

@@ -18,9 +18,11 @@
 
     <!-- Actual content -->
     <div x-show="loaded" x-cloak>
-        <!-- Sticky Header with Backdrop Blur -->
-        <div class="sticky top-0 z-40 bg-black/95 backdrop-blur-2xl border-b border-white/10 transition-all duration-300">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-20 flex items-center justify-between">
+        <!-- Floating Glass Header -->
+        <div class="sticky top-6 z-40 px-4 mb-6 transition-all duration-500">
+            <div class="max-w-5xl mx-auto bg-zinc-950/60 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] h-24 flex items-center justify-between px-10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] relative overflow-hidden group">
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+                <div class="absolute -inset-x-0 -inset-y-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
                 <div class="flex items-center gap-4">
                     <div class="flex flex-col">
                         <h1 class="text-2xl font-black text-white tracking-tighter leading-none italic">
@@ -51,7 +53,7 @@
         <!-- Filter Node -->
         @if($showFilters)
         <div 
-            class="mb-10 bg-zinc-900/40 border border-zinc-800/50 rounded-[2rem] p-10 backdrop-blur-3xl shadow-3xl overflow-hidden relative"
+            class="mb-10 bg-zinc-950/60 border border-zinc-800/50 rounded-[2rem] p-10 backdrop-blur-3xl shadow-3xl overflow-hidden relative"
             x-show="loaded"
             x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500"
             x-transition:enter-start="opacity-0 -translate-y-8 blur-lg"
@@ -336,7 +338,7 @@
                 <!-- Intelligence Card -->
                 <article 
                     onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
-                    class="group relative flex flex-col rounded-[2.5rem] border border-zinc-800/50 bg-zinc-900/40 backdrop-blur-3l p-10 shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:border-emerald-500/30 transition-all duration-700 transform hover:scale-[1.02] hover:-translate-y-2 cursor-pointer overflow-hidden"
+                    class="group relative flex flex-col rounded-[2.5rem] border border-zinc-800/50 bg-zinc-950/60 backdrop-blur-3xl p-10 shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:border-emerald-500/30 transition-all duration-700 transform hover:scale-[1.02] hover:-translate-y-2 cursor-pointer overflow-hidden"
                     x-data="{ show: false }"
                     x-init="setTimeout(() => show = true, {{ ($index % 10) * 100 }})"
                     x-show="show"
@@ -553,7 +555,7 @@
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeEditModal"></div>
 
-                <div class="inline-block align-bottom bg-brand-deep/95 border border-white/5 rounded-3xl text-left overflow-hidden shadow-3xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full backdrop-blur-xl" wire:click.stop>
+                <div class="inline-block align-bottom bg-zinc-950/95 border border-white/5 rounded-3xl text-left overflow-hidden shadow-3xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full backdrop-blur-xl" wire:click.stop>
                     <div class="px-8 py-5 bg-white/5 border-b border-white/5 flex items-center justify-between">
                         <h3 class="text-[10px] font-black text-white uppercase tracking-widest">Adjust Mission Parameters</h3>
                         <button wire:click="closeEditModal" class="text-gray-500 hover:text-white transition-colors">
@@ -569,7 +571,7 @@
                                 type="text"
                                 wire:model="editTitle"
                                 id="editTitle"
-                                class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm font-medium"
+                                class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all text-sm font-medium"
                                 placeholder="UPDATE MISSION TITLE">
                             @error('editTitle') <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 ml-1 block">{{ $message }}</span> @enderror
                         </div>
@@ -581,7 +583,7 @@
                                 wire:model="editContent"
                                 id="editContent"
                                 rows="6"
-                                class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm resize-none shadow-inner leading-relaxed"
+                                class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all text-sm resize-none shadow-inner leading-relaxed"
                                 placeholder="MODIFY BROADCAST..."></textarea>
                             @error('editContent') <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 ml-1 block">{{ $message }}</span> @enderror
                         </div>
@@ -590,14 +592,14 @@
                             <!-- Job Type -->
                             <div class="space-y-2">
                                 <label for="editJobType" class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 ml-1">Job Specification</label>
-                                <select wire:model="editJobType" id="editJobType" class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all appearance-none cursor-pointer">
-                                    <option value="" class="bg-brand-deep">Select type</option>
-                                    <option value="full-time" class="bg-brand-deep">Full-time</option>
-                                    <option value="part-time" class="bg-brand-deep">Part-time</option>
-                                    <option value="contract" class="bg-brand-deep">Contract</option>
-                                    <option value="freelance" class="bg-brand-deep">Freelance</option>
-                                    <option value="internship" class="bg-brand-deep">Internship</option>
-                                    <option value="remote" class="bg-brand-deep">Remote</option>
+                                <select wire:model="editJobType" id="editJobType" class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer">
+                                    <option value="" class="bg-zinc-950">Select type</option>
+                                    <option value="full-time" class="bg-zinc-950">Full-time</option>
+                                    <option value="part-time" class="bg-zinc-950">Part-time</option>
+                                    <option value="contract" class="bg-zinc-950">Contract</option>
+                                    <option value="freelance" class="bg-zinc-950">Freelance</option>
+                                    <option value="internship" class="bg-zinc-950">Internship</option>
+                                    <option value="remote" class="bg-zinc-950">Remote</option>
                                 </select>
                             </div>
 
@@ -616,7 +618,7 @@
                             <button type="button" wire:click="closeEditModal" class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
                                 Abort
                             </button>
-                            <button type="submit" class="px-8 py-2.5 bg-brand-purple hover:bg-brand-violet text-white text-[10px] font-black rounded-xl transition-all shadow-lg shadow-brand-purple/20 uppercase tracking-widest">
+                            <button type="submit" class="px-8 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black text-[10px] font-black rounded-xl transition-all shadow-lg shadow-emerald-500/20 uppercase tracking-widest italic">
                                 Commit Changes
                             </button>
                         </div>
@@ -787,11 +789,11 @@
                 <div class="inline-block align-bottom bg-black rounded-[2rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-white/5" wire:click.stop>
                     <div class="bg-black px-6 py-6 border-b border-white/5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl overflow-hidden bg-brand-deep border border-white/5 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-xl overflow-hidden bg-zinc-950 border border-white/5 flex items-center justify-center">
                                 @if($inlinePost->user && $inlinePost->user->profile_photo_path)
                                     <img src="{{ $inlinePost->user->profile_photo_url }}" alt="{{ $inlinePost->user->name }}" class="w-full h-full object-cover">
                                 @else
-                                    <span class="text-[10px] font-black text-brand-violet">
+                                    <span class="text-[10px] font-black text-emerald-500">
                                         {{ strtoupper(substr($inlinePost->user->name ?? 'U', 0, 1)) }}
                                     </span>
                                 @endif
@@ -836,8 +838,8 @@
                                 @if ($isImage)
                                     <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-auto">
                                 @else
-                                    <div class="bg-brand-deep/20 p-6 flex items-center justify-center">
-                                        <a href="{{ $mediaUrl }}" target="_blank" class="flex items-center gap-3 text-brand-violet hover:text-brand-purple transition-all font-black uppercase tracking-widest text-xs">
+                                    <div class="bg-emerald-500/10 p-6 flex items-center justify-center">
+                                        <a href="{{ $mediaUrl }}" target="_blank" class="flex items-center gap-3 text-emerald-500 hover:text-emerald-400 transition-all font-black uppercase tracking-widest text-xs italic">
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                                             </svg>
@@ -859,7 +861,7 @@
                         </button>
                         <a
                             href="{{ route('posts.show', $inlinePost->slug) }}"
-                            class="px-8 py-2.5 rounded-xl bg-brand-purple text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-brand-purple/20"
+                            class="px-8 py-2.5 rounded-xl bg-emerald-500 text-black font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 italic"
                             wire:click="closeInlinePostModal"
                         >
                             View Full Details
@@ -890,12 +892,12 @@
         }"
         x-show="isVisible"
         x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500"
-        x-transition:enter-start="opacity-0 transform translate-y-full translate-x-1/2 blur-lg"
-        x-transition:enter-end="opacity-100 transform translate-y-0 translate-x-1/2 blur-0"
+        x-transition:enter-start="opacity-0 transform translate-y-full -translate-x-1/2 blur-lg"
+        x-transition:enter-end="opacity-100 transform translate-y-0 -translate-x-1/2 blur-0"
         x-transition:leave="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500"
-        x-transition:leave-start="opacity-100 transform translate-y-0 translate-x-1/2 blur-0"
-        x-transition:leave-end="opacity-0 transform translate-y-full translate-x-1/2 blur-lg"
-        class="fixed bottom-0 z-50 max-w-xl w-full translate-x-1/2 bg-zinc-950/40 backdrop-blur-3xl rounded-[2.5rem] left-0 shadow-[0_50px_100px_rgba(0,0,0,0.5)] mb-8 mx-auto px-6 py-4 border border-zinc-800/50"
+        x-transition:leave-start="opacity-100 transform translate-y-0 -translate-x-1/2 blur-0"
+        x-transition:leave-end="opacity-0 transform translate-y-full -translate-x-1/2 blur-lg"
+        class="fixed bottom-0 z-50 max-w-xl w-full left-1/2 -translate-x-1/2 bg-zinc-950/40 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.5)] mb-8 mx-auto px-6 py-4 border border-zinc-800/50"
     >
         <div class="w-full mb-4">
             <div class="grid max-w-md grid-cols-3 gap-2 p-1.5 mx-auto bg-zinc-900/50 rounded-2xl border border-zinc-800/50 shadow-inner" role="group">

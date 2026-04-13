@@ -1,5 +1,5 @@
 <div
-    class="min-h-screen bg-zinc-950 text-white pb-24 font-sans"
+    class="min-h-screen bg-transparent text-white pb-24 font-sans"
     style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);"
     x-data="{ loaded: false }"
     x-init="setTimeout(() => loaded = true, 50)"
@@ -70,7 +70,7 @@
         <!-- Operational Matrix -->
         <div class="space-y-8">
             <!-- Profile Identity Card -->
-            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] hover:border-emerald-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] hover:border-emerald-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div class="flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="flex items-center gap-8">
@@ -89,7 +89,7 @@
             </div>
 
             <!-- Blocked Users Card -->
-            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-rose-500/[0.02] hover:border-rose-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-rose-500/[0.02] hover:border-rose-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div class="flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="flex items-center gap-8">
@@ -109,7 +109,7 @@
 
             <!-- Suspended Items (Admin) -->
             @if(auth()->check() && auth()->user()->isAdmin())
-            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-amber-500/[0.02] hover:border-amber-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-amber-500/[0.02] hover:border-amber-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div class="flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="flex items-center gap-8">
@@ -130,7 +130,7 @@
 
             <!-- My Reports (User) -->
             @if(auth()->check() && !auth()->user()->isAdmin())
-            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] hover:border-emerald-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] hover:border-emerald-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div class="flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="flex items-center gap-8">
@@ -150,7 +150,7 @@
             @endif
 
             <!-- Interface Environment -->
-            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] transition-all duration-700" x-data="{ isOpen: false }">
+            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] transition-all duration-700" x-data="{ isOpen: false }">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="flex items-center gap-8">
                         <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-emerald-500/30 transition-all duration-700">
@@ -344,7 +344,7 @@
                     <div class="space-y-6">
                         <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">Identity Quarantines ({{ $suspendedUsers->count() }})</h3>
                         @forelse($suspendedUsers as $sUser)
-                            <div class="bg-zinc-950 border border-amber-500/20 rounded-[2rem] p-8 group hover:border-amber-500/50 transition-all duration-700">
+                            <div class="bg-zinc-950/60 border border-amber-500/20 rounded-[2rem] p-8 backdrop-blur-3xl group hover:border-amber-500/50 transition-all duration-700">
                                 <div class="flex items-start justify-between gap-6">
                                     <div class="flex-1 min-w-0">
                                         <h4 class="text-lg font-black text-white uppercase tracking-tight italic mb-1">{{ $sUser->name }}</h4>
@@ -370,7 +370,7 @@
                     <div class="space-y-6">
                         <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">Log Quarantines ({{ $suspendedPosts->count() }})</h3>
                         @forelse($suspendedPosts as $sPost)
-                            <div class="bg-zinc-950 border border-amber-500/20 rounded-[2rem] p-8 group hover:border-amber-500/50 transition-all duration-700">
+                            <div class="bg-zinc-950/60 border border-amber-500/20 rounded-[2rem] p-8 backdrop-blur-3xl group hover:border-amber-500/50 transition-all duration-700">
                                 <div class="flex items-start justify-between gap-6">
                                     <div class="flex-1 min-w-0 text-bold">
                                         <h4 class="text-[11px] font-black text-zinc-500 uppercase tracking-widest mb-3 italic">Source: @ {{ $sPost->user->username ?? 'Unknown' }}</h4>
