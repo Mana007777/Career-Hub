@@ -135,10 +135,10 @@
             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
         >
-            <div class="bg-gray-900 border border-white/5 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
+            <div class="bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
                 <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
-                    <h3 class="text-sm font-bold text-gray-200 uppercase tracking-widest">Create New Post</h3>
-                    <button wire:click="closeCreateForm" class="text-gray-500 hover:text-white transition-colors">
+                    <h3 class="text-sm font-black text-white uppercase tracking-[0.2em]">Create New Post</h3>
+                    <button wire:click="closeCreateForm" class="text-gray-400 hover:text-white transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -184,7 +184,7 @@
                                 wire:model="jobType"
                                 wire:key="job-type-input"
                                 id="jobType"
-                                class="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none cursor-pointer">
+                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all appearance-none cursor-pointer">
                                 <option value="">Select type (Optional)</option>
                                 <option value="full-time">Full-time</option>
                                 <option value="part-time">Part-time</option>
@@ -198,7 +198,7 @@
                         <!-- Media -->
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Media</label>
-                            <label for="media" class="relative group flex items-center justify-center w-full px-4 py-3 bg-gray-950 border border-white/10 border-dashed rounded-xl hover:bg-white/5 transition-all cursor-pointer">
+                            <label for="media" class="relative group flex items-center justify-center w-full px-4 py-3 bg-brand-deep/30 border border-white/10 border-dashed rounded-xl hover:bg-white/5 transition-all cursor-pointer">
                                 <div class="flex items-center gap-3 text-gray-400 group-hover:text-white transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -227,12 +227,12 @@
                                 type="text"
                                 wire:model="specialtyName"
                                 placeholder="Main Category"
-                                class="flex-1 px-4 py-2.5 bg-gray-950 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-sm">
+                                class="flex-1 px-4 py-2.5 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm">
                             <input 
                                 type="text"
                                 wire:model="subSpecialtyName"
                                 placeholder="Sub Category"
-                                class="flex-1 px-4 py-2.5 bg-gray-950 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-sm">
+                                class="flex-1 px-4 py-2.5 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm">
                             <button 
                                 type="button"
                                 wire:click="addSpecialty"
@@ -244,8 +244,8 @@
                         @if(count($specialties) > 0)
                             <div class="flex flex-wrap gap-2">
                                 @foreach($specialties as $index => $spec)
-                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-300 text-xs font-bold">
-                                        {{ $spec['specialty_name'] }} <span class="text-indigo-500/50">/</span> {{ $spec['sub_specialty_name'] }}
+                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-purple/10 border border-brand-purple/20 rounded-lg text-brand-violet text-xs font-black uppercase tracking-widest">
+                                        {{ $spec['specialty_name'] }} <span class="text-brand-purple/50">/</span> {{ $spec['sub_specialty_name'] }}
                                         <button type="button" wire:click="removeSpecialty({{ $index }})" class="hover:text-rose-400 transition-colors">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -269,7 +269,7 @@
                             type="submit"
                             wire:loading.attr="disabled"
                             wire:target="create"
-                            class="px-10 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black rounded-xl transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50 flex items-center gap-2">
+                            class="px-10 py-2.5 bg-gradient-to-r from-brand-purple to-brand-violet hover:opacity-90 text-white font-black rounded-xl transition-all shadow-lg shadow-brand-purple/25 disabled:opacity-50 flex items-center gap-2 tracking-widest uppercase text-xs"
                             <span wire:loading.remove wire:target="create">Publish Post</span>
                             <span wire:loading wire:target="create" class="flex items-center gap-2">
                                 <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
@@ -313,7 +313,7 @@
                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                 >
                     <!-- Background Glow -->
-                    <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-600/5 blur-[100px] group-hover:bg-indigo-600/10 transition-all duration-700"></div>
+                    <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-purple/5 blur-[100px] group-hover:bg-brand-purple/10 transition-all duration-700"></div>
 
                     <!-- Post Header -->
                     <div class="flex items-start justify-between mb-6 relative z-10">
@@ -321,7 +321,7 @@
                             <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" 
                                onclick="event.stopPropagation()" 
                                class="relative flex-shrink-0 group/avatar">
-                                <div class="w-12 h-12 rounded-2xl overflow-hidden bg-gray-800 ring-2 ring-white/5 group-hover/avatar:ring-indigo-500/50 transition-all duration-300">
+                                <div class="w-12 h-12 rounded-2xl overflow-hidden bg-gray-800 ring-2 ring-white/5 group-hover/avatar:ring-brand-purple/50 transition-all duration-300">
                                     @if($post->user && $post->user->profile_photo_path)
                                         <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover">
                                     @else
@@ -367,8 +367,8 @@
 
                         @if($post->job_type)
                             <div>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-wider rounded-lg border border-indigo-500/20">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-purple/10 text-indigo-400 text-[10px] font-black uppercase tracking-wider rounded-lg border border-brand-purple/20">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-brand-purple"></span>
                                     {{ str_replace('-', ' ', $post->job_type) }}
                                 </span>
                             </div>
@@ -379,7 +379,7 @@
                         </p>
 
                         @if(\Illuminate\Support\Str::length($post->content) > 280)
-                            <button wire:click.stop="openInlinePostModal({{ $post->id }})" class="text-sm font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest text-xs">
+                            <button wire:click.stop="openInlinePostModal({{ $post->id }})" class="text-sm font-bold text-indigo-400 hover:text-brand-violet transition-colors uppercase tracking-widest text-xs">
                                 Read More +
                             </button>
                         @endif
@@ -430,7 +430,7 @@
                             </button>
 
                             <button onclick="event.stopPropagation()" class="flex items-center gap-2 group/btn">
-                                <div class="p-2 rounded-xl transition-all duration-300 text-gray-500 group-hover/btn:bg-indigo-500/10 group-hover/btn:text-indigo-400">
+                                <div class="p-2 rounded-xl transition-all duration-300 text-gray-500 group-hover/btn:bg-brand-purple/10 group-hover/btn:text-indigo-400">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                     </svg>
@@ -454,7 +454,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                                         </svg>
                                     </button>
-                                    <div x-show="open" @click.away="open = false" class="absolute right-0 bottom-full mb-2 w-48 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden py-1">
+                                    <div x-show="open" @click.away="open = false" class="absolute right-0 bottom-full mb-2 w-48 bg-black border border-white/10 rounded-2xl shadow-2xl overflow-hidden py-1">
                                         @if($post->user_id === auth()->id())
                                             <button wire:click.stop="openEditModal({{ $post->id }})" class="w-full text-left px-4 py-2.5 text-xs font-bold text-gray-300 hover:bg-white/5 flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -552,7 +552,7 @@
                             <!-- Job Type -->
                             <div class="space-y-2">
                                 <label for="editJobType" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Job Type</label>
-                                <select wire:model="editJobType" id="editJobType" class="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none cursor-pointer">
+                                <select wire:model="editJobType" id="editJobType" class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all appearance-none cursor-pointer">
                                     <option value="">Select type</option>
                                     <option value="full-time">Full-time</option>
                                     <option value="part-time">Part-time</option>
@@ -566,7 +566,7 @@
                             <!-- Media -->
                             <div class="space-y-2">
                                 <label for="editMedia" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Update Media</label>
-                                <label class="flex items-center justify-center w-full px-4 py-[13px] bg-gray-950 border border-white/10 border-dashed rounded-xl hover:bg-white/5 transition-all cursor-pointer">
+                                <label class="flex items-center justify-center w-full px-4 py-[13px] bg-brand-deep/30 border border-white/10 border-dashed rounded-xl hover:bg-white/5 transition-all cursor-pointer">
                                     <span class="text-xs font-bold text-gray-400 truncate">{{ $editMedia ? $editMedia->getClientOriginalName() : 'Change File' }}</span>
                                     <input type="file" wire:model="editMedia" id="editMedia" accept="image/*,video/*" class="hidden">
                                 </label>
@@ -578,7 +578,7 @@
                             <button type="button" wire:click="closeEditModal" class="px-6 py-2.5 text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">
                                 Cancel
                             </button>
-                            <button type="submit" class="px-8 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-indigo-500/20 uppercase tracking-widest">
+                            <button type="submit" class="px-8 py-2.5 bg-brand-purple hover:bg-brand-purple text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-brand-purple/20 uppercase tracking-widest">
                                 Save Changes
                             </button>
                         </div>
@@ -595,9 +595,9 @@
     @if ($showDeleteModal)
         <div class="fixed inset-0 z-[70] overflow-y-auto" x-data="{}" x-init="$el.focus()">
             <div class="flex items-center justify-center min-h-screen px-4 text-center">
-                <div class="fixed inset-0 transition-opacity bg-gray-950/90 backdrop-blur-md" wire:click="closeDeleteModal"></div>
+                <div class="fixed inset-0 transition-opacity bg-brand-deep/30/90 backdrop-blur-md" wire:click="closeDeleteModal"></div>
 
-                <div class="inline-block align-bottom bg-gray-900 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-white/10" wire:click.stop>
+                <div class="inline-block align-bottom bg-black rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-white/10" wire:click.stop>
                     <div class="p-8 text-center">
                         <div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -693,7 +693,7 @@
                                 <button 
                                     type="button"
                                     wire:click="closeAdminActionsModal"
-                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep hover:bg-white/5 text-white bg-gray-800 hover:bg-black rounded-lg transition-colors">
                                     Cancel
                                 </button>
                                 <button 
@@ -715,7 +715,7 @@
                                 <button 
                                     type="button"
                                     wire:click="closeAdminActionsModal"
-                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep hover:bg-white/5 text-white bg-gray-800 hover:bg-black rounded-lg transition-colors">
                                     Cancel
                                 </button>
                                 <button 
@@ -778,7 +778,7 @@
                             <button 
                                 type="button"
                                 wire:click="closeSuspendModal"
-                                class="px-4 py-2 dark:text-gray-300 bg-brand-deep dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                class="px-4 py-2 dark:text-gray-300 bg-brand-deep hover:bg-white/5 text-white bg-gray-800 hover:bg-black rounded-lg transition-colors">
                                 Cancel
                             </button>
                             <button 
