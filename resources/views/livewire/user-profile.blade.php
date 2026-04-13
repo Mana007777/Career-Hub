@@ -106,36 +106,38 @@
                                 @endif
                             </div>
 
-                            <!-- Stats -->
-                            <div class="flex flex-wrap items-start gap-10 mb-2">
-                                <div class="flex flex-col gap-1 min-w-[60px]">
-                                    <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Posts</span>
-                                    <p class="text-white text-xl font-black uppercase">{{ $postsCount }}</p>
-                                </div>
-                                <button 
-                                    type="button"
-                                    wire:click="openFollowersModal"
-                                    class="text-left hover:opacity-80 transition-opacity flex flex-col gap-1 min-w-[80px]">
-                                    <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Followers</span>
-                                    <p class="text-white text-xl font-black uppercase hover:text-brand-violet transition-colors">{{ $followersCount }}</p>
-                                </button>
-                                <button 
-                                    type="button"
-                                    wire:click="openFollowingModal"
-                                    class="text-left hover:opacity-80 transition-opacity flex flex-col gap-1 min-w-[80px]">
-                                    <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Following</span>
-                                    <p class="text-white text-xl font-black uppercase hover:text-brand-violet transition-colors">{{ $followingCount }}</p>
-                                </button>
-                                <div class="flex flex-col gap-1 min-w-[80px]">
-                                    <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Reactions</span>
-                                    <p class="text-white text-xl font-black uppercase">{{ $endorsementCount }}</p>
+                            <!-- Stats Grid -->
+                            <div class="flex flex-wrap items-center gap-x-12 gap-y-6 mb-8">
+                                <div class="flex items-center gap-10">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-none">Posts</span>
+                                        <p class="text-white text-xl font-black uppercase leading-none">{{ $postsCount }}</p>
+                                    </div>
+                                    <button 
+                                        type="button"
+                                        wire:click="openFollowersModal"
+                                        class="text-left group flex flex-col gap-1">
+                                        <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-none group-hover:text-brand-violet transition-colors">Followers</span>
+                                        <p class="text-white text-xl font-black uppercase leading-none group-hover:text-brand-violet transition-colors">{{ $followersCount }}</p>
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        wire:click="openFollowingModal"
+                                        class="text-left group flex flex-col gap-1">
+                                        <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-none group-hover:text-brand-violet transition-colors">Following</span>
+                                        <p class="text-white text-xl font-black uppercase leading-none group-hover:text-brand-violet transition-colors">{{ $followingCount }}</p>
+                                    </button>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-none">Reactions</span>
+                                        <p class="text-white text-xl font-black uppercase leading-none">{{ $endorsementCount }}</p>
+                                    </div>
                                 </div>
                                 
                                 <!-- Organizations -->
                                 @if($organizationMemberships && count($organizationMemberships) > 0)
-                                    <div class="flex flex-col gap-1 min-w-[120px]">
-                                        <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Mission Groups</span>
-                                        <div class="flex flex-wrap items-center gap-2 mt-1">
+                                    <div class="flex flex-col gap-1.5 pl-8 border-l border-white/10">
+                                        <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-none">Mission Groups</span>
+                                        <div class="flex flex-wrap items-center gap-2">
                                             @foreach($organizationMemberships as $org)
                                                 <a
                                                     href="{{ route('user.profile', $org->username ?? 'unknown') }}"
