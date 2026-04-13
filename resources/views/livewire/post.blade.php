@@ -493,7 +493,7 @@
                     wire:click="loadMore"
                     wire:loading.attr="disabled"
                     class="group relative flex items-center gap-4 text-gray-500 hover:text-indigo-400 transition-all duration-300 font-bold uppercase tracking-[0.2em] text-xs">
-                    <span class="h-px w-12 bg-gray-800 group-hover:bg-indigo-500/50 transition-colors"></span>
+                    <span class="h-px w-24 bg-gray-800 group-hover:bg-indigo-500/50 transition-colors"></span>
                     <span class="flex items-center gap-2">
                         <span wire:loading.remove wire:target="loadMore">See more</span>
                         <span wire:loading wire:target="loadMore" class="flex items-center gap-2">
@@ -504,7 +504,7 @@
                             Loading...
                         </span>
                     </span>
-                    <span class="h-px w-12 bg-gray-800 group-hover:bg-indigo-500/50 transition-colors"></span>
+                    <span class="h-px w-24 bg-gray-800 group-hover:bg-indigo-500/50 transition-colors"></span>
                 </button>
             </div>
         @endif
