@@ -199,6 +199,56 @@
             </div>
         </div>
 
+        <!-- Verified Competencies (Endorsements) -->
+        @if(count($endorsementsBySkill) > 0)
+            <div class="mb-12">
+                <h2 class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] flex items-center gap-4 px-4 italic mb-6">
+                    <span class="w-4 h-px bg-zinc-800"></span>
+                    Verified Competencies
+                </h2>
+                <div class="flex flex-wrap gap-4 px-2">
+                    @foreach($endorsementsBySkill as $skill => $endorsements)
+                        <div class="group relative px-5 py-3 bg-zinc-900/40 border border-zinc-800/50 rounded-2xl flex items-center gap-4 hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all cursor-default backdrop-blur-sm shadow-lg">
+                            <span class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest">{{ $skill }}</span>
+                            <div class="w-px h-4 bg-zinc-800 group-hover:bg-emerald-500/30 transition-colors"></div>
+                            <span class="text-[11px] font-black text-emerald-500/80">{{ count($endorsements) }}</span>
+                            
+                            <!-- Tooltip showing endorsers -->
+                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-max max-w-xs bg-zinc-950 border border-zinc-800/80 rounded-2xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 shadow-2xl backdrop-blur-xl">
+                                <div class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-3 border-b border-zinc-800/50 pb-2 italic">Endorsed By</div>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach(collect($endorsements)->take(5) as $endorsement)
+                                        @php $endorser = $endorsement->endorser ?? null; @endphp
+                                        @if($endorser)
+                                            <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner" title="{{ $endorser->name }}">
+                                                @if($endorser->profile_photo_path)
+                                                    <img src="{{ $endorser->profile_photo_url }}" class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full flex items-center justify-center text-[10px] font-black text-emerald-500">{{ strtoupper(substr($endorser->name, 0, 1)) }}</div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                    @if(count($endorsements) > 5)
+                                        <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[9px] font-black text-emerald-500/50">
+                                            +{{ count($endorsements) - 5 }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <!-- Remove Endorsement Button if owner -->
+                            @if(Auth::check() && Auth::id() === $user->id)
+                                <button wire:click.stop="removeEndorsement('{{ addslashes($skill) }}')" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center text-zinc-600 hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/20 border border-transparent transition-all" title="Remove Endorsement">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <!-- Mission Stream -->
         @if($isBlocked)
             <div class="p-20 bg-zinc-900/40 border border-dashed border-rose-500/30 rounded-[3rem] text-center backdrop-blur-3xl relative">
