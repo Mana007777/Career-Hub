@@ -34,14 +34,16 @@ class Settings extends Component
     public $website;
     public $photo;
     
-    // Theme preference
+    // Theme and Language preference
     public $themePreference = 'system';
+    public $locale = 'en';
 
     public function mount(): void
     {
         $this->loadBlockedUsers();
         $this->loadProfileData();
         $this->loadThemePreference();
+        $this->loadLocalePreference();
     }
 
     protected function loadProfileData(): void
@@ -70,6 +72,16 @@ class Settings extends Component
 
         $user = Auth::user();
         $this->themePreference = $user->theme_preference ?? 'system';
+    }
+
+    protected function loadLocalePreference(): void
+    {
+        if (!Auth::check()) {
+            return;
+        }
+
+        $user = Auth::user();
+        $this->locale = $user->locale ?? 'en';
     }
 
     public function openBlocksModal(): void
@@ -221,6 +233,24 @@ class Settings extends Component
             ");
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update theme preference: ' . $e->getMessage());
+        }
+    }
+
+    public function updateLocale(): void
+    {
+        try {
+            $user = Auth::user();
+            $user->locale = $this->locale;
+            $user->save();
+
+            session()->put('locale', $this->locale);
+            app()->setLocale($this->locale);
+
+            session()->flash('success', 'Language preference updated!');
+
+            $this->js("setTimeout(() => window.location.reload(), 300);");
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to update language: ' . $e->getMessage());
         }
     }
 

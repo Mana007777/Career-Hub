@@ -184,6 +184,42 @@
                     @endforeach
                 </div>
             </div>
+
+            <!-- Language Configuration -->
+            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] transition-all duration-700" x-data="{ isOpen: false }">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div class="flex items-center gap-8">
+                        <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-emerald-500/30 transition-all duration-700">
+                             <div class="w-full h-full rounded-[1.4rem] bg-zinc-900 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 6C11.644 10.334 8.784 13.916 5 16.29" /></svg>
+                             </div>
+                        </div>
+                        <div>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Global Communication</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Linguistic Matrix</p>
+                        </div>
+                    </div>
+                    <button @click="isOpen = !isOpen" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500/70 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-zinc-800 hover:text-emerald-400 transition-all flex items-center justify-center gap-4 italic group/btn">
+                        <span>Modify Syntax</span>
+                        <svg class="w-4 h-4 transition-transform duration-500" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50" x-show="isOpen" x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display:none">
+                    @foreach(['en' => ['Universal', 'English'], 'ar' => ['Regional Code', 'Arabic'], 'ckb' => ['Local Protocol', 'Kurdish']] as $lang => $labels)
+                        <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl hover:border-emerald-500/30 transition-all cursor-pointer group/mode {{ $locale === $lang ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
+                            <div class="relative flex items-center justify-center">
+                                <input type="radio" wire:model="locale" wire:change="updateLocale" value="{{ $lang }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
+                                <div class="absolute w-3 h-3 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            </div>
+                            <div>
+                                <span class="block text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover/mode:text-emerald-500 transition-colors">{{ $labels[0] }}</span>
+                                <span class="block text-sm font-black text-white uppercase tracking-tight italic">{{ $labels[1] }}</span>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 

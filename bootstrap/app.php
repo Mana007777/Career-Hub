@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SecureHeaders::class,
             \App\Http\Middleware\EnsureSessionIsolation::class,
             \App\Http\Middleware\CheckUserSuspension::class,
+            \App\Http\Middleware\SetUserLocale::class,
         ]);
         $middleware->api(append: [
             \App\Http\Middleware\SecureHeaders::class,
