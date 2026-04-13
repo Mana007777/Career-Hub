@@ -93,7 +93,10 @@
                             <div class="p-6 border-b border-white/5">
                                 <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-1">Users</h3>
                                 <div class="space-y-4">
-                                    @foreach($users as $index => $user)
+                                    @php
+                                        $displayUsers = ($this->resultType === 'all') ? $users->take(3) : $users;
+                                    @endphp
+                                    @foreach($displayUsers as $index => $user)
                                         <a 
                                             href="{{ route('user.profile', $user->username ?? 'unknown') }}"
                                             wire:click="closeSearch"
@@ -142,8 +145,16 @@
                                     @endforeach
                                 </div>
                                 
-                                <!-- Users Pagination -->
-                                @if($users->hasPages())
+                                <!-- Users Pagination / See All -->
+                                @if($this->resultType === 'all' && $users->total() > 3)
+                                    <div class="mt-4 flex justify-center">
+                                        <button 
+                                            wire:click="setResultType('users')"
+                                            class="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-brand-purple hover:border-brand-purple transition-all">
+                                            See All Users ({{ $users->total() }})
+                                        </button>
+                                    </div>
+                                @elseif($this->resultType !== 'all' && $users->hasPages())
                                     <div class="mt-4 pt-4 border-t border-white/5">
                                         {{ $users->links() }}
                                     </div>
@@ -156,7 +167,10 @@
                             <div class="p-6 {{ (in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0) ? 'border-t border-white/5' : '' }}">
                                 <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-1">Posts</h3>
                                 <div class="space-y-6">
-                                    @foreach($posts as $index => $post)
+                                    @php
+                                        $displayPosts = ($this->resultType === 'all') ? $posts->take(3) : $posts;
+                                    @endphp
+                                    @foreach($displayPosts as $index => $post)
                                     <a 
                                         href="{{ route('posts.show', $post->slug) }}"
                                         wire:click="closeSearch"
@@ -239,12 +253,20 @@
                                 @endforeach
                             </div>
 
-                                    <!-- Posts Pagination -->
-                                    @if($posts->hasPages())
-                                        <div class="mt-4 pt-4 border-t border-white/5">
-                                            {{ $posts->links() }}
-                                        </div>
-                                    @endif
+                            <!-- Posts Pagination / See All -->
+                            @if($this->resultType === 'all' && $posts->total() > 3)
+                                <div class="mt-8 flex justify-center">
+                                    <button 
+                                        wire:click="setResultType('posts')"
+                                        class="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-brand-purple hover:border-brand-purple transition-all">
+                                        See All Posts ({{ $posts->total() }})
+                                    </button>
+                                </div>
+                            @elseif($this->resultType !== 'all' && $posts->hasPages())
+                                <div class="mt-4 pt-4 border-t border-white/5">
+                                    {{ $posts->links() }}
+                                </div>
+                            @endif
                                 </div>
                             </div>
                         @endif

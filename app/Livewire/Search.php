@@ -104,11 +104,11 @@ class Search extends Component
         $showUsers = in_array($this->resultType, ['all', 'users'], true);
 
         $posts = ($searchQuery && $showPosts)
-            ? $postService->searchPosts($searchQuery, 10)
+            ? $postService->searchPosts($searchQuery, ($this->resultType === 'all' ? 4 : 10))
             : $postRepository->getEmptyPaginated(10);
 
         $users = ($searchQuery && $showUsers)
-            ? $userRepository->searchUsers($searchQuery, 10, auth()->id())
+            ? $userRepository->searchUsers($searchQuery, ($this->resultType === 'all' ? 4 : 10), auth()->id())
             : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
 
         return view('livewire.search', [
