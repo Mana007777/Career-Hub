@@ -1,4 +1,25 @@
 <div class="space-y-12 bg-transparent" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 50)">
+    <!-- Back (same pattern as Settings / profile) -->
+    <div
+        class="mb-10"
+        x-show="loaded"
+        x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-700"
+        x-transition:enter-start="opacity-0 -translate-x-10"
+        x-transition:enter-end="opacity-100 translate-x-0"
+    >
+        <a
+            href="{{ route('dashboard') }}"
+            class="inline-flex items-center gap-4 text-emerald-500/70 hover:text-emerald-400 transition-all duration-500 group"
+        >
+            <div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500 shadow-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </div>
+            <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Return to Command Center</span>
+        </a>
+    </div>
+
     <!-- Header -->
     <div 
         class="flex flex-col gap-4"
