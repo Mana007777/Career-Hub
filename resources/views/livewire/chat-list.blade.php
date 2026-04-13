@@ -22,24 +22,44 @@
             });
         }
     }"
-    x-show="isOpen"
-    x-cloak
     @if(!($inline ?? false))
-        x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition cubic-bezier(0.16, 1, 0.3, 1) duration-300"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        @click.away="isOpen = false; @this.call('close')"
-        class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/98 backdrop-blur-2xl px-4"
+        class="contents"
     @else
+        x-show="isOpen"
+        x-cloak
         class="mb-6"
     @endif
 >
+    @if(!($inline ?? false))
+        <div
+            x-show="isOpen"
+            x-cloak
+            class="fixed inset-0 z-[100] bg-zinc-950/90 backdrop-blur-2xl"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-250"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="isOpen = false; @this.call('close')"
+        ></div>
+        <div
+            x-show="isOpen"
+            x-cloak
+            class="fixed inset-x-0 bottom-0 z-[101] flex justify-center items-end pb-40 px-4 pointer-events-none"
+        >
+    @endif
     <div 
-        @click.stop
-        class="bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden transform transition-all duration-700 backdrop-blur-3xl @if(!($inline ?? false)) w-full max-w-md max-h-[80vh] relative @endif"
+        @if(!($inline ?? false)) @click.stop @endif
+        class="bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden backdrop-blur-3xl @if(!($inline ?? false)) pointer-events-auto w-full max-w-md max-h-[min(80vh,calc(100vh-11rem))] relative @endif"
+        @if(!($inline ?? false))
+            x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500"
+            x-transition:enter-start="opacity-0 translate-y-[110%]"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition cubic-bezier(0.34, 1, 0.56, 1) duration-350"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-[110%]"
+        @endif
     >
         @if(!($inline ?? false))
             <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
@@ -160,4 +180,7 @@
 
         </div>
     </div>
+    @if(!($inline ?? false))
+        </div>
+    @endif
 </div>
