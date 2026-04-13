@@ -220,15 +220,15 @@
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($endorsements->take(5) as $endorsement)
                                         @php 
-                                            // Handle case where $endorsement itself might be cast as an object/array
-                                            $endorser = is_array($endorsement) ? ($endorsement['endorser'] ?? null) : ($endorsement->endorser ?? null); 
+                                            // Handle case where $endorsement itself might be cast as an object/array/collection
+                                            $endorser = data_get($endorsement, 'endorser'); 
                                         @endphp
                                         @if($endorser)
-                                            <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner" title="{{ is_array($endorser) ? ($endorser['name'] ?? 'U') : ($endorser->name ?? 'U') }}">
-                                                @if(is_array($endorser) ? !empty($endorser['profile_photo_path']) : !empty($endorser->profile_photo_path))
-                                                    <img src="{{ is_array($endorser) ? ($endorser['profile_photo_url'] ?? '') : ($endorser->profile_photo_url ?? '') }}" class="w-full h-full object-cover">
+                                            <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner" title="{{ data_get($endorser, 'name', 'U') }}">
+                                                @if(!empty(data_get($endorser, 'profile_photo_path')))
+                                                    <img src="{{ data_get($endorser, 'profile_photo_url', '') }}" class="w-full h-full object-cover">
                                                 @else
-                                                    <div class="w-full h-full flex items-center justify-center text-[10px] font-black text-emerald-500">{{ strtoupper(substr(is_array($endorser) ? ($endorser['name'] ?? 'U') : ($endorser->name ?? 'U'), 0, 1)) }}</div>
+                                                    <div class="w-full h-full flex items-center justify-center text-[10px] font-black text-emerald-500">{{ strtoupper(substr(data_get($endorser, 'name', 'U'), 0, 1)) }}</div>
                                                 @endif
                                             </div>
                                         @endif

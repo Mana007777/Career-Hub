@@ -38,8 +38,7 @@ class UserProfile extends Component
     /** @var \Illuminate\Support\Collection<int, \App\Models\Organization>|array */
     public $organizationMemberships = [];
     public $pendingOrganizationInvitationId = null;
-    public bool $viewerCompanyAlreadyMember = false;
-    public $endorsementsBySkill = [];
+    public $viewerCompanyAlreadyMember = false;
     public $endorsableSkills = [];
     public $showEndorseModal = false;
     public $endorsementCount = 0;
@@ -85,8 +84,6 @@ class UserProfile extends Component
         $this->followingCount = $this->user->following_count;
         $this->postsCount = $this->user->posts_count;
 
-        $endorsementRepository = app(EndorsementRepository::class);
-        $this->endorsementsBySkill = $endorsementRepository->getEndorsementsBySkillForUser($this->user)->all();
         $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
 
         if (Auth::check() && Auth::id() !== $this->user->id) {
@@ -349,7 +346,6 @@ class UserProfile extends Component
                 return;
             }
             $endorseUserAction->endorse($this->user, $skill);
-            $this->endorsementsBySkill = $endorsementRepository->getEndorsementsBySkillForUser($this->user)->all();
             $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
             $this->endorsableSkills = $endorseUserAction->getEndorsableSkills($this->user)->all();
             $this->customSkill = '';
@@ -368,7 +364,6 @@ class UserProfile extends Component
                 return;
             }
             $endorseUserAction->removeEndorsement($this->user, $skill);
-            $this->endorsementsBySkill = $endorsementRepository->getEndorsementsBySkillForUser($this->user)->all();
             $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
             $this->endorsableSkills = $endorseUserAction->getEndorsableSkills($this->user)->all();
             session()->flash('success', "Endorsement for {$skill} removed.");
@@ -630,8 +625,11 @@ class UserProfile extends Component
             $posts = $postRepository->getByUserId($this->user->id, 10);
         }
 
+        $endorsementsBySkill = app(EndorsementRepository::class)->getEndorsementsBySkillForUser($this->user)->all();
+
         return view('livewire.user-profile', [
             'posts' => $posts,
+            'endorsementsBySkill' => $endorsementsBySkill,
         ]);
     }
 }
