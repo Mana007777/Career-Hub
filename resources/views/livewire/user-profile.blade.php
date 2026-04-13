@@ -218,7 +218,77 @@
                 
                 <div class="space-y-8">
                     @forelse ($posts as $index => $post)
-                        @livewire('post-card', ['post' => $post, 'uniqueId' => 'profile-post-'.$post->id], key($post->id))
+                        <!-- Archive Card Inline (Replaces missing post-card component) -->
+                        <article
+                            onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
+                            class="group relative h-full flex flex-col bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] p-8 transition-all duration-700 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] shadow-[0_30px_60px_rgba(0,0,0,0.3)] backdrop-blur-3xl cursor-pointer overflow-hidden"
+                            style="transition-delay: {{ $index * 50 }}ms"
+                        >
+                            <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                            <div class="flex items-start justify-between mb-8 relative z-10">
+                                <div class="flex items-center gap-4 group/author">
+                                    <div class="w-12 h-12 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center p-0.5 shrink-0 group-hover/author:border-emerald-500/30 transition-all duration-700">
+                                        @if($post->user && $post->user->profile_photo_path)
+                                            <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover grayscale opacity-50 group-hover/author:grayscale-0 group-hover/author:opacity-100 transition-all duration-1000">
+                                        @else
+                                            <span class="text-emerald-500/40 font-black text-xs">
+                                                {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h3 class="text-[11px] font-black text-zinc-400 group-hover/author:text-white transition-colors truncate uppercase tracking-widest">{{ $post->user->name ?? 'Unknown' }}</h3>
+                                        <p class="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em] mt-1 italic">{{ $post->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-8 flex-1 relative z-10">
+                                @if(!empty($post->title))
+                                    <h2 class="text-lg font-black text-white mb-3 group-hover:text-emerald-400 transition-colors uppercase tracking-tight italic">
+                                        {{ $post->title }}
+                                    </h2>
+                                @endif
+                                <p class="text-zinc-500 text-sm leading-relaxed line-clamp-4 italic selection:bg-emerald-500/20 font-medium font-bold">
+                                    {{ $post->content }}
+                                </p>
+                            </div>
+
+                            @if ($post->media)
+                                <div class="mb-8 rounded-2xl overflow-hidden border border-zinc-800 relative group/media">
+                                    @php
+                                        $mediaUrl = app(\App\Services\PostService::class)->getMediaUrl($post);
+                                        $isImage = in_array(strtolower(pathinfo($post->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
+                                    @endphp
+                                    @if($isImage)
+                                        <img src="{{ $mediaUrl }}" alt="Intelligence Media" class="w-full h-40 object-cover grayscale opacity-50 group-hover/media:grayscale-0 group-hover/media:opacity-100 transition-all duration-1000">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent"></div>
+                                    @else
+                                        <div class="bg-zinc-950 py-6 px-8 flex items-center justify-between group-hover:bg-emerald-500/5 transition-colors duration-700">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L13.732 14M5 18H13a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></div>
+                                                <span class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Multimedia Payload</span>
+                                            </div>
+                                            <svg class="w-4 h-4 text-emerald-500/30 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 5l7 7-7 7" /></svg>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+
+                            <div class="mt-auto pt-8 border-t border-zinc-800/50 flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-2 group/stat">
+                                        <svg class="w-4 h-4 text-zinc-600 group-hover/stat:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                                        <span class="text-[9px] font-black tracking-widest text-zinc-500">{{ $post->stars_count ?? $post->stars->count() }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 group/stat">
+                                        <svg class="w-4 h-4 text-zinc-600 group-hover/stat:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                        <span class="text-[9px] font-black tracking-widest text-zinc-500">{{ $post->comments_count ?? $post->comments->count() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
                     @empty
                         <div class="py-32 bg-zinc-900/20 border border-dashed border-zinc-800/50 rounded-[3rem] text-center group">
                             <div class="w-24 h-24 bg-zinc-950 border border-zinc-900/50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
