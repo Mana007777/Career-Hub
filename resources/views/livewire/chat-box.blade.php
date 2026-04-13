@@ -49,7 +49,8 @@
             $isFollowing = $currentUser->following()->where('following_id', $otherUser->id)->exists();
         @endphp
 
-        <!-- Absolute Dark Chat Interface -->
+        <!-- Docked above bottom nav (same column as Uplink list); outer flex avoids transform conflicts with Alpine transitions -->
+        <div class="fixed inset-x-0 bottom-0 z-[110] flex justify-center px-4 pb-40 pointer-events-none">
         <div 
             x-data="{ 
                 isMinimized: false,
@@ -65,13 +66,13 @@
             x-show="$wire.isOpen"
             x-cloak
             x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500"
-            x-transition:enter-start="opacity-0 translate-y-20 blur-xl"
+            x-transition:enter-start="opacity-0 translate-y-12 blur-xl"
             x-transition:enter-end="opacity-100 translate-y-0 blur-0"
             x-transition:leave="transition cubic-bezier(0.16, 1, 0.3, 1) duration-400"
             x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 translate-y-20 blur-xl"
-            class="fixed bottom-40 left-1/2 z-[110] w-[min(calc(100vw-2rem),28rem)] max-w-full -translate-x-1/2 min-w-0 bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,1)] flex flex-col overflow-hidden backdrop-blur-3xl"
-            x-bind:style="isMinimized ? 'height: 80px;' : 'height: 650px;'"
+            x-transition:leave-end="opacity-0 translate-y-12 blur-xl"
+            class="pointer-events-auto w-full max-w-md min-w-0 bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,1)] flex flex-col overflow-hidden backdrop-blur-3xl max-h-[min(650px,calc(100dvh-10rem))]"
+            x-bind:style="isMinimized ? 'height: 80px; max-height: 80px' : 'height: min(650px, calc(100dvh - 10rem)); max-height: min(650px, calc(100dvh - 10rem))'"
         >
             <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
 
@@ -207,6 +208,7 @@
                     @endif
                 </div>
             @endif
+        </div>
         </div>
     @endif
 </div>
