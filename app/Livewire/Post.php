@@ -63,6 +63,8 @@ class Post extends Component
     public array $savedPostIds = [];
     public $showInlinePostModal = false;
     public ?PostModel $inlinePost = null;
+    public $perPage = 10;
+
     
     // Filter properties
     public $sortOrder = 'desc'; // desc, asc
@@ -183,27 +185,37 @@ class Post extends Component
         $this->selectedTags = '';
         $this->selectedSpecialties = '';
         $this->selectedJobType = '';
+        $this->perPage = 10;
         $this->resetPage();
     }
     
     public function updatedSelectedTags(): void
     {
+        $this->perPage = 10;
         $this->resetPage();
     }
     
     public function updatedSelectedSpecialties(): void
     {
+        $this->perPage = 10;
         $this->resetPage();
     }
     
     public function updatedSelectedJobType(): void
     {
+        $this->perPage = 10;
         $this->resetPage();
     }
     
     public function updatedSortOrder(): void
     {
+        $this->perPage = 10; // Reset load more limit when filters change
         $this->resetPage();
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 10;
     }
 
     public function toggleCreateForm()
@@ -913,9 +925,9 @@ class Post extends Component
         ];
         
         $posts = match ($this->feedMode) {
-            'popular' => $postService->getPopularPosts(9, $filterParams),
-            'following' => $postService->getFollowingPosts(9, $filterParams),
-            default => $postService->getAllPosts(9, $filterParams),
+            'popular' => $postService->getPopularPosts($this->perPage, $filterParams),
+            'following' => $postService->getFollowingPosts($this->perPage, $filterParams),
+            default => $postService->getAllPosts($this->perPage, $filterParams),
         };
         
         $userId = Auth::id();
