@@ -49,8 +49,8 @@
             $isFollowing = $currentUser->following()->where('following_id', $otherUser->id)->exists();
         @endphp
 
-        <!-- Docked above bottom nav (same column as Uplink list); outer flex avoids transform conflicts with Alpine transitions -->
-        <div class="fixed inset-x-0 bottom-0 z-[110] flex justify-center px-4 pb-40 pointer-events-none">
+        <!-- Centered in viewport; outer flex only (no translate-x) so Alpine y-transitions stay clean. Extra bottom padding clears the dock. -->
+        <div class="fixed inset-0 z-[110] flex items-center justify-center px-4 pt-8 pb-44 pointer-events-none sm:pb-48">
         <div 
             x-data="{ 
                 isMinimized: false,
