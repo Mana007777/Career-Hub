@@ -1,14 +1,14 @@
 @php
     $dashboardTitle = match (true) {
-        !empty($showCvs ?? false) => 'CVs',
-        !empty($showReports ?? false) => 'Reports',
+        !empty($showCvs ?? false) => __('CVs'),
+        !empty($showReports ?? false) => __('Reports'),
         isset($profileUsername) => $profilePageTitle ?? ('@'.ltrim((string) $profileUsername, '@')),
-        isset($postSlug) => $postPageTitle ?? 'Post',
-        !empty($showSettings ?? false) => 'Settings',
-        !empty($showBookmarks ?? false) => 'Bookmarks',
-        !empty($showExploreUsers ?? false) => 'Explore people',
-        !empty($openSearch ?? false) => $searchPageTitle ?? 'Search',
-        default => 'Home',
+        isset($postSlug) => $postPageTitle ?? __('Post'),
+        !empty($showSettings ?? false) => __('Settings'),
+        !empty($showBookmarks ?? false) => __('Bookmarks'),
+        !empty($showExploreUsers ?? false) => __('Explore people'),
+        !empty($openSearch ?? false) => $searchPageTitle ?? __('Search'),
+        default => __('Home'),
     };
 @endphp
 <x-app-layout :title="$dashboardTitle">

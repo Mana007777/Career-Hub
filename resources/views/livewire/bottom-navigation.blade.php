@@ -7,14 +7,14 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                 d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
         </svg>
-        <span class="sr-only">Home</span>
+        <span class="sr-only">{{ __('Home') }}</span>
         @if(Request::routeIs('dashboard'))
             <div class="absolute bottom-1.5 w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
         @endif
     </a>
     <div id="tooltip-home" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Command Center
+        {{ __('Command Center') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -34,11 +34,12 @@
                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
             </span>
         @endif
-        <span class="sr-only">Notifications</span>
+        @endif
+        <span class="sr-only">{{ __('Notifications') }}</span>
     </button>
     <div id="tooltip-notifications" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Inbound Comms
+        {{ __('Inbound Comms') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -54,11 +55,12 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7 7V5" />
             </svg>
         </div>
-        <span class="sr-only">Deploy Node</span>
+        </div>
+        <span class="sr-only">{{ __('Deploy Node') }}</span>
     </button>
     <div id="tooltip-post" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Deploy Node
+        {{ __('Deploy Node') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -72,11 +74,12 @@
             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
             <path stroke="currentColor" stroke-linecap="round" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
         </svg>
-        <span class="sr-only">Deep Scan</span>
+        </svg>
+        <span class="sr-only">{{ __('Deep Scan') }}</span>
     </button>
     <div id="tooltip-search" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Deep Scan
+        {{ __('Deep Scan') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -96,11 +99,12 @@
                 {{ $savedPostsCount > 99 ? '99+' : $savedPostsCount }}
             </span>
         @endif
-        <span class="sr-only">Archive</span>
+        @endif
+        <span class="sr-only">{{ __('Archive') }}</span>
     </a>
     <div id="tooltip-bookmarks" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Archive Sector
+        {{ __('Archive Sector') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -120,11 +124,12 @@
                 {{ $totalUnreadMessages > 99 ? '99+' : $totalUnreadMessages }}
             </span>
         @endif
-        <span class="sr-only">Uplink</span>
+        @endif
+        <span class="sr-only">{{ __('Uplink') }}</span>
     </button>
     <div id="tooltip-chat" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Direct Uplink
+        {{ __('Direct Uplink') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -139,11 +144,12 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                 d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2m12-10a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm5 5h3m-3-3h3m-3 6h3" />
         </svg>
-        <span class="sr-only">Network</span>
+        </svg>
+        <span class="sr-only">{{ __('Network') }}</span>
     </a>
     <div id="tooltip-explore" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Intelligence Network
+        {{ __('Intelligence Network') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -166,11 +172,12 @@
                     {{ $pendingReportsCount > 99 ? '99+' : $pendingReportsCount }}
                 </span>
             @endif
-            <span class="sr-only">Overseer</span>
+            @endif
+            <span class="sr-only">{{ __('Overseer') }}</span>
         </a>
         <div id="tooltip-reports" role="tooltip"
             class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-            Overseer Protocol
+            {{ __('Overseer Protocol') }}
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
     @else
@@ -185,11 +192,12 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span class="sr-only">Dossier</span>
+            </svg>
+            <span class="sr-only">{{ __('Dossier') }}</span>
         </a>
         <div id="tooltip-cvs" role="tooltip"
             class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-            Intel Dossier
+            {{ __('Intel Dossier') }}
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
     @endif
@@ -205,11 +213,12 @@
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924-1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
         </svg>
-        <span class="sr-only">Config</span>
+        </svg>
+        <span class="sr-only">{{ __('Config') }}</span>
     </a>
     <div id="tooltip-settings" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        System Config
+        {{ __('System Config') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -228,14 +237,14 @@
                 </svg>
             @endif
         </div>
-        <span class="sr-only">Identity</span>
+        <span class="sr-only">{{ __('Identity') }}</span>
         @if(Request::routeIs('user.profile') || Request::routeIs('profile.show'))
             <div class="absolute bottom-1.5 w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
         @endif
     </a>
     <div id="tooltip-profile" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        Identity Node
+        {{ __('Identity Node') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 </div>

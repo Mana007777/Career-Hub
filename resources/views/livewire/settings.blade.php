@@ -27,7 +27,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Abort Database Session</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Abort Database Session') }}</span>
             </a>
         </div>
 
@@ -56,11 +56,11 @@
         >
             <div class="flex items-center gap-6 mb-6">
                 <div class="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
-                <h2 class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.6em] italic">Node Config Protocols</h2>
+                <h2 class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.6em] italic">{{ __('Node Config Protocols') }}</h2>
                 <div class="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
             </div>
-            <h1 class="text-6xl font-black text-white uppercase tracking-tighter italic italic">Advanced <span class="text-emerald-500">Settings</span></h1>
-            <p class="text-zinc-500 text-sm mt-6 uppercase tracking-[0.2em] italic font-medium">Calibrate identity parameters and interface environment.</p>
+            <h1 class="text-6xl font-black text-white uppercase tracking-tighter italic italic">{{ __('Advanced') }} <span class="text-emerald-500">{{ __('Settings') }}</span></h1>
+            <p class="text-zinc-500 text-sm mt-6 uppercase tracking-[0.2em] italic font-medium">{{ __('Calibrate identity parameters and interface environment.') }}</p>
         </div>
 
         <div class="mb-12">
@@ -80,11 +80,11 @@
                              </div>
                         </div>
                         <div>
-                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Personnel Identity</h3>
-                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Biometric Calibration</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Personnel Identity') }}</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Biometric Calibration') }}</p>
                         </div>
                     </div>
-                    <button wire:click="openProfileModal" class="w-full md:w-auto px-10 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:bg-emerald-400 transition-all italic">Adjust Signal Bio</button>
+                    <button wire:click="openProfileModal" class="w-full md:w-auto px-10 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:bg-emerald-400 transition-all italic">{{ __('Adjust Signal Bio') }}</button>
                 </div>
             </div>
 
@@ -99,11 +99,11 @@
                              </div>
                         </div>
                         <div>
-                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Containment Protocols</h3>
-                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Blacklisted Entity Stream</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Containment Protocols') }}</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Blacklisted Entity Stream') }}</p>
                         </div>
                     </div>
-                    <button wire:click="openBlocksModal" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-rose-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-rose-500 hover:text-white transition-all italic">Inspect Blacklist</button>
+                    <button wire:click="openBlocksModal" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-rose-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-rose-500 hover:text-white transition-all italic">{{ __('Inspect Blacklist') }}</button>
                 </div>
             </div>
 
@@ -119,11 +119,11 @@
                              </div>
                         </div>
                         <div>
-                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Administrative Hold</h3>
-                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Quarantine Master Matrix</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Administrative Hold') }}</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Quarantine Master Matrix') }}</p>
                         </div>
                     </div>
-                    <button wire:click="openSuspendedItemsModal" class="w-full md:w-auto px-10 py-5 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-amber-500/10 hover:shadow-amber-500/20 hover:bg-amber-400 transition-all italic">Oversee Quarantine</button>
+                    <button wire:click="openSuspendedItemsModal" class="w-full md:w-auto px-10 py-5 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-amber-500/10 hover:shadow-amber-500/20 hover:bg-amber-400 transition-all italic">{{ __('Oversee Quarantine') }}</button>
                 </div>
             </div>
             @endif
@@ -140,11 +140,11 @@
                              </div>
                         </div>
                         <div>
-                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Mission Intelligence</h3>
-                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Reported Incident Logs</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Mission Intelligence') }}</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Reported Incident Logs') }}</p>
                         </div>
                     </div>
-                    <button wire:click="openReportsModal" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-emerald-500 hover:text-black transition-all italic">Inspect Records</button>
+                    <button wire:click="openReportsModal" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-emerald-500 hover:text-black transition-all italic">{{ __('Inspect Records') }}</button>
                 </div>
             </div>
             @endif
@@ -159,18 +159,18 @@
                              </div>
                         </div>
                         <div>
-                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Visual Environment</h3>
-                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Interface Calibration</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Visual Environment') }}</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Interface Calibration') }}</p>
                         </div>
                     </div>
                     <button @click="isOpen = !isOpen" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500/70 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-zinc-800 hover:text-emerald-400 transition-all flex items-center justify-center gap-4 italic group/btn">
-                        <span>Modify Mode</span>
+                        <span>{{ __('Modify Mode') }}</span>
                         <svg class="w-4 h-4 transition-transform duration-500" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7" /></svg>
                     </button>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50" x-show="isOpen" x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display:none">
-                    @foreach(['light' => ['Legacy', 'Surface Mode'], 'dark' => ['Active', 'Absolute Dark'], 'system' => ['Auto', 'Sync Protocol']] as $mode => $labels)
+                    @foreach(['light' => [__('Legacy'), __('Surface Mode')], 'dark' => [__('Active'), __('Absolute Dark')], 'system' => [__('Auto'), __('Sync Protocol')]] as $mode => $labels)
                         <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl hover:border-emerald-500/30 transition-all cursor-pointer group/mode {{ $themePreference === $mode ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
                             <div class="relative flex items-center justify-center">
                                 <input type="radio" wire:model="themePreference" wire:change="updateThemePreference" value="{{ $mode }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
@@ -195,18 +195,18 @@
                              </div>
                         </div>
                         <div>
-                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Global Communication</h3>
-                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Linguistic Matrix</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Global Communication') }}</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Linguistic Matrix') }}</p>
                         </div>
                     </div>
                     <button @click="isOpen = !isOpen" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500/70 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-zinc-800 hover:text-emerald-400 transition-all flex items-center justify-center gap-4 italic group/btn">
-                        <span>Modify Syntax</span>
+                        <span>{{ __('Modify Syntax') }}</span>
                         <svg class="w-4 h-4 transition-transform duration-500" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50" x-show="isOpen" x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display:none">
-                    @foreach(['en' => ['Universal', 'English'], 'ar' => ['Regional Code', 'Arabic'], 'ckb' => ['Local Protocol', 'Kurdish']] as $lang => $labels)
+                    @foreach(['en' => [__('Universal'), __('English')], 'ar' => [__('Regional Code'), __('Arabic')], 'ckb' => [__('Local Protocol'), __('Kurdish')]] as $lang => $labels)
                         <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl hover:border-emerald-500/30 transition-all cursor-pointer group/mode {{ $locale === $lang ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
                             <div class="relative flex items-center justify-center">
                                 <input type="radio" wire:model="locale" wire:change="updateLocale" value="{{ $lang }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
@@ -229,7 +229,7 @@
             <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,1)] relative" wire:click.stop>
                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
                 <div class="flex items-center justify-between p-10 border-b border-zinc-800/50 bg-zinc-950/40">
-                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Identity Calibration Matrix</h2>
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">{{ __('Identity Calibration Matrix') }}</h2>
                     <button wire:click="closeProfileModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-rose-500 transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
                 </div>
                 <div class="flex-1 overflow-y-auto p-10 custom-scrollbar bg-zinc-900/50">
@@ -237,7 +237,7 @@
                         <!-- Photo Cluster -->
                         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                             <div x-data="{photoName: null, photoPreview: null}" class="p-8 bg-zinc-950 border border-zinc-800 rounded-[2.5rem]">
-                                <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Biometric Visual</label>
+                                <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">{{ __('Biometric Visual') }}</label>
                                 <div class="flex items-center gap-10">
                                     <div class="relative group/avatar">
                                         <div class="w-32 h-32 rounded-[2rem] overflow-hidden bg-zinc-900 border-4 border-zinc-800/50 flex-shrink-0" x-show="!photoPreview">
@@ -249,9 +249,9 @@
                                     </div>
                                     <div class="flex flex-col gap-4">
                                         <input type="file" id="photo" class="hidden" wire:model.live="photo" x-ref="photo" x-on:change="if($refs.photo.files[0]){ photoName=$refs.photo.files[0].name; const reader=new FileReader(); reader.onload=(e)=>{photoPreview=e.target.result;}; reader.readAsDataURL($refs.photo.files[0]); }">
-                                        <button type="button" x-on:click.prevent="$refs.photo.click()" class="px-8 py-3 bg-zinc-800 text-white text-[9px] font-black uppercase tracking-widest rounded-xl border border-zinc-700 hover:bg-zinc-700 transition-all shadow-lg italic">Scan New Capture</button>
+                                        <button type="button" x-on:click.prevent="$refs.photo.click()" class="px-8 py-3 bg-zinc-800 text-white text-[9px] font-black uppercase tracking-widest rounded-xl border border-zinc-700 hover:bg-zinc-700 transition-all shadow-lg italic">{{ __('Scan New Capture') }}</button>
                                         @if (auth()->user()->profile_photo_path)
-                                            <button type="button" wire:click="deleteProfilePhoto" class="px-8 py-3 bg-rose-500/10 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-xl border border-rose-500/20 hover:bg-rose-500/20 transition-all italic">Purge Capture</button>
+                                            <button type="button" wire:click="deleteProfilePhoto" class="px-8 py-3 bg-rose-500/10 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-xl border border-rose-500/20 hover:bg-rose-500/20 transition-all italic">{{ __('Purge Capture') }}</button>
                                         @endif
                                     </div>
                                 </div>
@@ -261,7 +261,7 @@
 
                         <!-- Input Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            @foreach(['name' => 'Operational Name', 'email' => 'Primary Data Uplink', 'username' => 'Unique Designation', 'location' => 'Deployment Sector', 'website' => 'External Node'] as $field => $label)
+                            @foreach(['name' => __('Operational Name'), 'email' => __('Primary Data Uplink'), 'username' => __('Unique Designation'), 'location' => __('Deployment Sector'), 'website' => __('External Node')] as $field => $label)
                                 @php $inputType = $field === 'email' ? 'email' : ($field === 'website' ? 'url' : 'text'); @endphp
                                 <div class="space-y-3">
                                     <label for="{{ $field }}" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ $label }}</label>
@@ -270,7 +270,7 @@
                                 </div>
                             @endforeach
                             <div class="col-span-full space-y-3">
-                                <label for="bio" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Mission Mandate (Bio)</label>
+                                <label for="bio" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ __('Mission Mandate (Bio)') }}</label>
                                 <textarea id="bio" wire:model="bio" rows="4" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-[2rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-[11px] font-medium resize-none italic shadow-inner font-bold"></textarea>
                                 @error('bio') <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4 mt-2">{{ $message }}</p> @enderror
                             </div>
@@ -278,8 +278,8 @@
 
                         <!-- Footer -->
                         <div class="flex items-center justify-end gap-6 pt-10 border-t border-zinc-800/50">
-                            <button type="button" wire:click="closeProfileModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors">Abort</button>
-                            <button type="submit" class="px-12 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">Commit Calibration</button>
+                            <button type="button" wire:click="closeProfileModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors">{{ __('Abort') }}</button>
+                            <button type="submit" class="px-12 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">{{ __('Commit Calibration') }}</button>
                         </div>
                     </form>
                 </div>
@@ -293,7 +293,7 @@
             <div class="bg-zinc-900 border border-rose-500/30 rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,1)] w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative" wire:click.stop>
                  <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/30 to-transparent"></div>
                  <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40 flex items-center justify-between">
-                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">Personnel Blacklist</h2>
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">{{ __('Personnel Blacklist') }}</h2>
                     <button wire:click="closeBlocksModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-rose-500 transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
                  </div>
                  <div class="flex-1 overflow-y-auto p-10 custom-scrollbar bg-zinc-900/50">
@@ -308,12 +308,12 @@
                                     <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1 italic">@ {{ $blockedUser->username }}</p>
                                 </div>
                             </div>
-                            <button wire:click="unblockUser({{ $blockedUser->id }})" class="px-8 py-3 bg-zinc-950 border border-rose-500/30 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-500 hover:text-white transition-all italic">Restore Access</button>
+                            <button wire:click="unblockUser({{ $blockedUser->id }})" class="px-8 py-3 bg-zinc-950 border border-rose-500/30 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-500 hover:text-white transition-all italic">{{ __('Restore Access') }}</button>
                         </div>
                     @empty
                          <div class="py-20 text-center">
                             <svg class="w-16 h-16 text-zinc-800 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Zero entities blacklisted.</p>
+                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('Zero entities blacklisted.') }}</p>
                          </div>
                     @endforelse
                  </div>
@@ -326,7 +326,7 @@
         <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeReportsModal">
             <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,1)] relative" wire:click.stop>
                 <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40 flex items-center justify-between">
-                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">Transmission Archive</h2>
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">{{ __('Transmission Archive') }}</h2>
                     <button wire:click="closeReportsModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
                 </div>
                 <div class="flex-1 overflow-y-auto p-10 custom-scrollbar bg-zinc-900/50">
@@ -340,24 +340,24 @@
                                         </span>
                                         <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">{{ $report->created_at->format('Y.m.d // H:i') }}</span>
                                     </div>
-                                    <span class="text-[8px] font-black text-emerald-500/40 uppercase tracking-[0.4em]">{{ $report->target_type }} Unit</span>
+                                    <span class="text-[8px] font-black text-emerald-500/40 uppercase tracking-[0.4em]">{{ ucfirst($report->target_type) }} {{ __('Unit') }}</span>
                                 </div>
                                 <div class="space-y-4">
                                     <p class="text-sm font-black text-white italic uppercase tracking-tight"><span class="text-emerald-500 opacity-50 mr-2">/</span>{{ $report->reason }}</p>
                                     <div class="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-6 italic text-zinc-500 text-[11px] leading-relaxed font-bold font-medium selection:bg-emerald-500/20">
                                         @if($report->target_type === 'post' && $report->target)
-                                            <p class="text-white mb-2 font-black italic">Log: {{ $report->target->title ?? 'Intelligence Data' }}</p>
-                                            <p class="opacity-80">Source: @ {{ $report->target->user->username }}</p>
+                                            <p class="text-white mb-2 font-black italic">{{ __('Log') }}: {{ $report->target->title ?? __('Intelligence Data') }}</p>
+                                            <p class="opacity-80">{{ __('Source') }}: @ {{ $report->target->user->username }}</p>
                                         @elseif($report->target_type === 'user' && $report->target)
-                                            <p class="text-white mb-2 font-black italic">Identity: {{ $report->target->name }}</p>
-                                            <p class="opacity-80">Designation: @ {{ $report->target->username }}</p>
+                                            <p class="text-white mb-2 font-black italic">{{ __('Identity') }}: {{ $report->target->name }}</p>
+                                            <p class="opacity-80">{{ __('Designation') }}: @ {{ $report->target->username }}</p>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                         @empty
                             <div class="py-20 text-center">
-                                <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.5em]">Zero incident transmissions recorded.</p>
+                                <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.5em]">{{ __('Zero incident transmissions recorded.') }}</p>
                             </div>
                         @endforelse
                     </div>
@@ -372,13 +372,13 @@
         <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeSuspendedItemsModal">
             <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,1)]" wire:click.stop>
                 <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40 flex items-center justify-between">
-                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">Quarantine Master Index</h2>
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">{{ __('Quarantine Master Index') }}</h2>
                     <button wire:click="closeSuspendedItemsModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
                 </div>
                 <div class="flex-1 overflow-y-auto p-10 custom-scrollbar grid grid-cols-1 lg:grid-cols-2 gap-10 bg-zinc-900/50">
                     <!-- Suspended Nodes -->
                     <div class="space-y-6">
-                        <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">Identity Quarantines ({{ $suspendedUsers->count() }})</h3>
+                        <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">{{ __('Identity Quarantines') }} ({{ $suspendedUsers->count() }})</h3>
                         @forelse($suspendedUsers as $sUser)
                             <div class="bg-zinc-950/60 border border-amber-500/20 rounded-[2rem] p-8 backdrop-blur-3xl group hover:border-amber-500/50 transition-all duration-700">
                                 <div class="flex items-start justify-between gap-6">
@@ -397,33 +397,33 @@
                             </div>
                         @empty
                              <div class="p-10 bg-zinc-950/50 rounded-[2rem] text-center border border-zinc-800/50">
-                                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Zero identity quarantines active.</p>
+                                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-widest">{{ __('Zero identity quarantines active.') }}</p>
                              </div>
                         @endforelse
                     </div>
 
                     <!-- Suspended Intelligence -->
                     <div class="space-y-6">
-                        <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">Log Quarantines ({{ $suspendedPosts->count() }})</h3>
+                        <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">{{ __('Log Quarantines') }} ({{ $suspendedPosts->count() }})</h3>
                         @forelse($suspendedPosts as $sPost)
                             <div class="bg-zinc-950/60 border border-amber-500/20 rounded-[2rem] p-8 backdrop-blur-3xl group hover:border-amber-500/50 transition-all duration-700">
                                 <div class="flex items-start justify-between gap-6">
                                     <div class="flex-1 min-w-0 text-bold">
-                                        <h4 class="text-[11px] font-black text-zinc-500 uppercase tracking-widest mb-3 italic">Source: @ {{ $sPost->user->username ?? 'Unknown' }}</h4>
+                                        <h4 class="text-[11px] font-black text-zinc-500 uppercase tracking-widest mb-3 italic">{{ __('Source') }}: @ {{ $sPost->user->username ?? __('Unknown') }}</h4>
                                         <p class="text-sm font-black text-white italic uppercase tracking-tight italic mb-4 line-clamp-2">"{{ $sPost->content }}"</p>
                                         @if($sPost->suspension)
                                             <div class="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 mb-4">
-                                                 <p class="text-[9px] font-black text-amber-500/70 uppercase tracking-widest mb-1 italic">Reason: {{ $sPost->suspension->reason }}</p>
-                                                 <p class="text-[8px] font-black text-zinc-600 uppercase tracking-widest italic">{{ $sPost->suspension->expires_at ? 'Expiry: ' . $sPost->suspension->expires_at->format('Y.m.d // H:i') : 'Permanent Vault' }}</p>
+                                                 <p class="text-[9px] font-black text-amber-500/70 uppercase tracking-widest mb-1 italic">{{ __('Reason') }}: {{ $sPost->suspension->reason }}</p>
+                                                 <p class="text-[8px] font-black text-zinc-600 uppercase tracking-widest italic">{{ $sPost->suspension->expires_at ? __('Expiry') . ': ' . $sPost->suspension->expires_at->format('Y.m.d // H:i') : __('Permanent Vault') }}</p>
                                             </div>
                                         @endif
                                     </div>
-                                    <button wire:click="unsuspendPost({{ $sPost->id }})" class="px-8 py-3 bg-amber-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 shadow-lg shadow-amber-500/10 transition-all italic font-bold">Resync Log</button>
+                                    <button wire:click="unsuspendPost({{ $sPost->id }})" class="px-8 py-3 bg-amber-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 shadow-lg shadow-amber-500/10 transition-all italic font-bold">{{ __('Resync Log') }}</button>
                                 </div>
                             </div>
                         @empty
                              <div class="p-10 bg-zinc-950/50 rounded-[2rem] text-center border border-zinc-800/50">
-                                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Zero log quarantines active.</p>
+                                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-widest">{{ __('Zero log quarantines active.') }}</p>
                              </div>
                         @endforelse
                     </div>
