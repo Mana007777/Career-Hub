@@ -16,7 +16,7 @@
 
     <!-- Scanner Protocols (Filters) -->
     <div 
-        class="bg-zinc-900/40 border border-zinc-800/50 rounded-[2.5rem] p-10 backdrop-blur-3xl shadow-[0_30px_60px_rgba(0,0,0,0.3)] relative overflow-hidden group"
+        class="bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] p-10 backdrop-blur-3xl shadow-[0_30px_60px_rgba(0,0,0,0.3)] relative overflow-hidden group"
         x-show="loaded"
         x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-1000 delay-100"
         x-transition:enter-start="opacity-0 scale-95 blur-xl"

@@ -43,7 +43,7 @@
         <div class="space-y-10">
             @forelse($cvs as $index => $cv)
                 <div 
-                    class="bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl relative overflow-hidden group shadow-[0_30px_60px_rgba(0,0,0,0.4)]"
+                    class="bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl shadow-[0_30px_60px_rgba(0,0,0,0.4)]"
                     x-data="{ show: false }"
                     x-init="setTimeout(() => show = true, {{ $index * 100 }})"
                     x-show="show"

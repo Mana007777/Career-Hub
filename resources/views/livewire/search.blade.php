@@ -17,7 +17,7 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-105 blur-2xl"
         @transitionend="if(!@js($showSearch)) document.body.style.overflow = ''"
-        class="fixed inset-0 z-[150] bg-zinc-950/98 backdrop-blur-3xl"
+        class="fixed inset-0 z-[150] bg-zinc-950/60 backdrop-blur-3xl"
         @click.self="$wire.closeSearch()"
         @keydown.escape.window="$wire.closeSearch()"
         wire:key="search-modal-{{ $showSearch }}"
@@ -28,7 +28,7 @@
         <div class="fixed inset-0 flex items-start justify-center pt-32 px-6" wire:click.stop>
             <div class="w-full max-w-3xl">
                 <!-- Search Module -->
-                <div class="bg-zinc-900 border border-zinc-800 rounded-[3.5rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] flex flex-col">
+                <div class="bg-zinc-950/60 border border-zinc-800 rounded-[3.5rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] flex flex-col backdrop-blur-3xl">
                     <div class="p-10 bg-zinc-950/40 border-b border-zinc-800/50">
                         <div class="flex items-center justify-between mb-8">
                             <h2 class="text-[10px] font-black text-white uppercase tracking-[0.6em] flex items-center gap-4 italic font-bold">

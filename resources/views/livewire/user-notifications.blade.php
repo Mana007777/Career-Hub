@@ -20,11 +20,11 @@
         @keydown.escape.window="show = false"
     >
         <!-- Backdrop -->
-        <div class="fixed inset-0 bg-zinc-950/98 backdrop-blur-3xl"></div>
+        <div class="fixed inset-0 bg-zinc-950/60 backdrop-blur-3xl"></div>
 
         <!-- Modal -->
         <div 
-            class="relative w-full max-w-2xl max-h-[85vh] bg-zinc-900 border border-zinc-800 rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col"
+            class="relative w-full max-w-2xl max-h-[85vh] bg-zinc-950/60 border border-zinc-800 rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col backdrop-blur-3xl"
             @click.stop
             x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-700"
             x-transition:enter-start="opacity-0 scale-95 translate-y-20 blur-xl"
