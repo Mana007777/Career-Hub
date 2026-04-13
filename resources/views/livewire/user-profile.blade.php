@@ -86,7 +86,11 @@
                                         <span class="text-zinc-400">{{ $user->profile->location }}</span>
                                     </div>
                                 @endif
-                                @php $websiteRecord = $user->profile && $user->profile->website ? $user->profile->website : null; @endphp
+                                @php 
+                                    $websiteRecord = $user->profile && $user->profile->website ? $user->profile->website : null; 
+                                    $websiteUrl = $websiteRecord ? (preg_match('~^[a-zA-Z]+://~', $websiteRecord) ? $websiteRecord : 'http://' . $websiteRecord) : '#';
+                                    $websiteDisplay = $websiteRecord ? preg_replace('~^https?://~', '', $websiteRecord) : '';
+                                @endphp
                                 @if($websiteRecord)
                                     <div class="flex items-center gap-3">
                                         <svg class="w-4 h-4 text-emerald-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
