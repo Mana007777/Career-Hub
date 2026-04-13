@@ -15,11 +15,7 @@
 
     <!-- MAIN INTERFACE -->
     <main class="relative min-h-screen flex items-center justify-center px-6 py-24 overflow-hidden">
-        <div x-show="visible.hero" 
-             x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-1000"
-             x-transition:enter-start="opacity-0 translate-y-24 scale-90 blur-xl"
-             x-transition:enter-end="opacity-100 translate-y-0 scale-100 blur-0"
-             class="text-center max-w-5xl mx-auto relative z-10">
+        <div class="text-center max-w-5xl mx-auto relative z-10">
             
             <!-- Operational Tag -->
             <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 mb-10 overflow-hidden group">
@@ -134,12 +130,7 @@
     <!-- REACTIVE CONTROL -->
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('landingUI', () => ({
-                visible: { hero: false },
-                init() {
-                    setTimeout(() => { this.visible.hero = true; }, 100);
-                }
-            }))
-        })
+            Alpine.data('landingUI', () => ({}));
+        });
     </script>
 </div>
