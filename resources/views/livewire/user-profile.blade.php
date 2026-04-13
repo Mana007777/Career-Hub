@@ -33,7 +33,7 @@
 
         <!-- Profile Header Core -->
         <div 
-            class="bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 mb-12 shadow-[0_50px_100px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative overflow-hidden group"
+            class="bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 mb-12 shadow-[0_50px_100px_rgba(0,0,0,0.5)] backdrop-blur-3xl relative group"
             x-show="loaded"
             x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-1000"
             x-transition:enter-start="opacity-0 translate-y-20 blur-xl scale-95"
@@ -59,10 +59,10 @@
                 </div>
 
                 <!-- Data Stream -->
-                <div class="flex-1 w-full">
-                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                        <div>
-                            <div class="flex items-center gap-4 mb-6">
+                <div class="flex-1 w-full min-w-0">
+                    <div class="flex flex-col gap-8">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-4 mb-6">
                                 <h1 class="text-4xl font-black text-white uppercase tracking-tighter italic selection:bg-emerald-500/30">{{ $user->username }}</h1>
                                 @if($user->role)
                                     <span class="px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
@@ -77,7 +77,7 @@
                             </div>
                             
                             @if($user->profile && $user->profile->bio)
-                                <p class="text-zinc-400 text-sm leading-relaxed mb-8 max-w-2xl italic font-medium selection:bg-emerald-500/20 opacity-80 border-l-2 border-emerald-500/20 pl-6">{{ $user->profile->bio }}</p>
+                                <p class="text-zinc-400 text-sm leading-relaxed mb-8 max-w-none md:max-w-2xl italic font-medium selection:bg-emerald-500/20 opacity-80 border-l-2 border-emerald-500/20 pl-6">{{ $user->profile->bio }}</p>
                             @endif
 
                             <div class="flex flex-wrap items-center gap-8 mb-8 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600">
@@ -122,19 +122,19 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-4" x-data="{ openOptions: false }">
+                        <div class="flex flex-wrap items-center gap-3 sm:gap-4 w-full" x-data="{ openOptions: false }">
                             @if(Auth::check() && Auth::id() !== $user->id)
                                 @if($isBlocked)
-                                    <button wire:click="toggleBlock" class="px-8 py-3 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-400 transition-all shadow-lg shadow-rose-900/20">Authorize Unit</button>
+                                    <button wire:click="toggleBlock" class="shrink-0 px-8 py-3 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-400 transition-all shadow-lg shadow-rose-900/20">Authorize Unit</button>
                                 @else
                                     <button 
                                         wire:click="toggleFollow"
-                                        class="px-10 py-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-500 shadow-xl
+                                        class="shrink-0 px-10 py-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-500 shadow-xl
                                             {{ $isFollowing ? 'bg-zinc-800 text-zinc-400 border border-zinc-700/50 hover:bg-zinc-700' : 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-emerald-500/10 hover:shadow-emerald-500/20' }}">
                                         {{ $isFollowing ? 'Sever Signal' : 'Align Signal' }}
                                     </button>
 
-                                    <div class="relative">
+                                    <div class="relative shrink-0">
                                         <button @click="openOptions = !openOptions" class="w-12 h-12 rounded-2xl bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-zinc-700 transition-all">
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M5 12h.01M12 12h.01M19 12h.01" /></svg>
                                         </button>
@@ -167,13 +167,13 @@
                             @endif
 
                             @if(Auth::check() && Auth::id() === $user->id)
-                                <a href="{{ route('profile.show') }}" class="px-8 py-3.5 bg-zinc-800 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl border border-zinc-700/50 hover:bg-zinc-700 transition-all flex items-center gap-3">
+                                <a href="{{ route('profile.show') }}" class="shrink-0 px-8 py-3.5 bg-zinc-800 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl border border-zinc-700/50 hover:bg-zinc-700 transition-all flex items-center gap-3">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M15.232 5.232a3 3 0 014.243 4.243L9 19.95 4 21l1.05-5 10.182-10.768z" /></svg>
                                     Configure Node
                                 </a>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" class="shrink-0">
                                     @csrf
-                                    <button type="submit" class="px-8 py-3.5 bg-rose-500/10 text-rose-500 text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-3">
+                                    <button type="submit" class="px-8 py-3.5 bg-rose-500/10 text-rose-500 text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-3 whitespace-nowrap">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3-3m0 0l3 3m-3-3v12" /></svg>
                                         Disconnect
                                     </button>
@@ -181,13 +181,13 @@
                             @endif
 
                             @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $user->id)
-                                <div class="relative" x-data="{ open: false }">
+                                <div class="relative shrink-0" x-data="{ open: false }">
                                     <button @click="open = !open" class="p-3.5 bg-zinc-900 border border-amber-500/30 text-amber-500 rounded-2xl hover:bg-amber-500/10 transition-all"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg></button>
                                     <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-4 w-64 bg-zinc-950 border border-zinc-800 rounded-[2rem] shadow-3xl z-50 p-3">
                                         <button wire:click="{{ $user->isSuspended() ? 'openUnsuspendUserModal' : 'openSuspendUserModal' }}" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black {{ $user->isSuspended() ? 'text-emerald-500' : 'text-amber-500' }} hover:bg-zinc-800 rounded-2xl transition-all uppercase tracking-widest italic" @click="open = false">
                                             <span>{{ $user->isSuspended() ? 'RESURRECT IDENTITY' : 'SUSPEND IDENTITY' }}</span>
                                         </button>
-                                        <button wire:click="openDeleteUserModal" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all uppercase tracking-widest italic" @click="open = false text-rose-500">
+                                        <button wire:click="openDeleteUserModal" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all uppercase tracking-widest italic" @click="open = false">
                                             <span>PURGE DATA NODE</span>
                                         </button>
                                     </div>
