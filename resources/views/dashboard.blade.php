@@ -12,7 +12,7 @@
     };
 @endphp
 <x-app-layout :title="$dashboardTitle">
-    <div class="bg-transparent dark:text-white text-gray-900 min-h-screen">
+    <div class="text-zinc-100 min-h-screen">
         @livewire('search', [
             'openSearchFromRoute' => $openSearch ?? false,
             'initialQuery' => $q ?? request()->query('q'),
@@ -23,7 +23,7 @@
         @livewire('chat-list')
         @livewire('report-modal')
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
             @if(isset($showCvs) && $showCvs)
                 <section>
                     <livewire:cvs />

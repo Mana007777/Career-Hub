@@ -1,606 +1,327 @@
 <div
-    class="min-h-screen dark:bg-black bg-black text-white pb-24"
+    class="min-h-screen bg-zinc-950 text-white pb-24"
     style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);"
     x-data="{ loaded: false }"
-    x-init="
-        loaded = false;
-
-        const setLoaded = () => { loaded = true };
-        const setLoading = () => { loaded = false };
-
-        document.addEventListener('livewire:load', setLoaded);
-        document.addEventListener('livewire:navigated', setLoaded);
-        document.addEventListener('livewire:navigating', setLoading);
-    "
+    x-init="setTimeout(() => loaded = true, 50)"
 >
-    <!-- Skeleton while post detail is loading -->
+    <!-- Skeleton -->
     <div x-show="!loaded">
         <x-skeleton.post-detail />
     </div>
 
     <!-- Actual content -->
-    <div class="max-w-4xl mx-auto px-4 py-8" x-show="loaded" x-cloak>
+    <div class="max-w-4xl mx-auto px-6 py-12" x-show="loaded" x-cloak>
         <!-- Back Button -->
         <div 
-            class="mb-6"
+            class="mb-12"
             x-show="loaded"
-            x-transition:enter="transition ease-out duration-500"
-            x-transition:enter-start="opacity-0 -translate-x-4"
+            x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-700"
+            x-transition:enter-start="opacity-0 -translate-x-10"
             x-transition:enter-end="opacity-100 translate-x-0"
         >
             <a 
                 href="{{ route('dashboard') }}"
-                class="inline-flex items-center gap-2 text-gray-500 dark:hover:text-white hover:text-gray-900 transition-all duration-300 transform hover:translate-x-1 group">
-                <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                <span>Back to Posts</span>
+                class="inline-flex items-center gap-4 text-emerald-500/70 hover:text-emerald-400 transition-all duration-500 group">
+                <div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500 shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-bold">Abort Deep Scan</span>
             </a>
         </div>
 
         @if($post)
-            <div 
-                class="bg-black border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
-                style="background-image: radial-gradient(circle at top right, rgba(112, 11, 151, 0.05), transparent);"
+            <article 
+                class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden"
                 x-show="loaded"
-                x-transition:enter="transition ease-out duration-700"
-                x-transition:enter-start="opacity-0 translate-y-8 scale-95"
-                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-1000"
+                x-transition:enter-start="opacity-0 translate-y-20 scale-95 blur-xl font-bold"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100 blur-0"
             >
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
+
                 <!-- Post Header -->
-                <div class="flex items-start justify-between mb-4">
-                    <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <div class="w-12 h-12 rounded-2xl overflow-hidden bg-brand-deep flex items-center justify-center ring-4 ring-white/5">
-                            @if($post->user && $post->user->profile_photo_path)
-                                <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover">
-                            @else
-                                <span class="text-[10px] font-black text-brand-violet">
-                                    {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
-                                </span>
-                            @endif
+                <div class="flex items-start justify-between mb-12">
+                    <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-6 group/author">
+                        <div class="w-16 h-16 rounded-[1.5rem] bg-zinc-950 border-2 border-zinc-800 overflow-hidden flex items-center justify-center p-0.5 group-hover/author:border-emerald-500/30 transition-all duration-700">
+                             <div class="w-full h-full rounded-[1.2rem] bg-zinc-900 flex items-center justify-center">
+                                @if($post->user && $post->user->profile_photo_path)
+                                    <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover grayscale opacity-50 group-hover/author:grayscale-0 group-hover/author:opacity-100 transition-all duration-1000">
+                                @else
+                                    <span class="text-emerald-500/40 font-black text-xl italic">{{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}</span>
+                                @endif
+                             </div>
                         </div>
                         <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-[10px] font-black text-white uppercase tracking-widest">{{ $post->user->name ?? 'Unknown User' }}</h3>
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-sm font-black text-white uppercase tracking-tight italic group-hover/author:text-emerald-400 transition-colors">{{ $post->user->name ?? 'Unknown' }}</h3>
                                 @if($post->suspension)
-                                    <span class="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md bg-rose-500/10 text-rose-500 border border-rose-500/20">
-                                        Suspended
-                                    </span>
+                                    <span class="px-4 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 italic">Quarantined</span>
                                 @endif
                             </div>
-                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">{{ $post->created_at->format('F j, Y') }}</p>
+                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mt-1 italic">{{ $post->created_at->format('Y.m.d // H:i') }}</p>
                         </div>
                     </a>
                     
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-4">
                         @if ($post->user_id === auth()->id())
-                            <a 
-                                href="{{ route('dashboard') }}?edit={{ $post->id }}"
-                                class="p-2 text-gray-500 hover:text-blue-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </a>
+                            <a href="{{ route('dashboard') }}?edit={{ $post->id }}" class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-600 hover:text-emerald-500 transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></a>
                         @endif
                         
-                        {{-- Admin Actions (Only visible to admins, not post owners) --}}
                         @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $post->user_id)
                             <div class="flex items-center gap-2">
                                 @if($post->suspension)
-                                    <button 
-                                        wire:click="unsuspendPost"
-                                        wire:confirm="Are you sure you want to unsuspend this post?"
-                                        class="p-2 dark:text-green-400 text-green-600 hover:text-green-500 dark:hover:bg-green-900/20 hover:bg-green-50 rounded-lg transition-colors"
-                                        title="Admin: Unsuspend Post">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </button>
+                                    <button wire:click="unsuspendPost" class="w-12 h-12 rounded-2xl bg-zinc-950 border border-emerald-500/30 text-emerald-500 flex items-center justify-center hover:bg-emerald-500 hover:text-black transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg></button>
                                 @else
-                                    <button 
-                                        wire:click="openSuspendModal"
-                                        class="p-2 dark:text-yellow-400 text-yellow-600 hover:text-yellow-500 dark:hover:bg-yellow-900/20 hover:bg-yellow-50 rounded-lg transition-colors"
-                                        title="Admin: Suspend Post">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                        </svg>
-                                    </button>
+                                    <button wire:click="openSuspendModal" class="w-12 h-12 rounded-2xl bg-zinc-950 border border-amber-500/30 text-amber-500 flex items-center justify-center hover:bg-amber-500 hover:text-black transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg></button>
                                 @endif
-                                <button 
-                                    wire:click="deletePostAsAdmin({{ $post->id }})"
-                                    wire:confirm="Are you sure you want to delete this post as admin? This action cannot be undone."
-                                    class="p-2 text-rose-400 hover:text-red-500 dark:hover:bg-red-900/20 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Admin: Delete Post">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                </button>
+                                <button wire:click="deletePostAsAdmin({{ $post->id }})" class="w-12 h-12 rounded-2xl bg-zinc-950 border border-rose-500/30 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                             </div>
                         @endif
                         
-                        {{-- Report Post Button (Visible to all users except post owner and admins) --}}
                         @if(auth()->check() && auth()->id() !== $post->user_id && !auth()->user()->isAdmin())
-                            <button 
-                                onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'post', targetId: {{ $post->id }} } }));"
-                                type="button"
-                                class="p-2 text-gray-500 hover:text-orange-400 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors relative z-10"
-                                title="Report Post">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                </svg>
-                            </button>
+                            <button onclick="window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'post', targetId: {{ $post->id }} } }));" class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 text-zinc-600 hover:text-rose-500 transition-all flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></button>
                         @endif
                     </div>
                 </div>
 
-                <!-- Post Title & Content -->
-                <div class="mb-4">
+                <!-- Post Body -->
+                <div class="mb-12">
                     @if(!empty($post->title))
-                        <h1 class="text-2xl font-black text-white uppercase tracking-tighter mb-2">{{ $post->title }}</h1>
+                        <h1 class="text-4xl font-black text-white uppercase tracking-tighter mb-6 italic">{{ $post->title }}</h1>
                     @endif
+                    
                     @if($post->job_type)
-                        <div class="mb-3">
-                            <span class="inline-flex items-center px-3 py-1 bg-brand-purple/10 border border-brand-purple/20 rounded-lg text-brand-violet text-xs font-black uppercase tracking-widest">
-                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
-                                {{ ucfirst(str_replace('-', ' ', $post->job_type)) }}
-                            </span>
+                        <div class="mb-8 p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div>
+                            <div>
+                                <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest italic">Operational Designation</p>
+                                <p class="text-[13px] font-black text-emerald-400 uppercase tracking-tight italic">{{ ucfirst(str_replace('-', ' ', $post->job_type)) }}</p>
+                            </div>
                         </div>
                     @endif
-                    <p class="text-gray-300 leading-relaxed whitespace-pre-wrap text-lg">{{ $post->content }}</p>
+
+                    <div class="prose prose-invert max-w-none">
+                        <p class="text-zinc-300 text-lg leading-relaxed italic selection:bg-emerald-500/20 whitespace-pre-wrap font-bold font-medium">"{{ $post->content }}"</p>
+                    </div>
                 </div>
 
                 <!-- Post Media -->
                 @if ($post->media)
-                    <div class="mb-4 rounded-lg overflow-hidden">
+                    <div class="mb-12 rounded-[2rem] overflow-hidden border border-zinc-800 shadow-2xl relative group/media">
                         @php
                             $mediaUrl = $this->getMediaUrl($post);
                             $isImage = in_array(strtolower(pathinfo($post->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
                         @endphp
                         
                         @if ($isImage)
-                            <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-auto rounded-lg">
+                            <img src="{{ $mediaUrl }}" alt="Intelligence Payload" class="w-full h-full object-cover grayscale-0 opacity-80 group-hover/media:opacity-100 transition-opacity duration-1000">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/50 to-transparent"></div>
                         @else
-                                    <div class="bg-brand-deep/30 p-4 rounded-xl border border-white/5">
-                                        <a href="{{ $mediaUrl }}" target="_blank" class="flex items-center gap-2 text-brand-violet hover:text-brand-purple transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <span>View Video</span>
+                            <div class="bg-zinc-950 p-12 flex flex-col items-center justify-center group-hover/media:bg-emerald-500/[0.02] transition-colors duration-1000">
+                                <a href="{{ $mediaUrl }}" target="_blank" class="flex flex-col items-center gap-6 group/btn">
+                                    <div class="w-20 h-20 rounded-[2rem] bg-emerald-500/10 border-2 border-emerald-500/20 flex items-center justify-center group-hover/btn:scale-110 group-hover/btn:border-emerald-500/50 transition-all duration-700">
+                                        <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                    </div>
+                                    <span class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em] group-hover/btn:text-emerald-400 transition-colors">Retrieve Video Payload</span>
                                 </a>
                             </div>
                         @endif
                     </div>
                 @endif
 
-                <!-- Post Specialties -->
-                @if($post->specialties && $post->specialties->count() > 0)
-                    <div class="mb-4 pt-4 border-t border-white/5">
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($post->specialties as $specialty)
-                                @php
-                                    $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
-                                    // Use already-loaded subSpecialties collection instead of DB query
-                                    $subSpecialty = $subSpecialtyId && $specialty->subSpecialties 
-                                        ? $specialty->subSpecialties->firstWhere('id', $subSpecialtyId) 
-                                        : null;
-                                @endphp
-                                @if($subSpecialty)
-                                    <span class="px-3 py-1.5 bg-brand-purple/10 border border-brand-purple/20 rounded-lg text-brand-violet text-[10px] font-black uppercase tracking-widest">
-                                        {{ $specialty->name }} - {{ $subSpecialty->name }}
-                                    </span>
-                                @endif
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Post Tags -->
-                @if($post->tags && $post->tags->count() > 0)
-                    <div class="mb-4 pt-4 border-t border-white/5">
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($post->tags as $tag)
-                                <span class="px-3 py-1.5 bg-brand-purple/10 border border-brand-purple/20 rounded-lg text-brand-violet text-[10px] font-black uppercase tracking-widest">
-                                    #{{ $tag->name }}
-                                </span>
-                            @endforeach
-                        </div>
+                <!-- Tags & Specialties -->
+                @if(($post->specialties && $post->specialties->count() > 0) || ($post->tags && $post->tags->count() > 0))
+                    <div class="flex flex-wrap gap-4 mb-12 py-8 border-y border-zinc-800/50">
+                        @foreach($post->specialties as $specialty)
+                             @php $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null; $subSpecialty = $subSpecialtyId && $specialty->subSpecialties ? $specialty->subSpecialties->firstWhere('id', $subSpecialtyId) : null; @endphp
+                             @if($subSpecialty)
+                                <span class="px-6 py-2 bg-zinc-950 border border-emerald-500/20 rounded-xl text-emerald-500 text-[9px] font-black uppercase tracking-widest italic">{{ $specialty->name }} <span class="text-zinc-700 mx-2">//</span> {{ $subSpecialty->name }}</span>
+                             @endif
+                        @endforeach
+                        @foreach($post->tags as $tag)
+                            <span class="px-6 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-600 text-[9px] font-black uppercase tracking-widest italic group-hover:text-emerald-500/50 transition-colors">#{{ $tag->name }}</span>
+                        @endforeach
                     </div>
                 @endif
 
                 <!-- Post Stats -->
-                @php
-                    $hasStarredPost = auth()->check() && $post->stars->contains('user_id', auth()->id());
-                    $hasSavedPost = auth()->check() && $hasSavedPost;
-                @endphp
-                <div class="flex items-center gap-6 pt-4 border-t border-white/5">
-                    <button
-                        type="button"
-                        wire:click="togglePostStar"
-                        class="flex items-center gap-2 text-sm {{ $hasStarredPost ? 'text-brand-violet' : 'text-gray-500 hover:text-brand-violet' }} transition-colors group">
-                        <svg class="w-5 h-5 {{ $hasStarredPost ? 'fill-brand-violet' : '' }} group-hover:scale-110 transition-transform" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                        </svg>
-                        <span>{{ $post->stars->count() }}</span>
+                <div class="flex items-center gap-10">
+                    <button wire:click="togglePostStar" class="flex items-center gap-4 text-xs font-black uppercase tracking-widest {{ $hasStarredPost ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400' }} transition-all group/stat italic">
+                        <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center group-hover/stat:border-emerald-500/30 transition-all">
+                            <svg class="w-5 h-5 {{ $hasStarredPost ? 'fill-emerald-500' : '' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783-.57-1.838-.197-1.538-1.118l1.518-4.674c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                        </div>
+                        <span>{{ $post->stars->count() }} Reactions</span>
                     </button>
 
-                    <button
-                        type="button"
-                        wire:click="togglePostSave"
-                        class="flex items-center gap-2 text-sm {{ $hasSavedPost ? 'text-brand-purple' : 'text-gray-500 hover:text-brand-purple' }} transition-colors">
-                        <svg class="w-5 h-5" fill="{{ $hasSavedPost ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z"></path>
-                        </svg>
-                        <span>{{ $hasSavedPost ? 'Saved' : 'Save' }}</span>
+                    <button wire:click="togglePostSave" class="flex items-center gap-4 text-xs font-black uppercase tracking-widest {{ $hasSavedPost ? 'text-cyan-500' : 'text-zinc-600 hover:text-cyan-400' }} transition-all group/stat italic">
+                        <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center group-hover/stat:border-cyan-500/30 transition-all">
+                             <svg class="w-5 h-5 {{ $hasSavedPost ? 'fill-cyan-500' : '' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z" /></svg>
+                        </div>
+                        <span>{{ $hasSavedPost ? 'Archived' : 'Pin to Archive' }}</span>
                     </button>
-
-                    <div class="flex items-center gap-2 text-gray-500 text-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                        </svg>
-                        <span>{{ $post->comments->count() }} comments</span>
-                    </div>
                 </div>
+            </article>
 
-                <!-- CV Upload Section (only show if user is not the post owner and post has job_type) -->
-                @auth
-                    @if($post->user_id !== auth()->id() && $post->job_type)
-                        <div class="mt-8 pt-6 border-t border-white/5">
-                            <div class="flex items-center justify-between mb-4">
-                                <h2 class="text-lg font-semibold text-white">Apply for this Job</h2>
+            <!-- CV Upload Protocol -->
+            @auth
+                @if($post->user_id !== auth()->id() && $post->job_type)
+                    <div class="mt-12 group">
+                        <div class="bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl group-hover:border-emerald-500/20 transition-all duration-700">
+                             <div class="flex items-center justify-between mb-10">
+                                <h2 class="text-2xl font-black text-white uppercase tracking-tighter italic">Application <span class="text-emerald-500">Uplink</span></h2>
                                 @if($hasUploadedCv)
-                                    <button
-                                        type="button"
-                                        disabled
-                                        class="px-4 py-2 bg-green-600/80 text-white text-sm font-medium rounded-lg cursor-not-allowed">
-                                        CV Uploaded ✓
-                                    </button>
+                                    <div class="px-8 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-500 text-[10px] font-black uppercase tracking-widest italic">CV Payload Synced ✓</div>
                                 @endif
-                            </div>
+                             </div>
 
-                            @if(!$hasUploadedCv)
-                                <form wire:submit.prevent="uploadCv" class="bg-brand-deep/20 border border-white/5 rounded-2xl p-6">
-                                    <div class="space-y-6">
-                                        <div>
-                                            <label for="cvFile" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2">CV File *</label>
-                                            <input
-                                                type="file"
-                                                wire:model="cvFile"
-                                                id="cvFile"
-                                                accept=".pdf,.doc,.docx"
-                                                class="w-full px-4 py-3 bg-black border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent">
-                                            @error('cvFile')
-                                                <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>
-                                            @enderror
-                                            @if($cvFile)
-                                                <p class="text-xs text-gray-500 mt-1">Selected: {{ $cvFile->getClientOriginalName() }}</p>
-                                            @endif
+                             @if(!$hasUploadedCv)
+                                <form wire:submit.prevent="uploadCv" class="space-y-10">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                        <div class="space-y-4">
+                                            <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">CV File Payload (.PDF, .DOCX)</label>
+                                            <div class="relative group/file">
+                                                <input type="file" wire:model="cvFile" id="cvFile" accept=".pdf,.doc,.docx" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                                                <div class="w-full px-8 py-4 bg-zinc-950 border-2 border-dashed border-zinc-800 rounded-3xl group-hover/file:border-emerald-500/30 transition-all flex items-center justify-between">
+                                                    <span class="text-[10px] font-black uppercase tracking-widest {{ $cvFile ? 'text-emerald-500' : 'text-zinc-700' }}">{{ $cvFile ? $cvFile->getClientOriginalName() : 'Initialize File Scan...' }}</span>
+                                                    <svg class="w-6 h-6 text-zinc-800 group-hover/file:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                                </div>
+                                            </div>
+                                            @error('cvFile') <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4">{{ $message }}</p> @enderror
                                         </div>
-
-                                        <div>
-                                            <label for="cvMessage" class="block text-sm font-medium text-gray-400 mb-2">Message (Optional)</label>
-                                            <textarea
-                                                wire:model="cvMessage"
-                                                id="cvMessage"
-                                                rows="3"
-                                                class="w-full px-4 py-3 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent resize-none shadow-inner"
-                                                placeholder="Add a message to your application..."></textarea>
-                                            @error('cvMessage')
-                                                <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>
-                                            @enderror
+                                        <div class="space-y-4">
+                                            <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Operational Message (Optional)</label>
+                                            <textarea wire:model="cvMessage" rows="2" class="w-full px-8 py-4 bg-zinc-950 border border-zinc-800 rounded-3xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-xs resize-none italic font-bold" placeholder="Transmitting additional context..."></textarea>
                                         </div>
-
-                                        <div class="flex justify-end">
-                                            <button
-                                                type="submit"
-                                                wire:loading.attr="disabled"
-                                                wire:target="uploadCv"
-                                                class="px-8 py-2.5 bg-gradient-to-r from-brand-purple to-brand-violet text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-brand-purple/20">
-                                                <span wire:loading.remove wire:target="uploadCv">Submit CV</span>
-                                                <span wire:loading wire:target="uploadCv">Uploading...</span>
-                                            </button>
-                                        </div>
+                                    </div>
+                                    <div class="flex justify-end">
+                                        <button type="submit" wire:loading.attr="disabled" class="px-12 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">Commit Application</button>
                                     </div>
                                 </form>
-                            @endif
+                             @endif
                         </div>
-                    @endif
+                    </div>
+                @endif
+            @endauth
+
+            <!-- Comments Matrix -->
+            <div class="mt-20">
+                <div class="flex items-center gap-6 mb-10">
+                     <h2 class="text-3xl font-black text-white uppercase tracking-tighter italic"><span class="text-emerald-500">Intelligence</span> Feedback</h2>
+                     <div class="h-px flex-1 bg-gradient-to-r from-emerald-500/20 to-transparent"></div>
+                </div>
+
+                @auth
+                    <form wire:submit.prevent="addComment" class="mb-12">
+                        <div class="relative group/input">
+                            <textarea wire:model.defer="content" rows="3" class="w-full px-10 py-8 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm italic font-bold focus:bg-zinc-900" placeholder="Transmit your analysis..."></textarea>
+                            <div class="absolute bottom-6 right-8">
+                                <button type="submit" class="px-8 py-3 bg-emerald-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-400 shadow-xl shadow-emerald-500/10 transition-all italic">Send Uplink</button>
+                            </div>
+                        </div>
+                    </form>
                 @endauth
 
-                <!-- Comments Section -->
-                <div class="mt-8 pt-6 border-t border-white/5">
-                    <h2 class="text-lg font-semibold text-white mb-4">Comments</h2>
-
-                    @auth
-                        <form wire:submit.prevent="addComment" class="mb-6">
-                            <div class="flex flex-col gap-3">
-                                <textarea
-                                    wire:model.defer="content"
-                                    rows="3"
-                                    class="w-full px-4 py-3 bg-brand-deep/30 border border-white/5 rounded-2xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent resize-none shadow-inner"
-                                    placeholder="Write a comment..."></textarea>
-                                <div class="flex justify-end">
-                                    <button
-                                        type="submit"
-                                        class="px-6 py-2.5 bg-brand-purple hover:bg-brand-violet text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-brand-purple/25">
-                                        Post Comment
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    @else
-                        <p class="text-sm text-gray-500 mb-4">
-                            <a href="{{ route('login') }}" class="text-brand-violet hover:text-brand-purple">Log in</a> to comment.
-                        </p>
-                    @endauth
-
-                    <div class="space-y-4">
-                        @php
-                            $rootComments = $post->comments->whereNull('parent_id');
-                        @endphp
-
-                        @forelse($rootComments as $index => $comment)
-                            @php
-                                $hasClappedComment = auth()->check() && $comment->claps->contains('user_id', auth()->id());
-                            @endphp
-                            <div 
-                                class="bg-brand-deep/10 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all duration-300 transform hover:scale-[1.01]"
-                                x-data="{ show: false }"
-                                x-init="
-                                    setTimeout(() => {
-                                        show = true;
-                                    }, {{ $index * 100 }});
-                                "
-                                x-show="show"
-                                x-transition:enter="transition ease-out duration-500"
-                                x-transition:enter-start="opacity-0 translate-x-4"
-                                x-transition:enter-end="opacity-100 translate-x-0"
-                            >
-                                <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-xl bg-brand-deep flex items-center justify-center text-[10px] font-black text-brand-violet ring-2 ring-white/5">
+                <div class="space-y-8">
+                    @forelse($post->comments->whereNull('parent_id') as $index => $comment)
+                        <div 
+                            class="bg-zinc-900/20 border border-zinc-800/50 rounded-[2.5rem] p-8 hover:bg-zinc-900/40 transition-all duration-500 group/comment"
+                            x-show="loaded"
+                            x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-700"
+                            x-transition:enter-start="opacity-0 translate-x-10"
+                            x-transition:enter-end="opacity-100 translate-x-0"
+                            style="transition-delay: {{ $index * 100 }}ms"
+                        >
+                            <div class="flex items-start gap-6">
+                                <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center p-0.5 group-hover/comment:border-emerald-500/30 transition-all">
+                                    <div class="w-full h-full rounded-xl bg-zinc-900 flex items-center justify-center">
                                         @if($comment->user && $comment->user->profile_photo_path)
-                                            <img src="{{ $comment->user->profile_photo_url }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
+                                            <img src="{{ $comment->user->profile_photo_url }}" class="w-full h-full object-cover grayscale opacity-50">
                                         @else
-                                            {{ strtoupper(substr($comment->user->name ?? 'U', 0, 1)) }}
-                                        @endif
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <p class="text-sm font-semibold text-white">
-                                                    {{ $comment->user->name ?? 'Unknown User' }}
-                                                </p>
-                                                <p class="text-xs text-gray-500">
-                                                    {{ $comment->created_at->diffForHumans() }}
-                                                </p>
-                                            </div>
-                                            
-                                            <div class="flex items-center gap-2">
-                                                {{-- Admin Delete Comment Button (Only visible to admins, not comment owners) --}}
-                                                @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $comment->user_id)
-                                                    <button 
-                                                        wire:click="deleteCommentAsAdmin({{ $comment->id }})"
-                                                        wire:confirm="Are you sure you want to delete this comment as admin?"
-                                                        class="p-1.5 text-rose-400 hover:text-red-500 hover:bg-red-900/20 rounded-lg transition-colors"
-                                                        title="Admin: Delete Comment">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                        </svg>
-                                                    </button>
-                                                @endif
-                                                
-                                                {{-- Report Comment Button (Visible to all users except comment owner and admins) --}}
-                                                @if(auth()->check() && auth()->id() !== $comment->user_id && !auth()->user()->isAdmin())
-                                                    <button 
-                                                        onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'comment', targetId: {{ $comment->id }} } }));"
-                                                        class="p-1.5 text-gray-500 hover:text-orange-400 hover:bg-gray-800 rounded transition-colors"
-                                                        title="Report Comment">
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                                        </svg>
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <p class="mt-2 text-sm text-gray-300 whitespace-pre-wrap">
-                                            {{ $comment->content }}
-                                        </p>
-
-                                        <div class="mt-3" x-data="{ open: false }">
-                                            <div class="flex items-center gap-4 text-xs text-gray-500">
-                                                <button
-                                                    type="button"
-                                                    wire:click="toggleCommentClap({{ $comment->id }})"
-                                                    class="inline-flex items-center gap-1 {{ $hasClappedComment ? 'text-brand-violet' : 'hover:text-brand-violet' }} transition-colors">
-                                                    <svg class="w-4 h-4" fill="{{ $hasClappedComment ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                              d="M7 11l2-2m0 0l2-2m-2 2l2 2m-2-2L7 9m6 2l2-2m0 0l2-2m-2 2l2 2m-2-2l-2 2M5 15a4 4 0 004 4h6a4 4 0 004-4v-1H5v1z" />
-                                                    </svg>
-                                                    <span>{{ $comment->claps->count() }}</span>
-                                                </button>
-
-                                                @auth
-                                                    <button
-                                                        type="button"
-                                                        @click="open = !open"
-                                                        class="inline-flex items-center gap-1 hover:text-blue-400 transition-colors">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V7a4 4 0 018 0v9"></path>
-                                                        </svg>
-                                                        <span>Reply</span>
-                                                    </button>
-                                                @endauth
-                                            </div>
-
-                                            @auth
-                                                <div x-show="open" x-transition class="mt-4">
-                                                    <form wire:submit.prevent="addReply({{ $comment->id }})" class="space-y-2">
-                                                        <textarea
-                                                            wire:model.defer="replyContent.{{ $comment->id }}"
-                                                            rows="2"
-                                                            class="w-full px-4 py-3 bg-black border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent resize-none shadow-inner text-sm"
-                                                            placeholder="Write a reply..."></textarea>
-                                                        <div class="flex justify-end">
-                                                            <button
-                                                                type="submit"
-                                                                class="px-4 py-2 bg-brand-purple hover:bg-brand-violet text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg">
-                                                                Reply
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            @endauth
-                                        </div>
-
-                                        @if($comment->replies && $comment->replies->count() > 0)
-                                            <div class="mt-4 space-y-3 border-l border-white/5 pl-4">
-                                                @foreach($comment->replies as $replyIndex => $reply)
-                                                    @php
-                                                        $hasClappedReply = auth()->check() && $reply->claps->contains('user_id', auth()->id());
-                                                    @endphp
-                                                    <div 
-                                                        class="flex items-start gap-3 transition-all duration-300 transform hover:translate-x-1"
-                                                        x-data="{ show: false }"
-                                                        x-init="
-                                                            setTimeout(() => {
-                                                                show = true;
-                                                            }, {{ ($index * 100) + ($replyIndex * 50) }});
-                                                        "
-                                                        x-show="show"
-                                                        x-transition:enter="transition ease-out duration-400"
-                                                        x-transition:enter-start="opacity-0 translate-x-2"
-                                                        x-transition:enter-end="opacity-100 translate-x-0"
-                                                    >
-                                                        <div class="w-7 h-7 rounded-lg bg-brand-deep flex items-center justify-center text-[8px] font-black text-brand-violet ring-2 ring-white/5">
-                                                            {{ strtoupper(substr($reply->user->name ?? 'U', 0, 1)) }}
-                                                        </div>
-                                                        <div class="flex-1">
-                                                            <div class="flex items-center justify-between">
-                                                                <div>
-                                                                    <p class="text-xs font-semibold text-white">
-                                                                        {{ $reply->user->name ?? 'Unknown User' }}
-                                                                    </p>
-                                                                    <p class="text-[11px] text-gray-500">
-                                                                        {{ $reply->created_at->diffForHumans() }}
-                                                                    </p>
-                                                                </div>
-                                                                
-                                                                {{-- Admin Delete Reply Button (Only visible to admins, not reply owners) --}}
-                                                                @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $reply->user_id)
-                                                                    <button 
-                                                                        wire:click="deleteCommentAsAdmin({{ $reply->id }})"
-                                                                        wire:confirm="Are you sure you want to delete this reply as admin?"
-                                                                        class="p-1 text-rose-400 hover:text-red-500 dark:hover:bg-red-900/20 hover:bg-red-50 rounded transition-colors"
-                                                                        title="Admin: Delete Reply">
-                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                                        </svg>
-                                                                    </button>
-                                                                @endif
-                                                            </div>
-                                                            <p class="mt-1 text-sm text-gray-300 whitespace-pre-wrap">
-                                                                {{ $reply->content }}
-                                                            </p>
-                                                            <div class="mt-2 flex items-center gap-3 text-[11px] text-gray-500">
-                                                                <button
-                                                                    type="button"
-                                                                    wire:click="toggleCommentClap({{ $reply->id }})"
-                                                                    class="inline-flex items-center gap-1 {{ $hasClappedReply ? 'text-yellow-400' : 'hover:text-yellow-400' }} transition-colors">
-                                                                    <svg class="w-3.5 h-3.5" fill="{{ $hasClappedReply ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                              d="M7 11l2-2m0 0l2-2m-2 2l2 2m-2-2L7 9m6 2l2-2m0 0l2-2m-2 2l2 2m-2-2l-2 2M5 15a4 4 0 004 4h6a4 4 0 004-4v-1H5v1z" />
-                                                                    </svg>
-                                                                    <span>{{ $reply->claps->count() }}</span>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                            <span class="text-[10px] font-black text-emerald-500/40">{{ strtoupper(substr($comment->user->name, 0, 1)) }}</span>
                                         @endif
                                     </div>
                                 </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 class="text-[11px] font-black text-white uppercase tracking-widest italic group-hover/comment:text-emerald-400 transition-colors">{{ $comment->user->name }}</h4>
+                                            <p class="text-[8px] font-black text-zinc-700 uppercase tracking-widest mt-1 italic">{{ $comment->created_at->diffForHumans() }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            @if(auth()->check() && (auth()->user()->isAdmin() || auth()->id() === $comment->user_id))
+                                                 <button wire:click="deleteCommentAsAdmin({{ $comment->id }})" class="w-10 h-10 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-800 hover:text-rose-500 transition-all flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <p class="text-zinc-400 text-sm leading-relaxed italic italic font-bold font-medium select-none">"{{ $comment->content }}"</p>
+                                    
+                                    <div class="mt-6 flex items-center gap-6" x-data="{ open: false }">
+                                        <button wire:click="toggleCommentClap({{ $comment->id }})" class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest {{ $comment->claps->where('user_id', auth()->id())->first() ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400' }} transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M7 11l2-2m0 0l2-2m-2 2l2 2m-2-2L7 9m6 2l2-2m0 0l2-2m-2 2l2 2m-2-2l-2 2M5 15a4 4 0 004 4h6a4 4 0 004-4v-1H5v1z" /></svg>
+                                            <span>{{ $comment->claps->count() }} Signal Claps</span>
+                                        </button>
+                                        @auth
+                                            <button @click="open = !open" class="flex items-center gap-2 text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors"><span>Reply Uplink</span></button>
+                                        @endauth
+
+                                        <div x-show="open" class="mt-6 w-full" x-transition>
+                                            <form wire:submit.prevent="addReply({{ $comment->id }})" class="space-y-4">
+                                                <textarea wire:model.defer="replyContent.{{ $comment->id }}" rows="2" class="w-full px-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-xs text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all italic" placeholder="Transmitting response..."></textarea>
+                                                <div class="flex justify-end"><button type="submit" class="px-6 py-2 bg-emerald-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-400 transition-all italic">Commit Reply</button></div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    @if($comment->replies->count() > 0)
+                                        <div class="mt-8 space-y-6 border-l-2 border-zinc-800/50 pl-8">
+                                            @foreach($comment->replies as $reply)
+                                                <div class="flex items-start gap-4">
+                                                    <div class="w-8 h-8 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-[8px] font-black text-emerald-500/40 italic">{{ strtoupper(substr($reply->user->name, 0, 1)) }}</div>
+                                                    <div class="flex-1">
+                                                        <h5 class="text-[10px] font-black text-white uppercase tracking-widest italic">{{ $reply->user->name }}</h5>
+                                                        <p class="text-zinc-500 text-xs mt-2 italic">"{{ $reply->content }}"</p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
-                        @empty
-                            <p class="text-sm text-gray-500">No comments yet. Be the first to comment!</p>
-                        @endforelse
-                    </div>
+                        </div>
+                    @empty
+                        <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.4em] text-center py-20 italic">Zero intelligence feedback strings detected.</p>
+                    @endforelse
                 </div>
-            </div>
-        @else
-            <div class="text-center py-12">
-                <h3 class="text-xl font-medium dark:text-gray-400 text-gray-700 mb-2">Post not found</h3>
-                <a href="{{ route('dashboard') }}" class="text-brand-violet hover:text-brand-purple">Go back to posts</a>
             </div>
         @endif
     </div>
 
-    <!-- Bottom Navigation (Post detail page only) -->
-    {{-- Bottom navigation is only shown on the main posts feed --}}
-    <!-- Suspend Post Modal -->
+    <!-- Modals -->
     @if ($showSuspendModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeSuspendModal"></div>
-
-                <div class="inline-block align-bottom bg-black rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-white/10" wire:click.stop>
-                    <div class="px-6 py-4 bg-black/5 border-b border-white/5 flex items-center justify-between">
-                        <h3 class="text-sm font-black text-white uppercase tracking-widest">Suspend Post</h3>
-                        <button wire:click="closeSuspendModal" class="text-gray-400 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
+        <div class="fixed inset-0 z-[400] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeSuspendModal">
+             <div class="bg-zinc-900 border border-amber-500/30 rounded-[3rem] max-w-lg w-full overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,1)] relative" wire:click.stop>
+                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
+                 <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40">
+                    <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Isolation Authorization Matrix</h3>
+                 </div>
+                 <form wire:submit.prevent="suspendPost" class="p-10 space-y-8">
+                    <div class="space-y-4">
+                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Isolation Logic *</label>
+                        <textarea wire:model="suspendReason" rows="3" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-3xl text-sm text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all italic font-bold"></textarea>
+                        @error('suspendReason') <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4">{{ $message }}</p> @enderror
                     </div>
-                    
-                    <form wire:submit.prevent="suspendPost" class="p-6 space-y-6">
-                        <div class="space-y-2">
-                            <label for="suspendReason" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Suspension Reason *</label>
-                            <textarea
-                                wire:model="suspendReason"
-                                id="suspendReason"
-                                rows="3"
-                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent resize-none shadow-inner"
-                                placeholder="Enter the reason for suspending this post..."></textarea>
-                            @error('suspendReason')
-                                <span class="text-rose-400 text-xs mt-1 ml-1 block">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="space-y-2">
-                            <label for="suspendExpiresAt" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Expires At (Optional)</label>
-                            <input
-                                type="datetime-local"
-                                wire:model="suspendExpiresAt"
-                                id="suspendExpiresAt"
-                                min="{{ now()->format('Y-m-d\TH:i') }}"
-                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent cursor-pointer">
-                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1 ml-1">Leave empty for permanent suspension</p>
-                            @error('suspendExpiresAt')
-                                <span class="text-rose-400 text-xs mt-1 ml-1 block">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="flex justify-end gap-3 pt-6 border-t border-white/5">
-                            <button 
-                                type="button"
-                                wire:click="closeSuspendModal"
-                                class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
-                                Abort
-                            </button>
-                            <button 
-                                type="submit"
-                                wire:loading.attr="disabled"
-                                wire:target="suspendPost"
-                                class="px-6 py-2 bg-brand-purple hover:bg-brand-violet text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-brand-purple/20">
-                                <span wire:loading.remove wire:target="suspendPost">Suspend Post</span>
-                                <span wire:loading wire:target="suspendPost">Suspending...</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                    <div class="space-y-4">
+                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Expiring Protocol (Optional)</label>
+                        <input type="datetime-local" wire:model="suspendExpiresAt" class="w-full px-8 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-xs text-white uppercase focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all">
+                    </div>
+                    <div class="flex justify-end gap-6 pt-6">
+                        <button type="button" wire:click="closeSuspendModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic">Abort</button>
+                        <button type="submit" class="px-10 py-4 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-xl shadow-xl shadow-amber-500/10 hover:bg-amber-400 transition-all font-bold italic">Execute Quarantine</button>
+                    </div>
+                 </form>
+             </div>
         </div>
     @endif
-
-    {{-- Likes and liker list removed; only stars and comments remain --}}
 </div>

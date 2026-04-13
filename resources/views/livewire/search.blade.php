@@ -1,295 +1,179 @@
 <div>
     @if($showSearch)
-    <!-- Search Overlay -->
+    <!-- Deep Scan Overlay -->
     <div 
         x-data="{ 
             init() {
-                // Lock body scroll when modal opens
                 document.body.style.overflow = 'hidden';
-                
-                // Cleanup on component destroy
                 this.$el.addEventListener('livewire:destroy', () => {
                     document.body.style.overflow = '';
                 });
             }
         }"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        @transitionend="document.body.style.overflow = ''"
-        class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl"
+        x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500"
+        x-transition:enter-start="opacity-0 scale-105 blur-2xl"
+        x-transition:enter-end="opacity-100 scale-100 blur-0"
+        x-transition:leave="transition cubic-bezier(0.16, 1, 0.3, 1) duration-300"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-105 blur-2xl"
+        @transitionend="if(!@js($showSearch)) document.body.style.overflow = ''"
+        class="fixed inset-0 z-[150] bg-zinc-950/98 backdrop-blur-3xl"
         @click.self="$wire.closeSearch()"
         @keydown.escape.window="$wire.closeSearch()"
         wire:key="search-modal-{{ $showSearch }}"
     >
+        <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+
         <!-- Search Container -->
-        <div 
-            class="fixed inset-0 flex items-start justify-center pt-20 px-4"
-            wire:click.stop
-        >
-            <div class="w-full max-w-2xl">
-                <!-- Search Header -->
-                <div class="bg-black rounded-t-[2.5rem] p-6 border-b border-white/5 shadow-2xl shadow-black/50">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Search</h2>
-                        <button 
-                            wire:click="closeSearch"
-                            class="p-2 text-gray-500 hover:text-white hover:bg-white/5 rounded-xl transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <!-- Result Type Tabs (URL filter: ?type=users|posts|all) -->
-                    @if($query && strlen(trim($query)) > 0)
-                    <div class="flex gap-2 mb-4">
-                        <button 
-                            wire:click="setResultType('all')"
-                            class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ ($resultType ?? 'all') === 'all' ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/20' : 'bg-brand-deep/30 text-gray-400 hover:bg-brand-deep/50 hover:text-white' }}">
-                            All
-                        </button>
-                        <button 
-                            wire:click="setResultType('users')"
-                            class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ ($resultType ?? 'all') === 'users' ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/20' : 'bg-brand-deep/30 text-gray-400 hover:bg-brand-deep/50 hover:text-white' }}">
-                            Users
-                        </button>
-                        <button 
-                            wire:click="setResultType('posts')"
-                            class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ ($resultType ?? 'all') === 'posts' ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/20' : 'bg-brand-deep/30 text-gray-400 hover:bg-brand-deep/50 hover:text-white' }}">
-                            Posts
-                        </button>
-                    </div>
-                    @endif
-
-                    <!-- Search Input -->
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
+        <div class="fixed inset-0 flex items-start justify-center pt-32 px-6" wire:click.stop>
+            <div class="w-full max-w-3xl">
+                <!-- Search Module -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-[3.5rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] flex flex-col">
+                    <div class="p-10 bg-zinc-950/40 border-b border-zinc-800/50">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-[10px] font-black text-white uppercase tracking-[0.6em] flex items-center gap-4 italic font-bold">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Intelligence Scan
+                            </h2>
+                            <button 
+                                wire:click="closeSearch"
+                                class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-rose-500 hover:bg-rose-500/10 transition-all flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
                         </div>
-                        <input 
-                            type="text"
-                            wire:model.live.debounce.300ms="query"
-                            placeholder="Search for posts or users..."
-                            class="w-full pl-12 pr-4 py-4 bg-brand-deep/30 border border-white/10 rounded-2xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 focus:border-transparent transition-all shadow-inner"
-                            autofocus>
-                    </div>
-                </div>
-
-                <!-- Search Results -->
-                <div 
-                    x-data="{ loaded: false }"
-                    x-init="setTimeout(() => loaded = true, 200)"
-                >
-                <div class="bg-black rounded-b-[2.5rem] max-h-[60vh] overflow-y-auto border-t border-white/5 shadow-2xl shadow-black/50">
-                    @if($query && strlen(trim($query)) > 0)
-                        <!-- Users Results -->
-                        @if(in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0)
-                            <div class="p-6 border-b border-white/5">
-                                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-1">Users</h3>
-                                <div class="space-y-4">
-                                    @php
-                                        $displayUsers = ($this->resultType === 'all') ? $users->take(3) : $users;
-                                    @endphp
-                                    @foreach($displayUsers as $index => $user)
-                                        <a 
-                                            href="{{ route('user.profile', $user->username ?? 'unknown') }}"
-                                            wire:click="closeSearch"
-                                            class="block bg-brand-deep/10 border border-white/5 rounded-2xl p-5 hover:border-white/20 hover:bg-brand-deep/20 transition-all duration-500 group"
-                                            x-data="{ show: false }"
-                                            x-init="
-                                                setTimeout(() => {
-                                                    show = true;
-                                                }, {{ $index * 50 }});
-                                            "
-                                            x-show="show"
-                                            x-transition:enter="transition ease-out duration-400"
-                                            x-transition:enter-start="opacity-0 translate-y-4"
-                                            x-transition:enter-end="opacity-100 translate-y-0"
-                                        >
-                                            <div class="flex items-center gap-4">
-                                                <!-- User Avatar -->
-                                                <div class="w-14 h-14 rounded-2xl bg-brand-deep border border-white/5 overflow-hidden flex items-center justify-center text-xl font-black text-brand-violet ring-4 ring-white/5 group-hover:scale-110 transition-transform duration-500">
-                                                    @if($user->profile_photo_path)
-                                                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
-                                                    @else
-                                                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
-                                                    @endif
-                                                </div>
-                                                
-                                                <!-- User Info -->
-                                                <div class="flex-1">
-                                                    <h4 class="text-base font-black text-white group-hover:text-brand-violet transition-colors">
-                                                        {!! str_ireplace(e($query), '<mark class="bg-brand-purple/30 text-white">' . e($query) . '</mark>', e($user->name ?? 'Unknown User')) !!}
-                                                    </h4>
-                                                    @if($user->username)
-                                                        <p class="text-sm text-gray-500">
-                                                            {!! '@' . str_ireplace(e($query), '<mark class="bg-brand-purple/30 text-brand-violet">' . e($query) . '</mark>', e($user->username)) !!}
-                                                        </p>
-                                                    @endif
-                                                </div>
-                                                
-                                                <!-- View Profile -->
-                                                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-white group-hover:bg-brand-purple transition-all duration-500">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    @endforeach
-                                </div>
-                                
-                                <!-- Users Pagination / See All -->
-                                @if($this->resultType === 'all' && $users->total() > 3)
-                                    <div class="mt-4 flex justify-center">
-                                        <button 
-                                            wire:click="setResultType('users')"
-                                            class="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-brand-purple hover:border-brand-purple transition-all">
-                                            See All Users ({{ $users->total() }})
-                                        </button>
-                                    </div>
-                                @elseif($this->resultType !== 'all' && $users->hasPages())
-                                    <div class="mt-4 pt-4 border-t border-white/5">
-                                        {{ $users->links() }}
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
                         
-                        <!-- Posts Results -->
-                        @if(in_array($resultType ?? 'all', ['all', 'posts']) && $posts->count() > 0)
-                            <div class="p-6 {{ (in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0) ? 'border-t border-white/5' : '' }}">
-                                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-1">Posts</h3>
-                                <div class="space-y-6">
-                                    @php
-                                        $displayPosts = ($this->resultType === 'all') ? $posts->take(3) : $posts;
-                                    @endphp
-                                    @foreach($displayPosts as $index => $post)
-                                    <a 
-                                        href="{{ route('posts.show', $post->slug) }}"
-                                        wire:click="closeSearch"
-                                        class="block bg-brand-deep/10 border border-white/5 rounded-3xl p-6 hover:border-white/20 hover:bg-brand-deep/20 transition-all duration-500 group"
-                                        x-data="{ show: false }"
-                                        x-init="
-                                            setTimeout(() => {
-                                                show = true;
-                                            }, {{ $index * 50 }});
-                                        "
-                                        x-show="show"
-                                        x-transition:enter="transition ease-out duration-400"
-                                        x-transition:enter-start="opacity-0 translate-y-4"
-                                        x-transition:enter-end="opacity-100 translate-y-0"
-                                    >
-                                        
-                                        <!-- Post Meta -->
-                                        <div class="flex items-center justify-between mb-3">
-                                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                                                {{ $post->user->name ?? 'Unknown User' }} · {{ $post->created_at->diffForHumans() }}
-                                            </p>
-                                        </div>
-
-                                        <!-- Post Title & Content (Highlighted) -->
-                                        <div class="mb-4">
-                                            @if(!empty($post->title))
-                                                <h3 class="text-lg font-black text-white mb-2 group-hover:text-brand-violet transition-colors">
-                                                    {!! str_ireplace(e($query), '<mark class="bg-brand-purple/30 text-white">' . e($query) . '</mark>', e($post->title)) !!}
-                                                </h3>
-                                            @endif
-                                            <p class="text-gray-300 text-sm leading-relaxed line-clamp-2">
-                                                {{ \Illuminate\Support\Str::limit($post->content, 140) }}
-                                            </p>
-                                        </div>
-
-                                        <!-- Post Specialties -->
-                                        @if($post->specialties && $post->specialties->count() > 0)
-                                            <div class="mb-2">
-                                                <div class="flex flex-wrap gap-2">
-                                                    @foreach($post->specialties as $specialty)
-                                                        @php
-                                                            $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
-                                                            $subSpecialty = $subSpecialtyId && $specialty->subSpecialties 
-                                                                ? $specialty->subSpecialties->firstWhere('id', $subSpecialtyId) 
-                                                                : null;
-                                                        @endphp
-                                                        @if($subSpecialty)
-                                                            <span class="px-2.5 py-1 bg-brand-purple/10 border border-brand-purple/20 rounded-lg text-brand-violet text-[10px] font-black uppercase tracking-widest">
-                                                                {{ $specialty->name }} - {{ $subSpecialty->name }}
-                                                            </span>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        <!-- Post Tags -->
-                                        @if($post->tags && $post->tags->count() > 0)
-                                            <div class="mb-2">
-                                                <div class="flex flex-wrap gap-2">
-                                                    @foreach($post->tags as $tag)
-                                                        <span class="px-2.5 py-1 bg-brand-violet/10 border border-brand-violet/20 rounded-lg text-brand-violet text-[10px] font-black uppercase tracking-widest">
-                                                            #{{ $tag->name }}
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        <!-- Post Stats -->
-                                        <div class="flex items-center gap-4 pt-4 border-t border-white/5">
-                                            <div class="flex items-center gap-2 text-gray-500 text-[10px] font-black uppercase tracking-widest">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                                                </svg>
-                                                <span>{{ $post->comments->count() }} Comments</span>
-                                            </div>
-                                        </div>
-                                    </a>
+                        <!-- Protocol Filters -->
+                        @if($query && strlen(trim($query)) > 0)
+                            <div class="flex gap-4 mb-8">
+                                @foreach(['all' => 'Global Stream', 'users' => 'Identity Nodes', 'posts' => 'Mission Logs'] as $type => $label)
+                                    <button 
+                                        wire:click="setResultType('{{ $type }}')"
+                                        class="px-8 py-3 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] italic transition-all duration-500 {{ ($resultType ?? 'all') === $type ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'bg-zinc-950 text-zinc-600 hover:text-zinc-400 border border-zinc-800' }}">
+                                        {{ $label }}
+                                    </button>
                                 @endforeach
                             </div>
+                        @endif
 
-                            <!-- Posts Pagination / See All -->
-                            @if($this->resultType === 'all' && $posts->total() > 3)
-                                <div class="mt-8 flex justify-center">
-                                    <button 
-                                        wire:click="setResultType('posts')"
-                                        class="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-brand-purple hover:border-brand-purple transition-all">
-                                        See All Posts ({{ $posts->total() }})
-                                    </button>
-                                </div>
-                            @elseif($this->resultType !== 'all' && $posts->hasPages())
-                                <div class="mt-4 pt-4 border-t border-white/5">
-                                    {{ $posts->links() }}
+                        <!-- Input Terminal -->
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-8 flex items-center pointer-events-none">
+                                <svg class="w-6 h-6 text-zinc-700 group-focus-within:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                type="text"
+                                wire:model.live.debounce.300ms="query"
+                                placeholder="INITIALIZE KEYWORD SEARCH..."
+                                class="w-full pl-20 pr-8 py-6 bg-zinc-950 border border-zinc-800/50 rounded-[2rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all text-xs font-black uppercase tracking-widest shadow-inner italic"
+                                autofocus>
+                        </div>
+                    </div>
+
+                    <!-- Scan Results Area -->
+                    <div class="overflow-y-auto max-h-[50vh] custom-scrollbar bg-zinc-900/50">
+                        @if($query && strlen(trim($query)) > 0)
+                            <!-- Identity Results -->
+                            @if(in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0)
+                                <div class="px-8 py-10 border-b border-zinc-800/30">
+                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Recovered Identity Nodes</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @php $displayUsers = ($this->resultType === 'all') ? $users->take(4) : $users; @endphp
+                                        @foreach($displayUsers as $index => $user)
+                                            <a 
+                                                href="{{ route('user.profile', $user->username ?? 'unknown') }}"
+                                                wire:click="closeSearch"
+                                                class="flex items-center gap-5 p-5 bg-zinc-950/40 border border-zinc-800/50 rounded-3xl hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all duration-500 group"
+                                            >
+                                                <div class="w-16 h-16 rounded-2xl bg-zinc-900 border-2 border-zinc-800 overflow-hidden flex items-center justify-center p-0.5 shrink-0 group-hover:scale-105 transition-all">
+                                                    <div class="w-full h-full rounded-xl overflow-hidden bg-zinc-800">
+                                                        @if($user->profile_photo_path)
+                                                            <img src="{{ $user->profile_photo_url }}" class="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                                                        @else
+                                                            <div class="w-full h-full flex items-center justify-center text-[10px] font-black text-emerald-500">{{ substr($user->name, 0, 1) }}</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <h4 class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest italic truncate font-bold">
+                                                        {!! str_ireplace(e($query), '<mark class="bg-emerald-500/20 text-emerald-300">'.e($query).'</mark>', e($user->name)) !!}
+                                                    </h4>
+                                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1 opacity-80">
+                                                       {{ '@' . $user->username }}
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                    
+                                    @if($this->resultType === 'all' && $users->total() > 4)
+                                        <div class="mt-8 flex justify-center">
+                                            <button wire:click="setResultType('users')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">Expand Node Index ({{ $users->total() }})</button>
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
+                            
+                            <!-- Log Results -->
+                            @if(in_array($resultType ?? 'all', ['all', 'posts']) && $posts->count() > 0)
+                                <div class="px-8 py-10 transition-all">
+                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Recovered Mission Logs</h3>
+                                    <div class="space-y-4">
+                                        @php $displayPosts = ($this->resultType === 'all') ? $posts->take(4) : $posts; @endphp
+                                        @foreach($displayPosts as $index => $post)
+                                            <a 
+                                                href="{{ route('posts.show', $post->slug) }}"
+                                                wire:click="closeSearch"
+                                                class="block p-8 bg-zinc-950/40 border border-zinc-800/50 rounded-[2.5rem] hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all duration-500 group"
+                                            >
+                                                <div class="flex items-center justify-between mb-4">
+                                                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ $post->user->username }} · Signal {{ $post->created_at->diffForHumans() }}</p>
+                                                    <div class="flex gap-2">
+                                                        @foreach($post->tags->take(2) as $tag)
+                                                            <span class="px-2 py-0.5 bg-zinc-800 rounded-lg text-[7px] font-black text-zinc-500 uppercase tracking-widest">#{{ $tag->name }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                <h3 class="text-[13px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-tight italic mb-3">
+                                                    {!! str_ireplace(e($query), '<mark class="bg-emerald-500/20 text-emerald-300">'.e($query).'</mark>', e($post->title ?? 'Log Capture')) !!}
+                                                </h3>
+                                                <p class="text-[11px] font-medium text-zinc-500 line-clamp-2 leading-relaxed italic selection:bg-emerald-500/20">
+                                                    {{ Str::limit($post->content, 180) }}
+                                                </p>
+                                            </a>
+                                        @endforeach
+                                    </div>
+
+                                    @if($this->resultType === 'all' && $posts->total() > 4)
+                                        <div class="mt-8 flex justify-center">
+                                            <button wire:click="setResultType('posts')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">Expand Log Archive ({{ $posts->total() }})</button>
+                                        </div>
+                                    @endif
                                 </div>
+                            @endif
+                            
+                            <!-- Null Stream -->
+                            @if((($resultType ?? 'all') === 'all' && $posts->count() === 0 && $users->count() === 0) || (($resultType ?? 'all') === 'users' && $users->count() === 0) || (($resultType ?? 'all') === 'posts' && $posts->count() === 0))
+                                <div class="py-32 text-center group">
+                                    <div class="w-20 h-20 bg-zinc-950 border border-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
+                                        <svg class="w-10 h-10 text-zinc-800 group-hover:text-rose-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    </div>
+                                    <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">Null Result</h3>
+                                    <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">Zero data nodes matching your scan parameters.</p>
+                                </div>
+                            @endif
+                        @else
+                            <!-- Initial State -->
+                            <div class="py-32 text-center group">
+                                <div class="w-20 h-20 bg-zinc-950 border border-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
+                                    <svg class="w-10 h-10 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                </div>
+                                <h3 class="text-xl font-black text-white italic uppercase tracking-tighter italic">Scanner Online</h3>
+                                <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">Initialize keywords to scan the global intelligence stream.</p>
                             </div>
                         @endif
-                        
-                        <!-- No Results -->
-                        @if((($resultType ?? 'all') === 'all' && $posts->count() === 0 && $users->count() === 0) || (($resultType ?? 'all') === 'users' && $users->count() === 0) || (($resultType ?? 'all') === 'posts' && $posts->count() === 0))
-                            <div class="p-8 text-center">
-                                <svg class="mx-auto h-12 w-12 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                                <h3 class="text-lg font-medium text-gray-500 mb-2">No results found</h3>
-                                <p class="text-sm text-gray-600">Try searching with different keywords</p>
-                            </div>
-                        @endif
-                    @else
-                        <div class="p-8 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <h3 class="text-lg font-medium text-gray-400 mb-2">Start searching</h3>
-                            <p class="text-sm text-gray-500">Enter keywords to find posts</p>
-                        </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>

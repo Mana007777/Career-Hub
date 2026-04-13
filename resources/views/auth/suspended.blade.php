@@ -1,116 +1,105 @@
-<x-guest-layout title="{{ __('Account suspended') }}">
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-guest-layout title="{{ __('Signal Intercepted') }}">
+    <div class="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden font-mono">
+        <!-- Background Glows -->
+        <div class="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-rose-500/10 rounded-full blur-[150px] animate-pulse"></div>
+        <div class="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-rose-500/5 rounded-full blur-[150px] animate-pulse" style="animation-delay: 1s"></div>
+
+        <div class="sm:mx-auto sm:w-full sm:max-w-2xl relative z-10 px-6 text-center">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-zinc-900 border-2 border-rose-500/30 mb-8 shadow-[0_0_50px_rgba(244,63,94,0.2)] animate-pulse">
+                <svg class="w-12 h-12 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.72 0z" />
+                </svg>
+            </div>
+
+            <h2 class="text-5xl font-black text-white uppercase tracking-tighter italic"><span class="text-rose-500">Node</span> Quarantined</h2>
+            <div class="flex justify-center mt-6">
+                <div class="h-1 w-32 bg-gradient-to-r from-transparent via-rose-500 to-transparent"></div>
+            </div>
+            
+            <p class="mt-8 text-[11px] font-black text-rose-500/70 uppercase tracking-[0.5em] italic leading-relaxed">
+                Your connection to the central intelligence matrix has been severed.
+            </p>
+        </div>
 
         @php
             $suspendedUntil = session('suspended_until');
             $suspensionReason = session('suspension_reason');
         @endphp
 
-        <div class="space-y-6">
-            {{-- Header --}}
-            <div class="text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-50 dark:bg-red-900/70 mb-4">
-                    <svg class="w-9 h-9 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.72 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 9v4m0 4h.01" />
-                    </svg>
+        <div class="sm:mx-auto sm:w-full sm:max-w-2xl mt-12 relative z-10 px-4">
+            <div class="bg-zinc-900/40 border-2 border-rose-500/20 rounded-[3rem] p-10 sm:p-14 shadow-[0_50px_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl space-y-12">
+                
+                {{-- Suspension details --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-8 space-y-4">
+                        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 italic">Discrepancy Status</p>
+                        <div class="flex items-center gap-4">
+                            <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                            <span class="text-white text-xl font-black uppercase italic tracking-tighter">Isolation Active</span>
+                        </div>
+                    </div>
+                    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-8 space-y-4">
+                        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 italic">Protocol Type</p>
+                        <span class="text-white text-xl font-black uppercase italic tracking-tighter block truncate">
+                             {{ $suspendedUntil ? 'Timed Quarantine' : 'Permanent Purge' }}
+                        </span>
+                    </div>
                 </div>
 
-                <h2 class="text-3xl font-extrabold tracking-tight text-red-600 dark:text-red-300">
-                    {{ __('Account Suspended') }}
-                </h2>
-                <div class="mt-2 h-1 w-16 mx-auto rounded-full bg-red-500/80 dark:bg-red-400/80"></div>
-                <p class="mt-4 text-sm text-gray-700 dark:text-gray-200">
-                    {{ __('Your access has been temporarily restricted to keep the community safe.') }}
-                </p>
-            </div>
+                <div class="bg-zinc-950 border border-rose-500/10 rounded-[2.5rem] p-10 space-y-6">
+                    <h4 class="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] italic leading-none">Security Log Summary</h4>
+                    
+                    <div class="space-y-6">
+                        @if($suspendedUntil)
+                            <p class="text-zinc-400 text-sm italic font-bold leading-relaxed">
+                                Restoration assessment scheduled for: <br>
+                                <span class="text-white text-lg font-black mt-2 block uppercase tracking-tighter">
+                                    {{ \Illuminate\Support\Carbon::parse($suspendedUntil)->toDayDateTimeString() }}
+                                </span>
+                            </p>
+                        @else
+                            <p class="text-zinc-400 text-sm italic font-bold leading-relaxed">
+                                This isolation protocol has no scheduled expiration. The node will remain dark until manually authorized by a system regulator.
+                            </p>
+                        @endif
 
-            {{-- Suspension details --}}
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-4">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-300">
-                            {{ __('Suspension status') }}
-                        </p>
-                        <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {{ $suspendedUntil ? __('Temporary suspension') : __('Indefinite suspension') }}
-                        </p>
+                        @if(!empty($suspensionReason))
+                            <div class="pt-6 border-t border-zinc-800">
+                                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic mb-4">Regulator Observation Data:</p>
+                                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 italic text-sm text-rose-500/70 font-bold leading-loose">
+                                    "{{ $suspensionReason }}"
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Action Protocol --}}
+                <div class="space-y-6">
+                    <div class="bg-zinc-950/40 p-10 rounded-[2.5rem] border border-zinc-800">
+                        <h4 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Counter-Protocol Options</h4>
+                        <ul class="space-y-4">
+                             <li class="flex items-start gap-4 text-[11px] text-zinc-500 italic font-bold">
+                                <span class="text-rose-500 font-black tracking-widest">[ERROR]</span>
+                                <span>Signal an identity discrepancy error to system support if you believe this isolation is a systemic failure.</span>
+                             </li>
+                             <li class="flex items-start gap-4 text-[11px] text-zinc-500 italic font-bold">
+                                <span class="text-rose-500 font-black tracking-widest">[RESTORE]</span>
+                                <span>Initialize a reconnect attempt only after the restoration assessment date.</span>
+                             </li>
+                        </ul>
                     </div>
 
-                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-200 border border-red-200 dark:border-red-700">
-                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                        {{ __('Active') }}
-                    </span>
-                </div>
-
-                <div class="space-y-2 text-sm text-gray-700 dark:text-gray-200">
-                    @if($suspendedUntil)
-                        <p>
-                            {{ __('Your account will be reviewed again on') }}
-                            <span class="font-semibold">
-                                {{ \Illuminate\Support\Carbon::parse($suspendedUntil)->toDayDateTimeString() }}
-                            </span>.
+                    <div class="flex flex-col gap-4">
+                        <a href="{{ route('login') }}" class="w-full py-6 bg-rose-500 text-black text-[11px] font-black uppercase tracking-[0.5em] rounded-2xl hover:bg-rose-400 shadow-xl shadow-rose-500/10 transition-all active:scale-95 text-center italic font-bold">
+                             Return to Access Gateway
+                        </a>
+                        <p class="text-[8px] font-black text-zinc-800 uppercase tracking-[0.5em] text-center italic mt-2">
+                             Access Denied // System Log #{{ rand(1000, 9999) }}
                         </p>
-                    @else
-                        <p>
-                            {{ __('This suspension does not have an end date and will remain in place until an administrator lifts it.') }}
-                        </p>
-                    @endif
-
-                    @if(!empty($suspensionReason))
-                        <div class="mt-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200 mb-1">
-                                {{ __('Reason provided by the administrator') }}
-                            </p>
-                            <p class="text-xs text-gray-700 dark:text-gray-200 leading-relaxed">
-                                {{ $suspensionReason }}
-                            </p>
-                        </div>
-                    @endif
+                    </div>
                 </div>
-            </div>
-
-            {{-- What you can do --}}
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-5 space-y-3">
-                <p class="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">
-                    {{ __('What can you do next?') }}
-                </p>
-                <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-300">
-                    <li class="flex gap-2">
-                        <span class="mt-0.5 text-gray-400 dark:text-gray-500">•</span>
-                        <span>{{ __('If you believe this is a mistake, you can contact support and include any relevant details.') }}</span>
-                    </li>
-                    @if($suspendedUntil)
-                        <li class="flex gap-2">
-                            <span class="mt-0.5 text-gray-400 dark:text-gray-500">•</span>
-                            <span>{{ __('You may try logging in again after the suspension review date shown above.') }}</span>
-                        </li>
-                    @endif
-                    <li class="flex gap-2">
-                        <span class="mt-0.5 text-gray-400 dark:text-gray-500">•</span>
-                        <span>{{ __('In the meantime, you can still browse public content without logging in.') }}</span>
-                    </li>
-                </ul>
-            </div>
-
-            {{-- Actions --}}
-            <div class="space-y-3">
-                <a href="{{ route('login') }}">
-                    <x-button class="w-full justify-center">
-                        {{ __('Back to login') }}
-                    </x-button>
-                </a>
-
-                <p class="text-xs text-center text-gray-500 dark:text-gray-400">
-                    {{ __('For urgent issues, please reach out to our support team with your account email.') }}
-                </p>
             </div>
         </div>
-    </x-authentication-card>
+    </div>
 </x-guest-layout>
-

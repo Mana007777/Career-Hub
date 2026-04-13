@@ -1,173 +1,163 @@
-<div class="min-h-screen dark:bg-black bg-white dark:text-white text-gray-900 pb-24">
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold dark:text-white text-gray-900 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                Reported content
-            </h1>
-            <p class="mt-2 text-sm dark:text-gray-400 text-gray-600">
-                Content that people have reported. Review each item and dismiss the report or delete the reported user or post.
-            </p>
+<div class="min-h-screen bg-zinc-950 text-white pb-24" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 50)">
+    <div class="max-w-7xl mx-auto px-6 py-12" x-show="loaded" x-cloak>
+        <!-- Header -->
+        <div 
+            class="mb-16"
+            x-show="loaded"
+            x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-1000"
+            x-transition:enter-start="opacity-0 translate-y-10"
+            x-transition:enter-end="opacity-100 translate-y-0"
+        >
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Discrepancy <span class="text-rose-500">Scan</span></h1>
+            </div>
+            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">System-wide surveillance and report management portal</p>
         </div>
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
-            <div class="mb-6 p-4 dark:bg-green-900/50 bg-green-50 border dark:border-green-700 border-green-200 rounded-lg dark:text-green-200 text-green-800 font-medium">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if (session()->has('error'))
-            <div class="mb-6 p-4 dark:bg-red-900/50 bg-red-50 border dark:border-red-700 border-red-200 rounded-lg dark:text-red-200 text-red-800 font-medium">
-                {{ session('error') }}
+            <div class="mb-10 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] backdrop-blur-3xl flex items-center gap-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7" /></svg>
+                <span>Action Committed Successfully</span>
             </div>
         @endif
 
         <!-- Reports List -->
-        <div class="space-y-4">
-            @forelse ($reports as $report)
-                <div class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-lg p-6 shadow-lg">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-3">
-                                <span class="px-3 py-1 text-xs font-medium rounded-full 
-                                    @if($report->status === 'pending') dark:bg-yellow-600/20 bg-yellow-100 dark:text-yellow-300 text-yellow-700
-                                    @elseif($report->status === 'resolved') dark:bg-green-600/20 bg-green-100 dark:text-green-300 text-green-700
-                                    @else dark:bg-gray-600/20 bg-gray-100 dark:text-gray-300 text-gray-700
-                                    @endif">
-                                    {{ ucfirst($report->status) }}
+        <div class="space-y-6">
+            @forelse ($reports as $index => $report)
+                <div 
+                    class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl transition-all duration-700 hover:border-rose-500/30 shadow-[0_30px_60px_rgba(0,0,0,0.3)]"
+                    x-show="loaded"
+                    x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-700"
+                    x-transition:enter-start="opacity-0 translate-y-10 blur-xl px-20 font-bold"
+                    x-transition:enter-end="opacity-100 translate-y-0 blur-0"
+                    style="transition-delay: {{ $index * 50 }}ms"
+                >
+                    <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                    <div class="flex flex-col lg:flex-row items-start justify-between gap-10">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-4 mb-8">
+                                <span class="px-6 py-2 bg-zinc-950 border {{ $report->status === 'pending' ? 'border-amber-500/30 text-amber-500' : 'border-emerald-500/30 text-emerald-400' }} rounded-xl text-[8px] font-black uppercase tracking-[0.3em] backdrop-blur-3xl italic">
+                                    {{ $report->status }}
                                 </span>
-                                <span class="px-3 py-1 text-xs font-medium rounded-full dark:bg-blue-600/20 bg-blue-100 dark:text-blue-300 text-blue-700">
-                                    {{ ucfirst($report->target_type) }}
+                                <span class="px-6 py-2 bg-zinc-950 border border-zinc-800 text-zinc-500 rounded-xl text-[8px] font-black uppercase tracking-[0.3em] italic">
+                                    Target: {{ $report->target_type }}
                                 </span>
                             </div>
 
-                            <div class="mb-3">
-                                <p class="text-sm dark:text-gray-400 text-gray-600 mb-1">
-                                    <strong>Reported by:</strong> 
-                                    <a href="{{ route('user.profile', $report->reporter->username ?? 'unknown') }}" class="dark:text-blue-400 text-blue-600 hover:underline">
-                                        {{ $report->reporter->name }}
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-4 text-sm font-black italic">
+                                    <span class="text-rose-500/50 uppercase tracking-widest text-[9px]">Signal Source:</span>
+                                    <a href="{{ route('user.profile', $report->reporter->username ?? 'unknown') }}" class="text-white hover:text-rose-400 transition-colors uppercase tracking-tight">
+                                        {{ $report->reporter->name }} <span class="text-zinc-600 block sm:inline text-[10px] sm:ml-2">@ {{ $report->reporter->username }}</span>
                                     </a>
-                                </p>
-                                <p class="text-sm dark:text-gray-400 text-gray-600">
-                                    <strong>Reason:</strong> {{ $report->reason }}
-                                </p>
-                                <p class="text-xs dark:text-gray-500 text-gray-500 mt-2">
-                                    Reported {{ $report->created_at->diffForHumans() }}
-                                </p>
+                                </div>
+                                <div class="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8 shadow-inner">
+                                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] mb-4 italic">Observation Logic:</p>
+                                    <p class="text-lg font-black text-white italic tracking-tight uppercase">{{ $report->reason }}</p>
+                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-6">Logged {{ $report->created_at->diffForHumans() }}</p>
+                                </div>
                             </div>
 
-                            <!-- Target Preview -->
-                            <div class="mt-4 p-4 dark:bg-gray-800 bg-gray-50 rounded-lg border dark:border-gray-700 border-gray-200">
+                            <!-- Payload Preview -->
+                            <div class="mt-8 p-10 bg-zinc-900/60 rounded-[2.5rem] border border-zinc-800/80 group/payload hover:border-zinc-700 transition-all">
+                                <h5 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 italic">Transmission Payload Buffer</h5>
+                                
                                 @if($report->target_type === 'post' && $report->target)
-                                    <div>
-                                        <p class="text-sm font-semibold dark:text-white text-gray-900 mb-2">
-                                            Post by: 
-                                            <a href="{{ route('user.profile', $report->target->user->username ?? 'unknown') }}" class="dark:text-blue-400 text-blue-600 hover:underline">
-                                                {{ $report->target->user->name }}
-                                            </a>
-                                        </p>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center gap-4 mb-4">
+                                            <div class="w-10 h-10 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center"><svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" /></svg></div>
+                                            <p class="text-[11px] font-black text-zinc-400 uppercase tracking-widest italic">Identity: @ {{ $report->target->user->username }}</p>
+                                        </div>
                                         @if($report->target->title)
-                                            <p class="text-sm font-medium dark:text-gray-200 text-gray-700 mb-1">{{ $report->target->title }}</p>
+                                            <h3 class="text-xl font-black text-white uppercase italic tracking-tighter">{{ $report->target->title }}</h3>
                                         @endif
-                                        <p class="text-sm dark:text-gray-300 text-gray-600">{{ Str::limit($report->target->content, 200) }}</p>
-                                        <a href="{{ route('posts.show', $report->target->slug) }}" target="_blank" class="text-xs dark:text-blue-400 text-blue-600 hover:underline mt-2 inline-block">
-                                            View Post →
-                                        </a>
+                                        <p class="text-sm text-zinc-500 font-bold italic line-clamp-3 leading-relaxed selection:bg-rose-500/20">"{{ $report->target->content }}"</p>
+                                        <a href="{{ route('posts.show', $report->target->slug) }}" target="_blank" class="inline-flex items-center gap-2 mt-4 text-[9px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-400 transition-colors italic">Deep Inspect Log →</a>
                                     </div>
                                 @elseif($report->target_type === 'user' && $report->target)
-                                    <div>
-                                        <p class="text-sm font-semibold dark:text-white text-gray-900 mb-2">
-                                            User: 
-                                            <a href="{{ route('user.profile', $report->target->username ?? 'unknown') }}" class="dark:text-blue-400 text-blue-600 hover:underline">
-                                                {{ $report->target->name ?? 'Unknown User' }}@if(!empty($report->target->username)) ({{ '@' . $report->target->username }})@endif
-                                            </a>
-                                        </p>
-                                        <p class="text-xs dark:text-gray-400 text-gray-600">{{ $report->target->email ?? 'N/A' }}</p>
+                                    <div class="flex items-center gap-8">
+                                        <div class="w-20 h-20 rounded-[1.5rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center text-rose-500/30 font-black text-2xl uppercase italic">{{ substr($report->target->name, 0, 1) }}</div>
+                                        <div>
+                                            <h3 class="text-xl font-black text-white uppercase italic tracking-tighter italic font-bold italic">{{ $report->target->name }}</h3>
+                                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mt-1 italic">@ {{ $report->target->username }}</p>
+                                            <p class="text-[9px] font-black text-zinc-800 uppercase tracking-[0.2em] mt-3 italic italic font-bold">Node ID: {{ $report->target->id }}</p>
+                                        </div>
                                     </div>
                                 @elseif($report->target_type === 'comment' && $report->target)
-                                    <div>
-                                        <p class="text-sm font-semibold dark:text-white text-gray-900 mb-2">
-                                            Comment by: 
-                                            <a href="{{ route('user.profile', $report->target->user->username ?? 'unknown') }}" class="dark:text-blue-400 text-blue-600 hover:underline">
-                                                {{ $report->target->user->name }}
-                                            </a>
-                                        </p>
-                                        <p class="text-sm dark:text-gray-300 text-gray-600">{{ Str::limit($report->target->content, 200) }}</p>
+                                    <div class="space-y-4">
+                                        <p class="text-[11px] font-black text-zinc-400 uppercase tracking-widest italic font-bold italic">Source: @ {{ $report->target->user->username }}</p>
+                                        <p class="text-sm text-zinc-500 italic line-clamp-3 italic font-bold">"{{ $report->target->content }}"</p>
                                     </div>
+                                @else
+                                    <p class="text-[10px] font-black text-rose-500/40 uppercase tracking-[0.4em] italic font-bold">Target unit has been purged or is inaccessible.</p>
                                 @endif
                             </div>
                         </div>
 
                         @if($report->status === 'pending')
-                            <div class="flex flex-col gap-2 ml-4">
+                            <div class="flex flex-col gap-4 w-full lg:w-auto shrink-0">
                                 <button 
                                     wire:click="openActionModal({{ $report->id }}, 'delete')"
-                                    class="px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                    Delete
+                                    class="w-full lg:px-12 py-5 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-rose-500/10 hover:bg-rose-400 transition-all italic italic font-bold">
+                                    Execute Purge
                                 </button>
                                 <button 
                                     wire:click="openActionModal({{ $report->id }}, 'dismiss')"
-                                    class="px-4 py-2 dark:bg-gray-600 dark:hover:bg-gray-700 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                    Dismiss
+                                    class="w-full lg:px-12 py-5 bg-zinc-950 border border-zinc-800 text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-zinc-800 hover:text-white transition-all italic">
+                                    Dismiss Flag
                                 </button>
                             </div>
                         @endif
                     </div>
                 </div>
             @empty
-                <div class="text-center py-12">
-                    <svg class="mx-auto h-12 w-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-400">No reports yet</h3>
-                    <p class="mt-1 text-sm text-gray-500">All reports have been reviewed.</p>
+                <div class="py-60 bg-zinc-900/20 border border-dashed border-zinc-800/50 rounded-[4rem] text-center group">
+                    <div class="w-32 h-32 bg-zinc-950 border border-zinc-800 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:scale-110 transition-all duration-1000">
+                        <svg class="w-16 h-16 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter">Zero Discrepancies</h3>
+                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">All systemic signals are within nominal parameters.</p>
                 </div>
             @endforelse
         </div>
 
-        <!-- Pagination -->
-        <div class="mt-8">
-            {{ $reports->links() }}
-        </div>
+        @if($reports->hasPages())
+            <div class="mt-20">
+                {{ $reports->links() }}
+            </div>
+        @endif
     </div>
 
-    <!-- Action Confirmation Modal -->
+    <!-- Action Confirmation Matrix -->
     @if($showActionModal && $selectedReport)
-        <div class="fixed inset-0 z-50 overflow-y-auto">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity dark:bg-gray-900 bg-gray-900 bg-opacity-75" wire:click="closeActionModal"></div>
-
-                <div class="inline-block align-bottom dark:bg-gray-900 bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border dark:border-gray-800 border-gray-200" wire:click.stop>
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-b dark:border-gray-800 border-gray-200">
-                        <h3 class="text-lg font-semibold dark:text-white text-gray-900">
-                            {{ $actionType === 'delete' ? 'Delete ' . ucfirst($selectedReport->target_type) : 'Dismiss Report' }}
-                        </h3>
-                    </div>
-                    
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4">
-                        <p class="dark:text-gray-300 text-gray-700 mb-4">
-                            @if($actionType === 'delete')
-                                Are you sure you want to delete this {{ $selectedReport->target_type }}? This action cannot be undone.
-                            @else
-                                Are you sure you want to dismiss this report? The report will be marked as dismissed.
-                            @endif
-                        </p>
-                    </div>
-
-                    <div class="dark:bg-gray-900 bg-white px-6 py-4 border-t dark:border-gray-800 border-gray-200 flex justify-end gap-3">
-                        <button 
-                            type="button"
-                            wire:click="closeActionModal"
-                            class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
-                            Cancel
-                        </button>
+        <div class="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeActionModal">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] max-w-lg w-full overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,1)] relative" wire:click.stop>
+                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/30 to-transparent"></div>
+                 <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40">
+                    <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">
+                        {{ $actionType === 'delete' ? 'Authorization Req: Purge ' . $selectedReport->target_type : 'Authorization Req: Dismiss Signal' }}
+                    </h3>
+                 </div>
+                 <div class="p-10">
+                    <p class="text-zinc-500 text-sm font-bold italic leading-relaxed mb-10 uppercase tracking-tight">
+                        @if($actionType === 'delete')
+                            Are you certain you wish to terminate this {{ $selectedReport->target_type }} unit? This command is irreversible and will purge all related data strings from the matrix.
+                        @else
+                            Mark this transmission as acknowledged and dismiss systemic flags? The signal will be archived as resolved.
+                        @endif
+                    </p>
+                    <div class="flex items-center gap-6">
+                        <button wire:click="closeActionModal" class="flex-1 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic italic font-bold italic font-bold">Abort Cmd</button>
                         <button 
                             wire:click="executeAction"
-                            class="px-4 py-2 {{ $actionType === 'delete' ? 'dark:bg-red-600 dark:hover:bg-red-700 bg-red-600 hover:bg-red-700' : 'dark:bg-gray-600 dark:hover:bg-gray-700 bg-gray-600 hover:bg-gray-700' }} text-white rounded-lg transition-colors">
-                            {{ $actionType === 'delete' ? 'Delete' : 'Dismiss' }}
+                            class="flex-1 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] font-bold italic shadow-xl {{ $actionType === 'delete' ? 'bg-rose-500 text-black shadow-rose-500/10 hover:bg-rose-400' : 'bg-zinc-950 border border-zinc-800 text-white hover:bg-zinc-800' }}">
+                            Authorize Commit
                         </button>
                     </div>
-                </div>
+                 </div>
             </div>
         </div>
     @endif

@@ -28,15 +28,16 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-black text-gray-100" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
-        <div class="min-h-screen bg-black relative overflow-hidden">
-            <!-- Background Glows -->
-            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-deep/20 rounded-full blur-[120px] pointer-events-none"></div>
-            <div class="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-brand-violet/10 rounded-full blur-[150px] pointer-events-none"></div>
+    <body class="font-sans antialiased bg-zinc-950 text-zinc-100 selection:bg-emerald-500/30 selection:text-emerald-200" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
+        <div class="min-h-screen bg-zinc-950 relative overflow-hidden">
+            <!-- Global Background Aesthetic -->
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.05),transparent_50%)]"></div>
+            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+            <div class="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none"></div>
 
             @if(isset($header))
-                <header class="bg-black/80 backdrop-blur-xl border-b border-white/5 relative z-10 transition-colors duration-500">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-zinc-950/80 backdrop-blur-2xl border-b border-zinc-800/50 relative z-10 sticky top-0 transition-all duration-500">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                         {{ $header }}
                     </div>
                 </header>
@@ -44,16 +45,17 @@
             
             <!-- Page Content -->
             <main 
-                class="pt-4 pb-10"
+                class="relative z-0 pt-4 pb-20"
+                x-cloak
                 x-show="pageLoaded"
-                x-transition:enter="transition ease-out duration-500"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
+                x-transition:enter="transition ease-out duration-1000"
+                x-transition:enter-start="opacity-0 scale-[0.98]"
+                x-transition:enter-end="opacity-100 scale-100"
             >
                 <div 
                     x-show="pageLoaded"
-                    x-transition:enter="transition ease-out duration-700"
-                    x-transition:enter-start="opacity-0 translate-y-4"
+                    x-transition:enter="transition ease-out duration-1000 delay-100"
+                    x-transition:enter-start="opacity-0 translate-y-8"
                     x-transition:enter-end="opacity-100 translate-y-0"
                 >
                     {{ $slot }}

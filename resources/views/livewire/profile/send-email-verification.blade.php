@@ -1,32 +1,58 @@
-<div>
+<div class="inline-block" x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 50)">
     @if ($user && !$user->email_verified_at)
-        <button 
-            type="button" 
-            wire:click="sendEmailVerification"
-            wire:loading.attr="disabled"
-            class="inline-flex items-center px-3 py-1.5 border dark:border-gray-600 border-gray-300 text-xs font-medium rounded-md dark:text-white text-gray-900 dark:bg-gray-800 bg-gray-200 dark:hover:bg-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+        <div 
+            class="flex flex-col gap-4"
+            x-show="loaded"
+            x-transition:enter="transition ease-out duration-700"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
         >
-            <svg wire:loading.remove wire:target="sendEmailVerification" class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-            <svg wire:loading wire:target="sendEmailVerification" class="animate-spin w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span wire:loading.remove wire:target="sendEmailVerification">{{ __('Send Verification Email') }}</span>
-            <span wire:loading wire:target="sendEmailVerification">{{ __('Sending...') }}</span>
-        </button>
+            <button 
+                type="button" 
+                wire:click="sendEmailVerification"
+                wire:loading.attr="disabled"
+                class="group relative inline-flex items-center gap-3 px-8 py-4 bg-zinc-950 border border-amber-500/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 hover:bg-amber-500 hover:text-black transition-all duration-500 shadow-xl shadow-amber-500/5 active:scale-95 disabled:opacity-50 italic"
+            >
+                <div class="absolute inset-0 bg-amber-500 opacity-0 group-hover:opacity-10 blur-xl transition-opacity"></div>
+                
+                <svg wire:loading.remove wire:target="sendEmailVerification" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
 
-        @if ($verificationLinkSent)
-            <p class="mt-2 text-sm font-medium text-green-600">
-                {{ __('A new verification link has been sent to your email address.') }}
-            </p>
-        @endif
+                <svg wire:loading wire:target="sendEmailVerification" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
 
-        @if (session('verification-error'))
-            <p class="mt-2 text-sm font-medium text-red-600">
-                {{ session('verification-error') }}
-            </p>
-        @endif
+                <span wire:loading.remove wire:target="sendEmailVerification" class="relative z-10">{{ __('Initialize Verification Link') }}</span>
+                <span wire:loading wire:target="sendEmailVerification" class="relative z-10">{{ __('Transmitting Signal...') }}</span>
+            </button>
+
+            @if ($verificationLinkSent)
+                <div class="flex items-center gap-3 px-6 py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl"
+                     x-transition:enter="transition ease-out duration-500"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                >
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">
+                        {{ __('Transmission Success: Check Signal Inbound.') }}
+                    </p>
+                </div>
+            @endif
+
+            @if (session('verification-error'))
+                <div class="flex items-center gap-3 px-6 py-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl"
+                     x-transition:enter="transition ease-out duration-500"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                >
+                    <div class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                    <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest italic">
+                        {{ session('verification-error') }}
+                    </p>
+                </div>
+            @endif
+        </div>
     @endif
 </div>

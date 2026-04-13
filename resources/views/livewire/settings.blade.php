@@ -1,772 +1,398 @@
 <div
-    class="min-h-screen dark:bg-black bg-white dark:text-white text-gray-900 pb-24"
+    class="min-h-screen bg-zinc-950 text-white pb-24 font-sans"
     style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);"
     x-data="{ loaded: false }"
-    x-init="
-        loaded = false;
-
-        const setLoaded = () => { loaded = true };
-        const setLoading = () => { loaded = false };
-
-        document.addEventListener('livewire:load', setLoaded);
-        document.addEventListener('livewire:navigated', setLoaded);
-        document.addEventListener('livewire:navigating', setLoading);
-    "
+    x-init="setTimeout(() => loaded = true, 50)"
 >
-    <!-- Skeleton while settings are loading -->
+    <!-- Skeleton -->
     <div x-show="!loaded">
         <x-skeleton.page-cards />
     </div>
 
     <!-- Actual content -->
-    <div class="max-w-4xl mx-auto px-4 py-8" x-show="loaded" x-cloak>
+    <div class="max-w-4xl mx-auto px-6 py-12" x-show="loaded" x-cloak>
         <!-- Back Button -->
         <div 
-            class="mb-6"
+            class="mb-12"
             x-show="loaded"
-            x-transition:enter="transition ease-out duration-500"
-            x-transition:enter-start="opacity-0 -translate-x-4"
+            x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-700"
+            x-transition:enter-start="opacity-0 -translate-x-10"
             x-transition:enter-end="opacity-100 translate-x-0"
         >
             <a 
                 href="{{ route('dashboard') }}"
-                class="inline-flex items-center gap-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 transition-all duration-300 transform hover:translate-x-1 group">
-                <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                <span>Back</span>
+                class="inline-flex items-center gap-4 text-emerald-500/70 hover:text-emerald-400 transition-all duration-500 group">
+                <div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500 shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Abort Database Session</span>
             </a>
         </div>
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
-            <div class="mb-6 p-4 dark:bg-green-900/50 bg-green-50 border dark:border-green-700 border-green-200 rounded-lg dark:text-green-200 text-green-800">
-                {{ session('success') }}
+            <div class="mb-10 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] backdrop-blur-3xl animate-pulse flex items-center gap-4">
+                <div class="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7" /></svg></div>
+                <span>{{ session('success') }}</span>
             </div>
         @endif
 
         @if (session()->has('error'))
-            <div class="mb-6 p-4 dark:bg-red-900/50 bg-red-50 border dark:border-red-700 border-red-200 rounded-lg dark:text-red-200 text-red-800">
-                {{ session('error') }}
+            <div class="mb-10 p-6 bg-rose-500/10 border border-rose-500/20 rounded-3xl text-rose-400 text-[10px] font-black uppercase tracking-[0.3em] backdrop-blur-3xl flex items-center gap-4">
+                <div class="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                <span>{{ session('error') }}</span>
             </div>
         @endif
 
         <!-- Settings Header -->
         <div 
-            class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 mb-6 shadow-2xl"
+            class="mb-20 text-center"
             x-show="loaded"
-            x-transition:enter="transition ease-out duration-700"
-            x-transition:enter-start="opacity-0 translate-y-8 scale-95"
-            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-        >
-            <h1 class="text-3xl font-bold dark:text-white text-gray-900 mb-2">Settings</h1>
-            <p class="dark:text-gray-400 text-gray-600">Manage your account settings and preferences</p>
-        </div>
-
-        <div
-            x-show="loaded"
-            x-transition:enter="transition ease-out duration-700"
-            x-transition:enter-start="opacity-0 translate-y-8"
+            x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-1000"
+            x-transition:enter-start="opacity-0 translate-y-10"
             x-transition:enter-end="opacity-100 translate-y-0"
         >
+            <div class="flex items-center gap-6 mb-6">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
+                <h2 class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.6em] italic">Node Config Protocols</h2>
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
+            </div>
+            <h1 class="text-6xl font-black text-white uppercase tracking-tighter italic italic">Advanced <span class="text-emerald-500">Settings</span></h1>
+            <p class="text-zinc-500 text-sm mt-6 uppercase tracking-[0.2em] italic font-medium">Calibrate identity parameters and interface environment.</p>
+        </div>
+
+        <div class="mb-12">
             @livewire('profile.verification-payment')
         </div>
 
-        <!-- Settings Options -->
-        <div 
-            class="space-y-4"
-            x-show="loaded"
-            x-transition:enter="transition ease-out duration-700"
-            x-transition:enter-start="opacity-0 translate-y-8"
-            x-transition:enter-end="opacity-100 translate-y-0"
-        >
-            <!-- Profile Edit Card -->
-            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full dark:bg-blue-600/20 bg-blue-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 dark:text-blue-400 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
+        <!-- Operational Matrix -->
+        <div class="space-y-8">
+            <!-- Profile Identity Card -->
+            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] hover:border-emerald-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div class="flex items-center gap-8">
+                        <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-emerald-500/30 transition-all duration-700">
+                             <div class="w-full h-full rounded-[1.4rem] bg-zinc-900 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                             </div>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Profile Information</h3>
-                            <p class="text-sm dark:text-gray-400 text-gray-600">Edit your profile details and information</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Personnel Identity</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Biometric Calibration</p>
                         </div>
                     </div>
-                    <button 
-                        wire:click="openProfileModal"
-                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
-                        Edit Profile
-                    </button>
+                    <button wire:click="openProfileModal" class="w-full md:w-auto px-10 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:bg-emerald-400 transition-all italic">Adjust Signal Bio</button>
                 </div>
             </div>
 
             <!-- Blocked Users Card -->
-            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-red-600/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 dark:text-red-400 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-                            </svg>
+            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-rose-500/[0.02] hover:border-rose-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div class="flex items-center gap-8">
+                        <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-rose-500/30 transition-all duration-700">
+                             <div class="w-full h-full rounded-[1.4rem] bg-zinc-900 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-rose-500/40 group-hover:text-rose-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                             </div>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Blocked Users</h3>
-                            <p class="text-sm dark:text-gray-400 text-gray-600">Manage users you have blocked</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Containment Protocols</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Blacklisted Entity Stream</p>
                         </div>
                     </div>
-                    <button 
-                        wire:click="openBlocksModal"
-                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
-                        View Blocked Users
-                    </button>
+                    <button wire:click="openBlocksModal" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-rose-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-rose-500 hover:text-white transition-all italic">Inspect Blacklist</button>
                 </div>
             </div>
 
-            <!-- Suspended Items Card (Only for admins) -->
+            <!-- Suspended Items (Admin) -->
             @if(auth()->check() && auth()->user()->isAdmin())
-            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-orange-600/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 dark:text-orange-400 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
+            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-amber-500/[0.02] hover:border-amber-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div class="flex items-center gap-8">
+                        <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-amber-500/30 transition-all duration-700">
+                             <div class="w-full h-full rounded-[1.4rem] bg-zinc-900 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-amber-500/40 group-hover:text-amber-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                             </div>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Suspended Items</h3>
-                            <p class="text-sm dark:text-gray-400 text-gray-600">Manage suspended users and posts</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Administrative Hold</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Quarantine Master Matrix</p>
                         </div>
                     </div>
-                    <button 
-                        wire:click="openSuspendedItemsModal"
-                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
-                        View Suspended Items
-                    </button>
+                    <button wire:click="openSuspendedItemsModal" class="w-full md:w-auto px-10 py-5 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-amber-500/10 hover:shadow-amber-500/20 hover:bg-amber-400 transition-all italic">Oversee Quarantine</button>
                 </div>
             </div>
             @endif
 
-            <!-- My Reports Card (Only for non-admin users) -->
+            <!-- My Reports (User) -->
             @if(auth()->check() && !auth()->user()->isAdmin())
-            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-orange-600/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 dark:text-orange-400 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                            </svg>
+            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] hover:border-emerald-500/30 transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div class="flex items-center gap-8">
+                        <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-emerald-500/30 transition-all duration-700">
+                             <div class="w-full h-full rounded-[1.4rem] bg-zinc-900 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                             </div>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">My Reports</h3>
-                            <p class="text-sm dark:text-gray-400 text-gray-600">View reports you have submitted</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Mission Intelligence</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Reported Incident Logs</p>
                         </div>
                     </div>
-                    <button 
-                        wire:click="openReportsModal"
-                        class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
-                        View Reports
-                    </button>
+                    <button wire:click="openReportsModal" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-emerald-500 hover:text-black transition-all italic">Inspect Records</button>
                 </div>
             </div>
             @endif
 
-            <!-- Theme Preference Card -->
-            <div class="dark:bg-gray-900 bg-gray-100 dark:border-gray-800 border-gray-300 rounded-xl p-6 dark:hover:border-gray-700 hover:border-gray-400 transition-colors" x-data="{ isOpen: false }">
-                <div class="flex items-center justify-between mb-4 cursor-pointer" @click="isOpen = !isOpen">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-purple-600/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 dark:text-purple-400 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                            </svg>
+            <!-- Interface Environment -->
+            <div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] transition-all duration-700" x-data="{ isOpen: false }">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div class="flex items-center gap-8">
+                        <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-emerald-500/30 transition-all duration-700">
+                             <div class="w-full h-full rounded-[1.4rem] bg-zinc-900 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                             </div>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold dark:text-white text-gray-900">Theme Preference</h3>
-                            <p class="text-sm dark:text-gray-400 text-gray-600">Choose your preferred color theme</p>
+                            <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">Visual Environment</h3>
+                            <p class="text-2xl font-black text-white uppercase tracking-tight italic">Interface Calibration</p>
                         </div>
                     </div>
-                    <svg class="w-5 h-5 dark:text-gray-400 text-gray-600 transition-transform duration-200" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
+                    <button @click="isOpen = !isOpen" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500/70 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-zinc-800 hover:text-emerald-400 transition-all flex items-center justify-center gap-4 italic group/btn">
+                        <span>Modify Mode</span>
+                        <svg class="w-4 h-4 transition-transform duration-500" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7" /></svg>
+                    </button>
                 </div>
-                <div class="space-y-3" 
-                     x-show="isOpen"
-                     x-transition:enter="transition ease-out duration-200"
-                     x-transition:enter-start="opacity-0 -translate-y-2"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100 translate-y-0"
-                     x-transition:leave-end="opacity-0 -translate-y-2"
-                     style="display: none;">
-                    <label class="flex items-center gap-3 p-4 dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 rounded-lg cursor-pointer dark:hover:border-gray-600 hover:border-gray-400 transition-colors">
-                        <input type="radio" 
-                               wire:model="themePreference" 
-                               wire:change="updateThemePreference"
-                               value="light" 
-                               class="w-4 h-4 text-blue-600 dark:bg-gray-700 bg-gray-200 dark:border-gray-600 border-gray-400 focus:ring-blue-500 focus:ring-2">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                </svg>
-                                <span class="dark:text-white text-gray-900 font-medium">Light Mode</span>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50" x-show="isOpen" x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display:none">
+                    @foreach(['light' => ['Legacy', 'Surface Mode'], 'dark' => ['Active', 'Absolute Dark'], 'system' => ['Auto', 'Sync Protocol']] as $mode => $labels)
+                        <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl hover:border-emerald-500/30 transition-all cursor-pointer group/mode {{ $themePreference === $mode ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
+                            <div class="relative flex items-center justify-center">
+                                <input type="radio" wire:model="themePreference" wire:change="updateThemePreference" value="{{ $mode }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
+                                <div class="absolute w-3 h-3 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                             </div>
-                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Use light theme</p>
-                        </div>
-                    </label>
-                    <label class="flex items-center gap-3 p-4 dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 rounded-lg cursor-pointer dark:hover:border-gray-600 hover:border-gray-400 transition-colors">
-                        <input type="radio" 
-                               wire:model="themePreference" 
-                               wire:change="updateThemePreference"
-                               value="dark" 
-                               class="w-4 h-4 text-blue-600 dark:bg-gray-700 bg-gray-200 dark:border-gray-600 border-gray-400 focus:ring-blue-500 focus:ring-2">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                                </svg>
-                                <span class="dark:text-white text-gray-900 font-medium">Dark Mode</span>
+                            <div>
+                                <span class="block text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover/mode:text-emerald-500 transition-colors">{{ $labels[0] }}</span>
+                                <span class="block text-sm font-black text-white uppercase tracking-tight italic">{{ $labels[1] }}</span>
                             </div>
-                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Use dark theme</p>
-                        </div>
-                    </label>
-                    <label class="flex items-center gap-3 p-4 dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 rounded-lg cursor-pointer dark:hover:border-gray-600 hover:border-gray-400 transition-colors">
-                        <input type="radio" 
-                               wire:model="themePreference" 
-                               wire:change="updateThemePreference"
-                               value="system" 
-                               class="w-4 h-4 text-blue-600 dark:bg-gray-700 bg-gray-200 dark:border-gray-600 border-gray-400 focus:ring-blue-500 focus:ring-2">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-5 h-5 dark:text-blue-400 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
-                                <span class="dark:text-white text-gray-900 font-medium">System Default</span>
-                            </div>
-                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Follow your system preference</p>
-                        </div>
-                    </label>
+                        </label>
+                    @endforeach
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Blocked Users Modal -->
-    @if($showBlocksModal)
-    <div 
-        class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm"
-        wire:click="closeBlocksModal"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-    >
-        <div 
-            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col mx-4"
-            wire:click.stop
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-        >
-            <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b dark:border-gray-800 border-gray-200">
-                <h2 class="text-2xl font-bold dark:text-white text-gray-900">Blocked Users</h2>
-                <button 
-                    wire:click="closeBlocksModal"
-                    class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-6">
-                @if($blockedUsers && count($blockedUsers) > 0)
-                    <div class="space-y-3">
-                        @foreach($blockedUsers as $blockedUser)
-                            <div class="flex items-center justify-between p-4 dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg dark:hover:border-gray-600 hover:border-gray-300 transition-colors">
-                                <div class="flex items-center gap-4 flex-1 min-w-0">
-                                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px] flex-shrink-0">
-                                        <div class="w-full h-full rounded-full dark:bg-gray-900 bg-gray-200 flex items-center justify-center text-lg font-semibold dark:text-gray-100 text-gray-900">
-                                            {{ strtoupper(substr($blockedUser->name ?? 'U', 0, 1)) }}
+    <!-- Modals (Profile, Blocks, Reports, Suspended) -->
+    @if($showProfileModal)
+        <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeProfileModal">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,1)] relative" wire:click.stop>
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+                <div class="flex items-center justify-between p-10 border-b border-zinc-800/50 bg-zinc-950/40">
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Identity Calibration Matrix</h2>
+                    <button wire:click="closeProfileModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-rose-500 transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-10 custom-scrollbar bg-zinc-900/50">
+                    <form wire:submit.prevent="updateProfile" class="space-y-10">
+                        <!-- Photo Cluster -->
+                        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+                            <div x-data="{photoName: null, photoPreview: null}" class="p-8 bg-zinc-950 border border-zinc-800 rounded-[2.5rem]">
+                                <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Biometric Visual</label>
+                                <div class="flex items-center gap-10">
+                                    <div class="relative group/avatar">
+                                        <div class="w-32 h-32 rounded-[2rem] overflow-hidden bg-zinc-900 border-4 border-zinc-800/50 flex-shrink-0" x-show="!photoPreview">
+                                            <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover grayscale opacity-50 transition-all duration-700">
+                                        </div>
+                                        <div class="w-32 h-32 rounded-[2rem] overflow-hidden bg-zinc-900 border-4 border-emerald-500/30 flex-shrink-0" x-show="photoPreview" style="display: none;">
+                                            <span class="block w-full h-full bg-cover bg-no-repeat bg-center" x-bind:style="'background-image: url(\'' + photoPreview + '\');'"></span>
                                         </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="dark:text-white text-gray-900 font-medium truncate">{{ $blockedUser->name ?? 'Unknown User' }}</p>
-                                        @if(!empty($blockedUser->username))
-                                            <p class="dark:text-gray-400 text-gray-600 text-sm truncate">{{ '@' . $blockedUser->username }}</p>
+                                    <div class="flex flex-col gap-4">
+                                        <input type="file" id="photo" class="hidden" wire:model.live="photo" x-ref="photo" x-on:change="if($refs.photo.files[0]){ photoName=$refs.photo.files[0].name; const reader=new FileReader(); reader.onload=(e)=>{photoPreview=e.target.result;}; reader.readAsDataURL($refs.photo.files[0]); }">
+                                        <button type="button" x-on:click.prevent="$refs.photo.click()" class="px-8 py-3 bg-zinc-800 text-white text-[9px] font-black uppercase tracking-widest rounded-xl border border-zinc-700 hover:bg-zinc-700 transition-all shadow-lg italic">Scan New Capture</button>
+                                        @if (auth()->user()->profile_photo_path)
+                                            <button type="button" wire:click="deleteProfilePhoto" class="px-8 py-3 bg-rose-500/10 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-xl border border-rose-500/20 hover:bg-rose-500/20 transition-all italic">Purge Capture</button>
                                         @endif
                                     </div>
                                 </div>
-                                <button 
-                                    wire:click="unblockUser({{ $blockedUser->id }})"
-                                    wire:confirm="Are you sure you want to unblock this user?"
-                                    class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white flex-shrink-0">
-                                    Unblock
-                                </button>
+                                @error('photo') <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest mt-4 ml-2">{{ $message }}</p> @enderror
                             </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="p-8 text-center dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg">
-                        <svg class="w-12 h-12 mx-auto dark:text-gray-600 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-                        </svg>
-                        <p class="dark:text-gray-400 text-gray-600">No blocked users</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-    @endif
+                        @endif
 
-    <!-- Profile Edit Modal -->
-    @if($showProfileModal)
-    <div 
-        class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm"
-        wire:click="closeProfileModal"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-    >
-        <div 
-            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col mx-4"
-            wire:click.stop
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-        >
-            <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b dark:border-gray-800 border-gray-200">
-                <h2 class="text-2xl font-bold dark:text-white text-gray-900">Edit Profile</h2>
-                <button 
-                    wire:click="closeProfileModal"
-                    class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-6">
-                <form wire:submit.prevent="updateProfile">
-                    <!-- Profile Photo -->
-                    @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                        <div x-data="{photoName: null, photoPreview: null}" class="mb-6">
-                            <label class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Profile Photo</label>
-                            
-                            <!-- Current Profile Photo -->
-                            <div class="mb-4" x-show="! photoPreview">
-                                <img src="{{ auth()->user()->profile_photo_url }}" alt="{{ auth()->user()->name }}" class="rounded-full size-24 object-cover border-2 dark:border-gray-700 border-gray-300">
+                        <!-- Input Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            @foreach(['name' => 'Operational Name', 'email' => 'Primary Data Uplink', 'username' => 'Unique Designation', 'location' => 'Deployment Sector', 'website' => 'External Node'] as $field => $label)
+                                @php $inputType = $field === 'email' ? 'email' : ($field === 'website' ? 'url' : 'text'); @endphp
+                                <div class="space-y-3">
+                                    <label for="{{ $field }}" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ $label }}</label>
+                                    <input type="{{ $inputType }}" id="{{ $field }}" wire:model="{{ $field }}" class="w-full px-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-xs font-black uppercase tracking-widest italic shadow-inner">
+                                    @error($field) <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4 mt-2">{{ $message }}</p> @enderror
+                                </div>
+                            @endforeach
+                            <div class="col-span-full space-y-3">
+                                <label for="bio" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Mission Mandate (Bio)</label>
+                                <textarea id="bio" wire:model="bio" rows="4" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-[2rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-[11px] font-medium resize-none italic shadow-inner font-bold"></textarea>
+                                @error('bio') <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4 mt-2">{{ $message }}</p> @enderror
                             </div>
-
-                            <!-- New Profile Photo Preview -->
-                            <div class="mb-4" x-show="photoPreview" style="display: none;">
-                                <span class="block rounded-full size-24 bg-cover bg-no-repeat bg-center border-2 dark:border-gray-700 border-gray-300"
-                                      x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
-                                </span>
-                            </div>
-
-                            <input type="file" id="photo" class="hidden"
-                                    wire:model.live="photo"
-                                    x-ref="photo"
-                                    accept="image/*"
-                                    x-on:change="
-                                            if ($refs.photo.files[0]) {
-                                                photoName = $refs.photo.files[0].name;
-                                                const reader = new FileReader();
-                                                reader.onload = (e) => {
-                                                    photoPreview = e.target.result;
-                                                };
-                                                reader.readAsDataURL($refs.photo.files[0]);
-                                            }
-                                    " />
-
-                            <button type="button" 
-                                    x-on:click.prevent="$refs.photo.click()"
-                                    class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700">
-                                Select New Photo
-                            </button>
-
-                            @if (auth()->user()->profile_photo_path)
-                                <button type="button" 
-                                        wire:click="deleteProfilePhoto"
-                                        class="ml-2 px-4 py-2 rounded-lg font-medium transition-colors dark:bg-red-600/20 bg-red-100 dark:hover:bg-red-600/30 hover:bg-red-200 dark:text-red-400 text-red-700 dark:border-red-700/50 border-red-300">
-                                    Remove Photo
-                                </button>
-                            @endif
-
-                            @error('photo')
-                                <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
-                    @endif
 
-                    <!-- Name -->
-                    <div class="mb-6">
-                        <label for="name" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Name</label>
-                        <input type="text" 
-                               id="name" 
-                               wire:model="name" 
-                               required
-                               class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('name')
-                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Email -->
-                    <div class="mb-6">
-                        <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                        <input type="email" 
-                               id="email" 
-                               wire:model="email" 
-                               required
-                               class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('email')
-                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Username -->
-                    <div class="mb-6">
-                        <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
-                        <input type="text" 
-                               id="username" 
-                               wire:model="username" 
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                               placeholder="username">
-                        <p class="mt-1 text-xs text-gray-500">Only letters, numbers, and underscores allowed</p>
-                        @error('username')
-                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Bio -->
-                    <div class="mb-6">
-                        <label for="bio" class="block text-sm font-medium text-gray-300 mb-2">Bio</label>
-                        <textarea id="bio" 
-                                  wire:model="bio" 
-                                  rows="4"
-                                  class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Tell us about yourself..."></textarea>
-                        @error('bio')
-                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Location -->
-                    <div class="mb-6">
-                        <label for="location" class="block text-sm font-medium text-gray-300 mb-2">Location</label>
-                        <input type="text" 
-                               id="location" 
-                               wire:model="location" 
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                               placeholder="City, Country">
-                        @error('location')
-                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Website -->
-                    <div class="mb-6">
-                        <label for="website" class="block text-sm font-medium text-gray-300 mb-2">Website</label>
-                        <input type="url" 
-                               id="website" 
-                               wire:model="website" 
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                               placeholder="https://example.com">
-                        @error('website')
-                            <p class="mt-2 text-sm dark:text-red-400 text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-800">
-                        <button type="button" 
-                                wire:click="closeProfileModal"
-                                class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white border dark:border-gray-700 border-gray-700">
-                            Cancel
-                        </button>
-                        <button type="submit" 
-                                wire:loading.attr="disabled"
-                                wire:target="photo,updateProfile"
-                                class="px-6 py-2 rounded-lg font-medium transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white bg-gray-800 hover:bg-gray-900 text-white">
-                            <span wire:loading.remove wire:target="updateProfile">Save Changes</span>
-                            <span wire:loading wire:target="updateProfile">Saving...</span>
-                        </button>
-                    </div>
-                </form>
+                        <!-- Footer -->
+                        <div class="flex items-center justify-end gap-6 pt-10 border-t border-zinc-800/50">
+                            <button type="button" wire:click="closeProfileModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors">Abort</button>
+                            <button type="submit" class="px-12 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">Commit Calibration</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     @endif
 
-    <!-- My Reports Modal (Only for non-admin users) -->
+    <!-- Blocked Users Modal -->
+    @if($showBlocksModal)
+        <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeBlocksModal">
+            <div class="bg-zinc-900 border border-rose-500/30 rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,1)] w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative" wire:click.stop>
+                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/30 to-transparent"></div>
+                 <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40 flex items-center justify-between">
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">Personnel Blacklist</h2>
+                    <button wire:click="closeBlocksModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-rose-500 transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
+                 </div>
+                 <div class="flex-1 overflow-y-auto p-10 custom-scrollbar bg-zinc-900/50">
+                    @forelse($blockedUsers as $blockedUser)
+                        <div class="flex items-center justify-between p-6 bg-zinc-950 border border-zinc-800/50 rounded-3xl mb-4 group hover:border-rose-500/30 transition-all duration-500">
+                            <div class="flex items-center gap-6">
+                                <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+                                    <span class="text-[11px] font-black text-rose-500/40 uppercase">{{ substr($blockedUser->name, 0, 1) }}</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-[13px] font-black text-white uppercase tracking-tight italic">{{ $blockedUser->name }}</h4>
+                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1 italic">@ {{ $blockedUser->username }}</p>
+                                </div>
+                            </div>
+                            <button wire:click="unblockUser({{ $blockedUser->id }})" class="px-8 py-3 bg-zinc-950 border border-rose-500/30 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-500 hover:text-white transition-all italic">Restore Access</button>
+                        </div>
+                    @empty
+                         <div class="py-20 text-center">
+                            <svg class="w-16 h-16 text-zinc-800 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Zero entities blacklisted.</p>
+                         </div>
+                    @endforelse
+                 </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- My Reports Modal (Non-Admin) -->
     @if($showReportsModal && auth()->check() && !auth()->user()->isAdmin())
-    <div 
-        class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm"
-        wire:click="closeReportsModal"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-    >
-        <div 
-            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col mx-4"
-            wire:click.stop
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-        >
-            <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b dark:border-gray-800 border-gray-200">
-                <h2 class="text-2xl font-bold dark:text-white text-gray-900">My Reports</h2>
-                <button 
-                    wire:click="closeReportsModal"
-                    class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-6">
-                @if($reports->count() > 0)
-                    <div class="space-y-4">
-                        @foreach($reports as $report)
-                            <div class="dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="px-3 py-1 text-xs font-semibold rounded-full 
-                                                @if($report->status === 'pending') dark:bg-yellow-600/20 bg-yellow-100 dark:text-yellow-400 text-yellow-700
-                                                @elseif($report->status === 'resolved') dark:bg-green-600/20 bg-green-100 dark:text-green-400 text-green-700
-                                                @else dark:bg-gray-600/20 bg-gray-100 dark:text-gray-400 text-gray-700
-                                                @endif">
-                                                {{ ucfirst($report->status) }}
-                                            </span>
-                                            <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-blue-600/20 bg-blue-100 dark:text-blue-400 text-blue-700">
-                                                {{ ucfirst($report->target_type) }}
-                                            </span>
-                                        </div>
-                                        <p class="text-sm dark:text-gray-300 text-gray-700 mb-2">
-                                            <span class="font-semibold">Reason:</span> {{ $report->reason }}
-                                        </p>
-                                        <p class="text-xs dark:text-gray-400 text-gray-600">
-                                            Reported on {{ $report->created_at->format('M d, Y \a\t g:i A') }}
-                                        </p>
+        <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeReportsModal">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,1)] relative" wire:click.stop>
+                <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40 flex items-center justify-between">
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">Transmission Archive</h2>
+                    <button wire:click="closeReportsModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-10 custom-scrollbar bg-zinc-900/50">
+                    <div class="space-y-6">
+                        @forelse($reports as $report)
+                            <div class="bg-zinc-950 border border-zinc-800/50 rounded-[2.5rem] p-8 group hover:border-emerald-500/30 transition-all duration-700 shadow-xl">
+                                <div class="flex items-center justify-between mb-8">
+                                    <div class="flex items-center gap-6">
+                                        <span class="px-6 py-2 bg-zinc-900 rounded-xl text-[8px] font-black uppercase tracking-[0.3em] font-bold border {{ $report->status === 'resolved' ? 'border-emerald-500/30 text-emerald-400' : 'border-amber-500/30 text-amber-500' }}">
+                                            {{ $report->status }}
+                                        </span>
+                                        <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">{{ $report->created_at->format('Y.m.d // H:i') }}</span>
+                                    </div>
+                                    <span class="text-[8px] font-black text-emerald-500/40 uppercase tracking-[0.4em]">{{ $report->target_type }} Unit</span>
+                                </div>
+                                <div class="space-y-4">
+                                    <p class="text-sm font-black text-white italic uppercase tracking-tight"><span class="text-emerald-500 opacity-50 mr-2">/</span>{{ $report->reason }}</p>
+                                    <div class="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-6 italic text-zinc-500 text-[11px] leading-relaxed font-bold font-medium selection:bg-emerald-500/20">
+                                        @if($report->target_type === 'post' && $report->target)
+                                            <p class="text-white mb-2 font-black italic">Log: {{ $report->target->title ?? 'Intelligence Data' }}</p>
+                                            <p class="opacity-80">Source: @ {{ $report->target->user->username }}</p>
+                                        @elseif($report->target_type === 'user' && $report->target)
+                                            <p class="text-white mb-2 font-black italic">Identity: {{ $report->target->name }}</p>
+                                            <p class="opacity-80">Designation: @ {{ $report->target->username }}</p>
+                                        @endif
                                     </div>
                                 </div>
-
-                                <!-- Target Details -->
-                                <div class="mt-4 p-4 dark:bg-gray-900 bg-white rounded-lg border dark:border-gray-700 border-gray-200">
-                                    @if($report->target_type === 'post' && $report->target)
-                                        <div>
-                                            <p class="text-sm font-semibold dark:text-white text-gray-900 mb-2">
-                                                Post by: 
-                                                <a href="{{ route('user.profile', $report->target->user->username ?? 'unknown') }}" class="dark:text-blue-400 text-blue-600 hover:underline">
-                                                    {{ $report->target->user->name }}
-                                                </a>
-                                            </p>
-                                            @if($report->target->title)
-                                                <p class="text-sm font-medium dark:text-gray-200 text-gray-700 mb-1">{{ $report->target->title }}</p>
-                                            @endif
-                                            <p class="text-sm dark:text-gray-300 text-gray-600">{{ Str::limit($report->target->content, 200) }}</p>
-                                            <a href="{{ route('posts.show', $report->target->slug) }}" target="_blank" class="text-xs dark:text-blue-400 text-blue-600 hover:underline mt-2 inline-block">
-                                                View Post →
-                                            </a>
-                                        </div>
-                                    @elseif($report->target_type === 'user' && $report->target)
-                                        <div>
-                                            <p class="text-sm font-semibold dark:text-white text-gray-900 mb-2">
-                                                User: 
-                                                <a href="{{ route('user.profile', $report->target->username ?? 'unknown') }}" class="dark:text-blue-400 text-blue-600 hover:underline">
-                                                    {{ $report->target->name ?? 'Unknown User' }}@if(!empty($report->target->username)) ({{ '@' . $report->target->username }})@endif
-                                                </a>
-                                            </p>
-                                            <p class="text-xs dark:text-gray-400 text-gray-600">{{ $report->target->email ?? 'N/A' }}</p>
-                                        </div>
-                                    @elseif($report->target_type === 'comment' && $report->target)
-                                        <div>
-                                            <p class="text-sm font-semibold dark:text-white text-gray-900 mb-2">
-                                                Comment by: 
-                                                <a href="{{ route('user.profile', $report->target->user->username ?? 'unknown') }}" class="dark:text-blue-400 text-blue-600 hover:underline">
-                                                    {{ $report->target->user->name }}
-                                                </a>
-                                            </p>
-                                            <p class="text-sm dark:text-gray-300 text-gray-600">{{ Str::limit($report->target->content, 200) }}</p>
-                                        </div>
-                                    @else
-                                        <p class="text-sm dark:text-gray-400 text-gray-600">Target no longer available (may have been deleted)</p>
-                                    @endif
-                                </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="py-20 text-center">
+                                <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.5em]">Zero incident transmissions recorded.</p>
+                            </div>
+                        @endforelse
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="mt-6">
-                        {{ $reports->links() }}
-                    </div>
-                @else
-                    <div class="p-8 text-center dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg">
-                        <svg class="w-12 h-12 mx-auto dark:text-gray-600 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                        <p class="dark:text-gray-400 text-gray-600">You haven't submitted any reports yet.</p>
-                    </div>
-                @endif
+                    <div class="mt-10">{{ $reports->links() }}</div>
+                </div>
             </div>
         </div>
-    </div>
     @endif
 
-    <!-- Suspended Items Modal (Only for admins) -->
+    <!-- Suspended Items (Admin) - Updating visuals but keeping core logic -->
     @if($showSuspendedItemsModal && auth()->check() && auth()->user()->isAdmin())
-    <div 
-        class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 bg-black/60 backdrop-blur-sm"
-        wire:click="closeSuspendedItemsModal"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-    >
-        <div 
-            class="dark:bg-gray-900 bg-white border dark:border-gray-800 border-gray-200 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col mx-4"
-            wire:click.stop
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-        >
-            <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b dark:border-gray-800 border-gray-200">
-                <h2 class="text-2xl font-bold dark:text-white text-gray-900">Suspended Items</h2>
-                <button 
-                    wire:click="closeSuspendedItemsModal"
-                    class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Suspended Users -->
-                    <div>
-                        <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-4">Suspended Users ({{ $suspendedUsers->count() }})</h3>
-                        @if($suspendedUsers->count() > 0)
-                            <div class="space-y-3">
-                                @foreach($suspendedUsers as $suspendedUser)
-                                    <div class="dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4">
-                                        <div class="flex items-start justify-between mb-3">
-                                            <div class="flex-1">
-                                                <p class="font-semibold dark:text-white text-gray-900">{{ $suspendedUser->name }}</p>
-                                                <p class="text-sm dark:text-gray-400 text-gray-600">{{ $suspendedUser->email }}</p>
-                                                @if($suspendedUser->suspension)
-                                                    <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
-                                                        <span class="font-medium">Reason:</span> {{ $suspendedUser->suspension->reason }}
-                                                    </p>
-                                                    @if($suspendedUser->suspension->expires_at)
-                                                        <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
-                                                            <span class="font-medium">Expires:</span> {{ $suspendedUser->suspension->expires_at->format('M d, Y \a\t g:i A') }}
-                                                        </p>
-                                                    @else
-                                                        <p class="text-xs dark:text-red-400 text-red-600 mt-1 font-medium">Permanent Suspension</p>
-                                                    @endif
-                                                @endif
-                                            </div>
-                                            <button 
-                                                wire:click="unsuspendUser({{ $suspendedUser->id }})"
-                                                wire:confirm="Are you sure you want to unsuspend this user?"
-                                                class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-green-600 dark:hover:bg-green-700 dark:text-white bg-green-600 hover:bg-green-700 text-white text-sm">
-                                                Unsuspend
-                                            </button>
-                                        </div>
+        <div class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeSuspendedItemsModal">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,1)]" wire:click.stop>
+                <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40 flex items-center justify-between">
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic italic">Quarantine Master Index</h2>
+                    <button wire:click="closeSuspendedItemsModal" class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white transition-all flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-10 custom-scrollbar grid grid-cols-1 lg:grid-cols-2 gap-10 bg-zinc-900/50">
+                    <!-- Suspended Nodes -->
+                    <div class="space-y-6">
+                        <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">Identity Quarantines ({{ $suspendedUsers->count() }})</h3>
+                        @forelse($suspendedUsers as $sUser)
+                            <div class="bg-zinc-950 border border-amber-500/20 rounded-[2rem] p-8 group hover:border-amber-500/50 transition-all duration-700">
+                                <div class="flex items-start justify-between gap-6">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-lg font-black text-white uppercase tracking-tight italic mb-1">{{ $sUser->name }}</h4>
+                                        <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-4 italic">{{ $sUser->email }}</p>
+                                        @if($sUser->suspension)
+                                             <div class="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 mb-4">
+                                                 <p class="text-[9px] font-black text-amber-500/70 uppercase tracking-widest mb-2 italic">Isolation Protocol: {{ $sUser->suspension->reason }}</p>
+                                                 <p class="text-[8px] font-black text-zinc-600 uppercase tracking-widest italic italic">{{ $sUser->suspension->expires_at ? 'Isolation Expiry: ' . $sUser->suspension->expires_at->format('Y.m.d // H:i') : 'Permanent Exclusion' }}</p>
+                                             </div>
+                                        @endif
                                     </div>
-                                @endforeach
+                                    <button wire:click="unsuspendUser({{ $sUser->id }})" class="px-8 py-3 bg-amber-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 shadow-lg shadow-amber-500/10 transition-all italic italic font-bold">Restore Unit</button>
+                                </div>
                             </div>
-                        @else
-                            <div class="p-8 text-center dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg">
-                                <p class="dark:text-gray-400 text-gray-600">No suspended users</p>
-                            </div>
-                        @endif
+                        @empty
+                             <div class="p-10 bg-zinc-950/50 rounded-[2rem] text-center border border-zinc-800/50">
+                                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Zero identity quarantines active.</p>
+                             </div>
+                        @endforelse
                     </div>
 
-                    <!-- Suspended Posts -->
-                    <div>
-                        <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-4">Suspended Posts ({{ $suspendedPosts->count() }})</h3>
-                        @if($suspendedPosts->count() > 0)
-                            <div class="space-y-3">
-                                @foreach($suspendedPosts as $suspendedPost)
-                                    <div class="dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4">
-                                        <div class="flex items-start justify-between mb-3">
-                                            <div class="flex-1">
-                                                <p class="font-semibold dark:text-white text-gray-900">
-                                                    Post by: {{ $suspendedPost->user->name ?? 'Unknown' }}
-                                                </p>
-                                                <p class="text-sm dark:text-gray-400 text-gray-600 mt-1">
-                                                    {{ Str::limit($suspendedPost->content ?? 'No content', 100) }}
-                                                </p>
-                                                @if($suspendedPost->suspension)
-                                                    <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
-                                                        <span class="font-medium">Reason:</span> {{ $suspendedPost->suspension->reason }}
-                                                    </p>
-                                                    @if($suspendedPost->suspension->expires_at)
-                                                        <p class="text-xs dark:text-gray-500 text-gray-500 mt-1">
-                                                            <span class="font-medium">Expires:</span> {{ $suspendedPost->suspension->expires_at->format('M d, Y \a\t g:i A') }}
-                                                        </p>
-                                                    @else
-                                                        <p class="text-xs dark:text-red-400 text-red-600 mt-1 font-medium">Permanent Suspension</p>
-                                                    @endif
-                                                @endif
+                    <!-- Suspended Intelligence -->
+                    <div class="space-y-6">
+                        <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic pl-4 mb-4">Log Quarantines ({{ $suspendedPosts->count() }})</h3>
+                        @forelse($suspendedPosts as $sPost)
+                            <div class="bg-zinc-950 border border-amber-500/20 rounded-[2rem] p-8 group hover:border-amber-500/50 transition-all duration-700">
+                                <div class="flex items-start justify-between gap-6">
+                                    <div class="flex-1 min-w-0 text-bold">
+                                        <h4 class="text-[11px] font-black text-zinc-500 uppercase tracking-widest mb-3 italic">Source: @ {{ $sPost->user->username ?? 'Unknown' }}</h4>
+                                        <p class="text-sm font-black text-white italic uppercase tracking-tight italic mb-4 line-clamp-2">"{{ $sPost->content }}"</p>
+                                        @if($sPost->suspension)
+                                            <div class="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 mb-4">
+                                                 <p class="text-[9px] font-black text-amber-500/70 uppercase tracking-widest mb-1 italic">Reason: {{ $sPost->suspension->reason }}</p>
+                                                 <p class="text-[8px] font-black text-zinc-600 uppercase tracking-widest italic">{{ $sPost->suspension->expires_at ? 'Expiry: ' . $sPost->suspension->expires_at->format('Y.m.d // H:i') : 'Permanent Vault' }}</p>
                                             </div>
-                                            <button 
-                                                wire:click="unsuspendPost({{ $suspendedPost->id }})"
-                                                wire:confirm="Are you sure you want to unsuspend this post?"
-                                                class="px-4 py-2 rounded-lg font-medium transition-colors dark:bg-green-600 dark:hover:bg-green-700 dark:text-white bg-green-600 hover:bg-green-700 text-white text-sm">
-                                                Unsuspend
-                                            </button>
-                                        </div>
+                                        @endif
                                     </div>
-                                @endforeach
+                                    <button wire:click="unsuspendPost({{ $sPost->id }})" class="px-8 py-3 bg-amber-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 shadow-lg shadow-amber-500/10 transition-all italic font-bold">Resync Log</button>
+                                </div>
                             </div>
-                        @else
-                            <div class="p-8 text-center dark:bg-gray-800 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg">
-                                <p class="dark:text-gray-400 text-gray-600">No suspended posts</p>
-                            </div>
-                        @endif
+                        @empty
+                             <div class="p-10 bg-zinc-950/50 rounded-[2rem] text-center border border-zinc-800/50">
+                                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Zero log quarantines active.</p>
+                             </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     @endif
 </div>
