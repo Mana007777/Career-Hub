@@ -52,7 +52,7 @@
         <!-- Filter Section -->
         @if($showFilters)
         <div 
-            class="mb-8 bg-brand-deep/20 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-2xl"
+            class="mb-8 bg-brand-deep/10 border border-white/5 rounded-3xl p-8 backdrop-blur-xl shadow-3xl"
             x-show="loaded"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 -translate-y-4"
@@ -135,10 +135,10 @@
             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
         >
-            <div class="bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
-                <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
-                    <h3 class="text-sm font-black text-white uppercase tracking-[0.2em]">Create New Post</h3>
-                    <button wire:click="closeCreateForm" class="text-gray-400 hover:text-white transition-colors">
+            <div class="bg-brand-deep/10 border border-white/5 rounded-3xl overflow-hidden shadow-3xl backdrop-blur-xl">
+                <div class="px-8 py-5 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                    <h3 class="text-[10px] font-black text-white uppercase tracking-widest">Construct New Broadcast</h3>
+                    <button wire:click="closeCreateForm" class="text-gray-500 hover:text-white transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -146,33 +146,30 @@
                 </div>
                 
                 <form wire:submit.prevent="create" wire:key="create-post-form" class="p-6 space-y-6">
-                    <!-- Title -->
                     <div class="space-y-2">
-                        <label for="title" class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Headline</label>
+                        <label for="title" class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Mission Headline</label>
                         <input
                             type="text"
                             wire:model="title"
                             wire:key="title-input"
                             id="title"
-                            class="w-full px-4 py-3 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all font-medium"
-                            placeholder="What's the main topic?">
+                            class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all font-medium text-sm"
+                            placeholder="WHAT IS THE PRIMARY OBJECTIVE?">
                         @error('title')
-                            <span class="text-rose-400 text-xs font-medium mt-1 block ml-1">{{ $message }}</span>
+                            <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 block ml-1">{{ $message }}</span>
                         @enderror
                     </div>
-
-                    <!-- Content -->
                     <div class="space-y-2">
-                        <label for="content" class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Draft</label>
+                        <label for="content" class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Data Stream</label>
                         <textarea 
                             wire:model="content"
                             wire:key="content-input"
                             id="content"
                             rows="5"
-                            class="w-full px-4 py-3 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all resize-none shadow-inner"
-                            placeholder="Share your thoughts, career updates, or job opportunities..."></textarea>
+                            class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all resize-none shadow-inner text-sm leading-relaxed"
+                            placeholder="INITIATE BROADCAST..."></textarea>
                         @error('content') 
-                            <span class="text-rose-400 text-xs font-medium mt-1 block ml-1">{{ $message }}</span> 
+                            <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 block ml-1">{{ $message }}</span> 
                         @enderror
                     </div>
 
@@ -269,7 +266,7 @@
                             type="submit"
                             wire:loading.attr="disabled"
                             wire:target="create"
-                            class="px-10 py-2.5 bg-gradient-to-r from-brand-purple to-brand-violet hover:opacity-90 text-white font-black rounded-xl transition-all shadow-lg shadow-brand-purple/25 disabled:opacity-50 flex items-center gap-2 tracking-widest uppercase text-xs"
+                            class="px-10 py-2.5 bg-gradient-to-r from-brand-purple to-brand-violet hover:opacity-90 text-white font-black rounded-xl transition-all shadow-lg shadow-brand-purple/25 disabled:opacity-50 flex items-center gap-2 tracking-widest uppercase text-xs">
                             <span wire:loading.remove wire:target="create">Publish Post</span>
                             <span wire:loading wire:target="create" class="flex items-center gap-2">
                                 <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
@@ -287,16 +284,27 @@
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
-            <div class="mb-6 p-4 dark:bg-green-900/50 bg-green-50 border dark:border-green-700 border-green-200 rounded-lg dark:text-green-200 text-green-800 font-medium">
-                {{ session('success') }}
+            <div class="mb-8 p-6 bg-emerald-950/20 border border-emerald-900/30 rounded-3xl text-emerald-500 text-[10px] font-black uppercase tracking-widest backdrop-blur-xl shadow-2xl flex items-center gap-3">
+                <div class="w-8 h-8 bg-emerald-600/10 rounded-xl flex items-center justify-center border border-emerald-600/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <span>{{ session('success') }}</span>
             </div>
         @endif
 
         @if (session()->has('error'))
-            <div class="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-200">
-                {{ session('error') }}
+            <div class="mb-8 p-6 bg-red-950/20 border border-red-900/30 rounded-3xl text-red-500 text-[10px] font-black uppercase tracking-widest backdrop-blur-xl shadow-2xl flex items-center gap-3">
+                <div class="w-8 h-8 bg-red-600/10 rounded-xl flex items-center justify-center border border-red-600/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                <span>{{ session('error') }}</span>
             </div>
         @endif
+ Broadway
 
         <!-- Posts List -->
         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-2 lg:mx-auto max-w-4xl">
@@ -304,12 +312,12 @@
                 <!-- Post Card -->
                 <article 
                     onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
-                    class="group relative flex flex-col rounded-[2.5rem] border border-white/20 bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-2xl p-7 shadow-2xl hover:from-white/[0.12] hover:to-white/[0.05] hover:border-brand-purple/40 transition-all duration-500 cursor-pointer overflow-hidden"
+                    class="group relative flex flex-col rounded-[2rem] border border-white/5 bg-brand-deep/10 backdrop-blur-xl p-8 shadow-2xl hover:border-white/10 transition-all duration-500 transform hover:scale-[1.01] hover:-translate-y-1 cursor-pointer overflow-hidden"
                     x-data="{ show: false }"
                     x-init="setTimeout(() => show = true, {{ ($index % 10) * 100 }})"
                     x-show="show"
                     x-transition:enter="transition ease-out duration-700"
-                    x-transition:enter-start="opacity-0 translate-y-12 scale-[0.98]"
+                    x-transition:enter-start="opacity-0 translate-y-8 scale-95"
                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                 >
                     <!-- Background Glow -->
@@ -321,11 +329,11 @@
                             <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" 
                                onclick="event.stopPropagation()" 
                                class="relative flex-shrink-0 group/avatar">
-                                <div class="w-12 h-12 rounded-2xl overflow-hidden bg-gray-800 ring-2 ring-white/5 group-hover/avatar:ring-brand-purple/50 transition-all duration-300">
+                                <div class="w-12 h-12 rounded-2xl overflow-hidden bg-brand-deep ring-2 ring-white/5 group-hover/avatar:ring-brand-purple/50 transition-all duration-300">
                                     @if($post->user && $post->user->profile_photo_path)
                                         <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover">
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-black text-lg">
+                                        <div class="w-full h-full flex items-center justify-center bg-brand-deep text-brand-violet font-black text-xs">
                                             {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
                                         </div>
                                     @endif
@@ -335,9 +343,9 @@
                             
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <h3 class="font-bold text-gray-100 truncate group-hover:text-indigo-400 transition-colors">{{ $post->user->name ?? 'Unknown User' }}</h3>
+                                    <h3 class="text-[10px] font-black text-white uppercase tracking-widest group-hover:text-brand-violet transition-colors truncate">{{ $post->user->name ?? 'Unknown User' }}</h3>
                                     @if($post->suspension)
-                                        <span class="px-2 py-0.5 text-[10px] font-black uppercase tracking-widest rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                                        <span class="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md bg-rose-500/10 text-rose-500 border border-rose-500/20">
                                             Suspended
                                         </span>
                                     @endif
@@ -350,7 +358,7 @@
                                 @php $isFollowing = $this->isFollowing($post->user_id); @endphp
                                 <button 
                                     wire:click.stop="toggleFollow({{ $post->user_id }})"
-                                    class="ml-auto px-4 py-1.5 text-xs font-bold rounded-xl transition-all {{ $isFollowing ? 'bg-white/5 text-gray-300 border border-white/5 hover:bg-white/10' : 'bg-white text-gray-950 hover:bg-indigo-50' }}">
+                                    class="ml-auto px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all {{ $isFollowing ? 'bg-white/5 text-gray-300 border border-white/5 hover:bg-white/10' : 'bg-brand-purple text-white hover:bg-brand-violet' }}">
                                     {{ $isFollowing ? 'Following' : 'Follow' }}
                                 </button>
                             @endif
@@ -360,15 +368,15 @@
                     <!-- Post Body -->
                     <div class="space-y-4 mb-6 relative z-10">
                         @if(!empty($post->title))
-                            <h2 class="text-xl font-black text-white leading-tight group-hover:text-indigo-400 transition-colors duration-300">
+                            <h2 class="text-xl font-black text-white uppercase tracking-tighter leading-tight group-hover:text-brand-violet transition-colors duration-300">
                                 {{ $post->title }}
                             </h2>
                         @endif
 
                         @if($post->job_type)
                             <div>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-purple/10 text-indigo-400 text-[10px] font-black uppercase tracking-wider rounded-lg border border-brand-purple/20">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-brand-purple"></span>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-violet/10 text-brand-violet text-[8px] font-black uppercase tracking-widest rounded-lg border border-brand-violet/20">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-brand-violet"></span>
                                     {{ str_replace('-', ' ', $post->job_type) }}
                                 </span>
                             </div>
@@ -379,8 +387,8 @@
                         </p>
 
                         @if(\Illuminate\Support\Str::length($post->content) > 280)
-                            <button wire:click.stop="openInlinePostModal({{ $post->id }})" class="text-sm font-bold text-indigo-400 hover:text-brand-violet transition-colors uppercase tracking-widest text-xs">
-                                Read More +
+                            <button wire:click.stop="openInlinePostModal({{ $post->id }})" class="text-[10px] font-black text-brand-violet hover:text-brand-purple transition-colors uppercase tracking-widest">
+                                Expand Stream +
                             </button>
                         @endif
                     </div>
@@ -430,7 +438,7 @@
                             </button>
 
                             <button onclick="event.stopPropagation()" class="flex items-center gap-2 group/btn">
-                                <div class="p-2 rounded-xl transition-all duration-300 text-gray-500 group-hover/btn:bg-brand-purple/10 group-hover/btn:text-indigo-400">
+                                <div class="p-2 rounded-xl transition-all duration-300 text-gray-500 group-hover/btn:bg-brand-purple/10 group-hover/btn:text-brand-purple">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                     </svg>
@@ -515,59 +523,59 @@
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeEditModal"></div>
 
-                <div class="inline-block align-bottom bg-black rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-white/5" wire:click.stop>
-                    <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
-                        <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest">Edit Post</h3>
+                <div class="inline-block align-bottom bg-brand-deep/95 border border-white/5 rounded-3xl text-left overflow-hidden shadow-3xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full backdrop-blur-xl" wire:click.stop>
+                    <div class="px-8 py-5 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-widest">Adjust Mission Parameters</h3>
                         <button wire:click="closeEditModal" class="text-gray-500 hover:text-white transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
                     
-                    <form wire:submit.prevent="update" class="p-6 space-y-6">
+                    <form wire:submit.prevent="update" class="p-8 space-y-6">
                         <!-- Title -->
                         <div class="space-y-2">
-                            <label for="editTitle" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Title</label>
+                            <label for="editTitle" class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Headline</label>
                             <input
                                 type="text"
                                 wire:model="editTitle"
                                 id="editTitle"
-                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm font-medium"
-                                placeholder="Update your headline">
-                            @error('editTitle') <span class="text-rose-400 text-xs mt-1 ml-1 block">{{ $message }}</span> @enderror
+                                class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm font-medium"
+                                placeholder="UPDATE MISSION TITLE">
+                            @error('editTitle') <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 ml-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Content -->
                         <div class="space-y-2">
-                            <label for="editContent" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Content</label>
+                            <label for="editContent" class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Data Stream</label>
                             <textarea 
                                 wire:model="editContent"
                                 id="editContent"
                                 rows="6"
-                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm resize-none shadow-inner"
-                                placeholder="What's changing?"></textarea>
-                            @error('editContent') <span class="text-rose-400 text-xs mt-1 ml-1 block">{{ $message }}</span> @enderror
+                                class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm resize-none shadow-inner leading-relaxed"
+                                placeholder="MODIFY BROADCAST..."></textarea>
+                            @error('editContent') <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 ml-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- Job Type -->
                             <div class="space-y-2">
-                                <label for="editJobType" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Job Type</label>
-                                <select wire:model="editJobType" id="editJobType" class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all appearance-none cursor-pointer">
-                                    <option value="">Select type</option>
-                                    <option value="full-time">Full-time</option>
-                                    <option value="part-time">Part-time</option>
-                                    <option value="contract">Contract</option>
-                                    <option value="freelance">Freelance</option>
-                                    <option value="internship">Internship</option>
-                                    <option value="remote">Remote</option>
+                                <label for="editJobType" class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 ml-1">Job Specification</label>
+                                <select wire:model="editJobType" id="editJobType" class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all appearance-none cursor-pointer">
+                                    <option value="" class="bg-brand-deep">Select type</option>
+                                    <option value="full-time" class="bg-brand-deep">Full-time</option>
+                                    <option value="part-time" class="bg-brand-deep">Part-time</option>
+                                    <option value="contract" class="bg-brand-deep">Contract</option>
+                                    <option value="freelance" class="bg-brand-deep">Freelance</option>
+                                    <option value="internship" class="bg-brand-deep">Internship</option>
+                                    <option value="remote" class="bg-brand-deep">Remote</option>
                                 </select>
                             </div>
 
                             <!-- Media -->
                             <div class="space-y-2">
-                                <label for="editMedia" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Update Media</label>
-                                <label class="flex items-center justify-center w-full px-4 py-[13px] bg-brand-deep/30 border border-white/10 border-dashed rounded-xl hover:bg-white/5 transition-all cursor-pointer">
-                                    <span class="text-xs font-bold text-gray-400 truncate">{{ $editMedia ? $editMedia->getClientOriginalName() : 'Change File' }}</span>
+                                <label for="editMedia" class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 ml-1">Update Attachment</label>
+                                <label class="flex items-center justify-center w-full px-5 py-[13px] bg-white/5 border border-white/10 border-dashed rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">{{ $editMedia ? $editMedia->getClientOriginalName() : 'Replace File' }}</span>
                                     <input type="file" wire:model="editMedia" id="editMedia" accept="image/*,video/*" class="hidden">
                                 </label>
                             </div>
@@ -575,14 +583,14 @@
 
                         <!-- Actions -->
                         <div class="flex items-center justify-end gap-3 pt-6 border-t border-white/5">
-                            <button type="button" wire:click="closeEditModal" class="px-6 py-2.5 text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">
-                                Cancel
+                            <button type="button" wire:click="closeEditModal" class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
+                                Abort
                             </button>
-                            <button type="submit" class="px-8 py-2.5 bg-brand-purple hover:bg-brand-purple text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-brand-purple/20 uppercase tracking-widest">
-                                Save Changes
+                            <button type="submit" class="px-8 py-2.5 bg-brand-purple hover:bg-brand-violet text-white text-[10px] font-black rounded-xl transition-all shadow-lg shadow-brand-purple/20 uppercase tracking-widest">
+                                Commit Changes
                             </button>
                         </div>
-                    </form>
+                   </form>
                 </div>
             </div>
         </div>
@@ -595,7 +603,7 @@
     @if ($showDeleteModal)
         <div class="fixed inset-0 z-[70] overflow-y-auto" x-data="{}" x-init="$el.focus()">
             <div class="flex items-center justify-center min-h-screen px-4 text-center">
-                <div class="fixed inset-0 transition-opacity bg-brand-deep/30/90 backdrop-blur-md" wire:click="closeDeleteModal"></div>
+                <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeDeleteModal"></div>
 
                 <div class="inline-block align-bottom bg-black rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-white/10" wire:click.stop>
                     <div class="p-8 text-center">
@@ -651,21 +659,21 @@
                                     class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all resize-none shadow-inner"
                                     placeholder="Enter reason..."></textarea>
                                 @error('suspendReason')
-                                    <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                                    <span class="text-rose-400 text-sm mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             <div class="mb-4">
-                                <label for="suspendExpiresAt" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Expires At (Optional)</label>
+                                <label for="suspendExpiresAt" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Expires At (Optional)</label>
                                 <input
                                     type="datetime-local"
                                     wire:model="suspendExpiresAt"
                                     id="suspendExpiresAt"
                                     min="{{ now()->format('Y-m-d\TH:i') }}"
-                                    class="w-full px-4 py-2 bg-brand-deep bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-                                <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Leave empty for permanent suspension</p>
+                                    class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all">
+                                <p class="text-[10px] text-gray-500 mt-1 ml-1">Leave empty for permanent suspension</p>
                                 @error('suspendExpiresAt')
-                                    <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                                    <span class="text-rose-400 text-sm mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
 
@@ -687,13 +695,13 @@
                             </div>
                         </form>
                     @elseif($adminActionType === 'unsuspend')
-                        <div class="bg-black px-6 py-4">
-                            <p class="mb-4 dark:text-gray-300 text-gray-700">Are you sure you want to unsuspend this post? It will become publicly visible again.</p>
-                            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                        <div class="bg-black px-6 py-6">
+                            <p class="mb-4 text-gray-300 text-sm">Are you sure you want to unsuspend this post? It will become publicly visible again.</p>
+                            <div class="flex justify-end gap-3 pt-6 border-t border-white/5">
                                 <button 
                                     type="button"
                                     wire:click="closeAdminActionsModal"
-                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep hover:bg-white/5 text-white bg-gray-800 hover:bg-black rounded-lg transition-colors">
+                                    class="px-6 py-2.5 text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">
                                     Cancel
                                 </button>
                                 <button 
@@ -701,21 +709,21 @@
                                     wire:click="unsuspendPost({{ $adminActionPostId }})"
                                     wire:loading.attr="disabled"
                                     wire:target="unsuspendPost"
-                                    class="px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:text-white bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                                    class="px-8 py-2.5 bg-brand-purple hover:bg-brand-violet text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-brand-purple/20 disabled:opacity-50 uppercase tracking-widest">
                                     <span wire:loading.remove wire:target="unsuspendPost">Unsuspend Post</span>
                                     <span wire:loading wire:target="unsuspendPost">Unsuspending...</span>
                                 </button>
                             </div>
                         </div>
                     @elseif($adminActionType === 'delete')
-                        <div class="bg-black px-6 py-4">
-                            <p class="mb-4 dark:text-red-400 text-red-600 font-semibold">Warning: This action cannot be undone!</p>
-                            <p class="mb-4 dark:text-gray-300 text-gray-700">Are you sure you want to permanently remove this post?</p>
-                            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                        <div class="bg-black px-6 py-6">
+                            <p class="mb-4 text-rose-400 font-black text-sm uppercase tracking-widest">Warning: This action cannot be undone!</p>
+                            <p class="mb-4 text-gray-300 text-sm">Are you sure you want to permanently remove this post?</p>
+                            <div class="flex justify-end gap-3 pt-6 border-t border-white/5">
                                 <button 
                                     type="button"
                                     wire:click="closeAdminActionsModal"
-                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep hover:bg-white/5 text-white bg-gray-800 hover:bg-black rounded-lg transition-colors">
+                                    class="px-6 py-2.5 text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">
                                     Cancel
                                 </button>
                                 <button 
@@ -723,7 +731,7 @@
                                     wire:click="deletePostAsAdmin({{ $adminActionPostId }})"
                                     wire:loading.attr="disabled"
                                     wire:target="deletePostAsAdmin"
-                                    class="px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 dark:text-white bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                                    class="px-8 py-2.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-rose-500/20 disabled:opacity-50 uppercase tracking-widest">
                                     <span wire:loading.remove wire:target="deletePostAsAdmin">Remove Post</span>
                                     <span wire:loading wire:target="deletePostAsAdmin">Removing...</span>
                                 </button>
@@ -748,44 +756,44 @@
                     
                     <form wire:submit.prevent="suspendPost" class="bg-black px-6 py-4">
                         <div class="mb-4">
-                            <label for="suspendReason" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Suspension Reason *</label>
+                            <label for="suspendReason" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Suspension Reason *</label>
                             <textarea
                                 wire:model="suspendReason"
                                 id="suspendReason"
                                 rows="3"
-                                class="w-full px-4 py-2 bg-brand-deep bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all resize-none shadow-inner"
                                 placeholder="Enter the reason for suspending this post..."></textarea>
                             @error('suspendReason')
-                                <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                                <span class="text-rose-400 text-sm mt-1 block">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="suspendExpiresAt" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Expires At (Optional)</label>
+                            <label for="suspendExpiresAt" class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Expires At (Optional)</label>
                             <input
                                 type="datetime-local"
                                 wire:model="suspendExpiresAt"
                                 id="suspendExpiresAt"
                                 min="{{ now()->format('Y-m-d\TH:i') }}"
-                                class="w-full px-4 py-2 bg-brand-deep bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-                            <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Leave empty for permanent suspension</p>
+                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all">
+                            <p class="text-[10px] text-gray-500 mt-1 ml-1">Leave empty for permanent suspension</p>
                             @error('suspendExpiresAt')
-                                <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
+                                <span class="text-rose-400 text-sm mt-1 block">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
+                        <div class="flex justify-end gap-3 pt-6 border-t border-white/5">
                             <button 
                                 type="button"
                                 wire:click="closeSuspendModal"
-                                class="px-4 py-2 dark:text-gray-300 bg-brand-deep hover:bg-white/5 text-white bg-gray-800 hover:bg-black rounded-lg transition-colors">
+                                class="px-6 py-2.5 text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">
                                 Cancel
                             </button>
                             <button 
                                 type="submit"
                                 wire:loading.attr="disabled"
                                 wire:target="suspendPost"
-                                class="px-4 py-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:text-white bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                                class="px-8 py-2.5 bg-brand-purple hover:bg-brand-violet text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-brand-purple/20 disabled:opacity-50 uppercase tracking-widest">
                                 <span wire:loading.remove wire:target="suspendPost">Suspend Post</span>
                                 <span wire:loading wire:target="suspendPost">Suspending...</span>
                             </button>
@@ -805,11 +813,11 @@
                 <div class="inline-block align-bottom bg-black rounded-[2rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-white/5" wire:click.stop>
                     <div class="bg-black px-6 py-6 border-b border-white/5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full overflow-hidden dark:bg-gray-700 bg-gray-200 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-xl overflow-hidden bg-brand-deep border border-white/5 flex items-center justify-center">
                                 @if($inlinePost->user && $inlinePost->user->profile_photo_path)
                                     <img src="{{ $inlinePost->user->profile_photo_url }}" alt="{{ $inlinePost->user->name }}" class="w-full h-full object-cover">
                                 @else
-                                    <span class="dark:text-gray-300 text-gray-700 font-semibold">
+                                    <span class="text-[10px] font-black text-brand-violet">
                                         {{ strtoupper(substr($inlinePost->user->name ?? 'U', 0, 1)) }}
                                     </span>
                                 @endif
@@ -826,7 +834,7 @@
                         <button
                             type="button"
                             wire:click="closeInlinePostModal"
-                            class="p-2 rounded-lg dark:text-gray-400 text-gray-600 hover:bg-brand-deep hover:bg-gray-100 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            class="p-2 rounded-lg text-gray-500 hover:bg-white/10 hover:text-white transition-colors"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

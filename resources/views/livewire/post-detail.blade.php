@@ -50,25 +50,25 @@
                 <!-- Post Header -->
                 <div class="flex items-start justify-between mb-4">
                     <a href="{{ route('user.profile', $post->user->username ?? 'unknown') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                <div class="w-12 h-12 rounded-2xl overflow-hidden bg-brand-deep flex items-center justify-center ring-4 ring-white/5">
+                        <div class="w-12 h-12 rounded-2xl overflow-hidden bg-brand-deep flex items-center justify-center ring-4 ring-white/5">
                             @if($post->user && $post->user->profile_photo_path)
                                 <img src="{{ $post->user->profile_photo_url }}" alt="{{ $post->user->name }}" class="w-full h-full object-cover">
                             @else
-                                <span class="text-gray-400 font-semibold">
+                                <span class="text-[10px] font-black text-brand-violet">
                                     {{ strtoupper(substr($post->user->name ?? 'U', 0, 1)) }}
                                 </span>
                             @endif
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
-                                <h3 class="font-semibold text-white">{{ $post->user->name ?? 'Unknown User' }}</h3>
+                                <h3 class="text-[10px] font-black text-white uppercase tracking-widest">{{ $post->user->name ?? 'Unknown User' }}</h3>
                                 @if($post->suspension)
-                                    <span class="px-2 py-0.5 text-xs font-medium rounded dark:bg-red-600/20 bg-red-100 dark:text-red-400 text-red-700 dark:border-red-600/50 border-red-300 border" title="Suspended">
+                                    <span class="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md bg-rose-500/10 text-rose-500 border border-rose-500/20">
                                         Suspended
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-sm text-gray-500">{{ $post->created_at->format('F j, Y \a\t g:i A') }}</p>
+                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">{{ $post->created_at->format('F j, Y') }}</p>
                         </div>
                     </a>
                     
@@ -136,7 +136,7 @@
                 <!-- Post Title & Content -->
                 <div class="mb-4">
                     @if(!empty($post->title))
-                        <h1 class="text-2xl font-bold text-white mb-2">{{ $post->title }}</h1>
+                        <h1 class="text-2xl font-black text-white uppercase tracking-tighter mb-2">{{ $post->title }}</h1>
                     @endif
                     @if($post->job_type)
                         <div class="mb-3">
@@ -580,12 +580,12 @@
                             @enderror
                         </div>
 
-                        <div class="flex justify-end gap-3 pt-4 border-t border-white/5">
+                        <div class="flex justify-end gap-3 pt-6 border-t border-white/5">
                             <button 
                                 type="button"
                                 wire:click="closeSuspendModal"
-                                class="px-5 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
-                                Cancel
+                                class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
+                                Abort
                             </button>
                             <button 
                                 type="submit"
