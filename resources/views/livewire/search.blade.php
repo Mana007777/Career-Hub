@@ -37,7 +37,7 @@
                         <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Search</h2>
                         <button 
                             wire:click="closeSearch"
-                            class="p-2 dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                            class="p-2 text-gray-500 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -49,17 +49,17 @@
                     <div class="flex gap-2 mb-4">
                         <button 
                             wire:click="setResultType('all')"
-                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'all' ? 'dark:bg-blue-600 bg-blue-600 dark:text-white text-white' : 'dark:bg-gray-700 bg-gray-200 dark:hover:bg-gray-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
+                            class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ ($resultType ?? 'all') === 'all' ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/20' : 'bg-brand-deep/30 text-gray-400 hover:bg-brand-deep/50 hover:text-white' }}">
                             All
                         </button>
                         <button 
                             wire:click="setResultType('users')"
-                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'users' ? 'dark:bg-blue-600 bg-blue-600 dark:text-white text-white' : 'dark:bg-gray-700 bg-gray-200 dark:hover:bg-gray-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
+                            class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ ($resultType ?? 'all') === 'users' ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/20' : 'bg-brand-deep/30 text-gray-400 hover:bg-brand-deep/50 hover:text-white' }}">
                             Users
                         </button>
                         <button 
                             wire:click="setResultType('posts')"
-                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($resultType ?? 'all') === 'posts' ? 'dark:bg-brand-purple bg-indigo-600 dark:text-white text-white' : 'dark:bg-brand-deep bg-gray-200 dark:hover:bg-brand-purple/20 hover:bg-gray-300 dark:text-gray-300 text-gray-700' }}">
+                            class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ ($resultType ?? 'all') === 'posts' ? 'bg-brand-purple text-white shadow-lg shadow-brand-purple/20' : 'bg-brand-deep/30 text-gray-400 hover:bg-brand-deep/50 hover:text-white' }}">
                             Posts
                         </button>
                     </div>
@@ -68,7 +68,7 @@
                     <!-- Search Input -->
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 dark:text-gray-400 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
@@ -90,14 +90,14 @@
                     @if($query && strlen(trim($query)) > 0)
                         <!-- Users Results -->
                         @if(in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0)
-                            <div class="p-4 border-b dark:border-gray-700 border-gray-200">
-                                <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-3">Users</h3>
-                                <div class="space-y-3">
+                            <div class="p-6 border-b border-white/5">
+                                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-1">Users</h3>
+                                <div class="space-y-4">
                                     @foreach($users as $index => $user)
                                         <a 
                                             href="{{ route('user.profile', $user->username ?? 'unknown') }}"
                                             wire:click="closeSearch"
-                                            class="block dark:bg-gray-900 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4 dark:hover:border-gray-600 hover:border-gray-300 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+                                            class="block bg-brand-deep/10 border border-white/5 rounded-2xl p-5 hover:border-white/20 hover:bg-brand-deep/20 transition-all duration-500 group"
                                             x-data="{ show: false }"
                                             x-init="
                                                 setTimeout(() => {
@@ -111,26 +111,32 @@
                                         >
                                             <div class="flex items-center gap-4">
                                                 <!-- User Avatar -->
-                                                <div class="w-12 h-12 rounded-2xl bg-brand-deep border border-white/5 flex items-center justify-center text-lg font-black text-brand-violet">
-                                                    {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                                                <div class="w-14 h-14 rounded-2xl bg-brand-deep border border-white/5 overflow-hidden flex items-center justify-center text-xl font-black text-brand-violet ring-4 ring-white/5 group-hover:scale-110 transition-transform duration-500">
+                                                    @if($user->profile_photo_path)
+                                                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                                                    @endif
                                                 </div>
                                                 
                                                 <!-- User Info -->
                                                 <div class="flex-1">
-                                                    <h4 class="text-base font-semibold dark:text-white text-gray-900">
-                                                        {!! str_ireplace(e($query), '<mark class="bg-yellow-500/30 text-yellow-200">' . e($query) . '</mark>', e($user->name ?? 'Unknown User')) !!}
+                                                    <h4 class="text-base font-black text-white group-hover:text-brand-violet transition-colors">
+                                                        {!! str_ireplace(e($query), '<mark class="bg-brand-purple/30 text-white">' . e($query) . '</mark>', e($user->name ?? 'Unknown User')) !!}
                                                     </h4>
                                                     @if($user->username)
-                                                        <p class="text-sm dark:text-gray-400 text-gray-600">
-                                                            {!! '@' . str_ireplace(e($query), '<mark class="bg-yellow-500/30 text-yellow-200">' . e($query) . '</mark>', e($user->username)) !!}
+                                                        <p class="text-sm text-gray-500">
+                                                            {!! '@' . str_ireplace(e($query), '<mark class="bg-brand-purple/30 text-brand-violet">' . e($query) . '</mark>', e($user->username)) !!}
                                                         </p>
                                                     @endif
                                                 </div>
                                                 
                                                 <!-- View Profile -->
-                                                <svg class="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                </svg>
+                                                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-white group-hover:bg-brand-purple transition-all duration-500">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </a>
                                     @endforeach
@@ -138,7 +144,7 @@
                                 
                                 <!-- Users Pagination -->
                                 @if($users->hasPages())
-                                    <div class="mt-4 pt-4 border-t dark:border-gray-700 border-gray-200">
+                                    <div class="mt-4 pt-4 border-t border-white/5">
                                         {{ $users->links() }}
                                     </div>
                                 @endif
@@ -147,14 +153,14 @@
                         
                         <!-- Posts Results -->
                         @if(in_array($resultType ?? 'all', ['all', 'posts']) && $posts->count() > 0)
-                            <div class="p-4 {{ (in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0) ? 'border-t dark:border-gray-700 border-gray-200' : '' }}">
-                                <h3 class="text-lg font-semibold dark:text-white text-gray-900 mb-3">Posts</h3>
-                                <div class="space-y-4">
+                            <div class="p-6 {{ (in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0) ? 'border-t border-white/5' : '' }}">
+                                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-1">Posts</h3>
+                                <div class="space-y-6">
                                     @foreach($posts as $index => $post)
                                     <a 
                                         href="{{ route('posts.show', $post->slug) }}"
                                         wire:click="closeSearch"
-                                        class="block dark:bg-gray-900 bg-gray-50 border dark:border-gray-700 border-gray-200 rounded-lg p-4 dark:hover:border-gray-600 hover:border-gray-300 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+                                        class="block bg-brand-deep/10 border border-white/5 rounded-3xl p-6 hover:border-white/20 hover:bg-brand-deep/20 transition-all duration-500 group"
                                         x-data="{ show: false }"
                                         x-init="
                                             setTimeout(() => {
@@ -167,21 +173,21 @@
                                         x-transition:enter-end="opacity-100 translate-y-0"
                                     >
                                         
-                                        <!-- Post Meta (no user profile card) -->
-                                        <div class="flex items-center justify-between mb-2">
-                                            <p class="text-xs dark:text-gray-400 text-gray-600">
-                                                Posted by {{ $post->user->name ?? 'Unknown User' }} · {{ $post->created_at->diffForHumans() }}
+                                        <!-- Post Meta -->
+                                        <div class="flex items-center justify-between mb-3">
+                                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                                {{ $post->user->name ?? 'Unknown User' }} · {{ $post->created_at->diffForHumans() }}
                                             </p>
                                         </div>
 
                                         <!-- Post Title & Content (Highlighted) -->
-                                        <div class="mb-2">
+                                        <div class="mb-4">
                                             @if(!empty($post->title))
-                                                <h3 class="text-sm font-semibold dark:text-white text-gray-900 mb-1">
-                                                    {!! str_ireplace(e($query), '<mark class="bg-yellow-500/30 text-yellow-200">' . e($query) . '</mark>', e($post->title)) !!}
+                                                <h3 class="text-lg font-black text-white mb-2 group-hover:text-brand-violet transition-colors">
+                                                    {!! str_ireplace(e($query), '<mark class="bg-brand-purple/30 text-white">' . e($query) . '</mark>', e($post->title)) !!}
                                                 </h3>
                                             @endif
-                                            <p class="dark:text-gray-200 text-gray-700 text-sm leading-relaxed line-clamp-3">
+                                            <p class="text-gray-300 text-sm leading-relaxed line-clamp-2">
                                                 {{ \Illuminate\Support\Str::limit($post->content, 140) }}
                                             </p>
                                         </div>
@@ -193,13 +199,12 @@
                                                     @foreach($post->specialties as $specialty)
                                                         @php
                                                             $subSpecialtyId = $specialty->pivot->sub_specialty_id ?? null;
-                                                            // Use already-loaded subSpecialties collection instead of DB query
                                                             $subSpecialty = $subSpecialtyId && $specialty->subSpecialties 
                                                                 ? $specialty->subSpecialties->firstWhere('id', $subSpecialtyId) 
                                                                 : null;
                                                         @endphp
                                                         @if($subSpecialty)
-                                                            <span class="px-2 py-0.5 bg-blue-600/20 border border-blue-600/40 rounded-lg text-blue-300 text-xs">
+                                                            <span class="px-2.5 py-1 bg-brand-purple/10 border border-brand-purple/20 rounded-lg text-brand-violet text-[10px] font-black uppercase tracking-widest">
                                                                 {{ $specialty->name }} - {{ $subSpecialty->name }}
                                                             </span>
                                                         @endif
@@ -213,7 +218,7 @@
                                             <div class="mb-2">
                                                 <div class="flex flex-wrap gap-2">
                                                     @foreach($post->tags as $tag)
-                                                        <span class="px-2 py-0.5 bg-purple-600/20 border border-purple-600/40 rounded-lg text-purple-300 text-xs">
+                                                        <span class="px-2.5 py-1 bg-brand-violet/10 border border-brand-violet/20 rounded-lg text-brand-violet text-[10px] font-black uppercase tracking-widest">
                                                             #{{ $tag->name }}
                                                         </span>
                                                     @endforeach
@@ -222,12 +227,12 @@
                                         @endif
 
                                         <!-- Post Stats -->
-                                        <div class="flex items-center gap-4 pt-2 border-t dark:border-gray-700 border-gray-200">
-                                            <div class="flex items-center gap-1 dark:text-gray-400 text-gray-600 text-xs">
+                                        <div class="flex items-center gap-4 pt-4 border-t border-white/5">
+                                            <div class="flex items-center gap-2 text-gray-500 text-[10px] font-black uppercase tracking-widest">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                                 </svg>
-                                                <span>{{ $post->comments->count() }}</span>
+                                                <span>{{ $post->comments->count() }} Comments</span>
                                             </div>
                                         </div>
                                     </a>
@@ -236,7 +241,7 @@
 
                                     <!-- Posts Pagination -->
                                     @if($posts->hasPages())
-                                        <div class="mt-4 pt-4 border-t dark:border-gray-700 border-gray-200">
+                                        <div class="mt-4 pt-4 border-t border-white/5">
                                             {{ $posts->links() }}
                                         </div>
                                     @endif
@@ -247,11 +252,11 @@
                         <!-- No Results -->
                         @if((($resultType ?? 'all') === 'all' && $posts->count() === 0 && $users->count() === 0) || (($resultType ?? 'all') === 'users' && $users->count() === 0) || (($resultType ?? 'all') === 'posts' && $posts->count() === 0))
                             <div class="p-8 text-center">
-                                <svg class="mx-auto h-12 w-12 dark:text-gray-600 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="mx-auto h-12 w-12 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
-                                <h3 class="text-lg font-medium dark:text-gray-400 text-gray-600 mb-2">No results found</h3>
-                                <p class="text-sm dark:text-gray-500 text-gray-500">Try searching with different keywords</p>
+                                <h3 class="text-lg font-medium text-gray-500 mb-2">No results found</h3>
+                                <p class="text-sm text-gray-600">Try searching with different keywords</p>
                             </div>
                         @endif
                     @else
