@@ -84,6 +84,7 @@ class UserProfile extends Component
         $this->followingCount = $this->user->following_count;
         $this->postsCount = $this->user->posts_count;
 
+        $endorsementRepository = app(\App\Repositories\EndorsementRepository::class);
         $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
 
         if (Auth::check() && Auth::id() !== $this->user->id) {

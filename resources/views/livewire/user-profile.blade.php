@@ -207,22 +207,22 @@
                     Verified Competencies
                 </h2>
                 <div class="flex flex-wrap gap-4 px-2">
-                    @foreach($endorsementsBySkill as $skill => $rawEndorsements)
-                        @php $endorsements = collect(is_object($rawEndorsements) ? (array)$rawEndorsements : $rawEndorsements); @endphp
-                        <div class="group relative px-5 py-3 bg-zinc-900/40 border border-zinc-800/50 rounded-2xl flex items-center gap-4 hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all cursor-default backdrop-blur-sm shadow-lg">
-                            <span class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest">{{ $skill }}</span>
-                            <div class="w-px h-4 bg-zinc-800 group-hover:bg-emerald-500/30 transition-colors"></div>
-                            <span class="text-[11px] font-black text-emerald-500/80">{{ count($endorsements) }}</span>
+                    @foreach($endorsementsBySkill as $endorsementData)
+                        @php
+                            $skillName = data_get($endorsementData, 'skill');
+                            $endorseCount = data_get($endorsementData, 'count');
+                            $endorsersList = collect(data_get($endorsementData, 'endorsers', []));
+                        @endphp
+                        <div class="group relative h-10 px-6 bg-zinc-900/40 border border-zinc-800/50 rounded-2xl flex items-center hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all cursor-default backdrop-blur-sm shadow-lg">
+                            <span class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest">{{ $skillName }}</span>
+                            <div class="w-px h-4 bg-zinc-800 mx-4 group-hover:bg-emerald-500/30 transition-colors shrink-0"></div>
+                            <span class="text-[11px] font-black text-emerald-500/80 shrink-0">{{ $endorseCount }}</span>
                             
                             <!-- Tooltip showing endorsers -->
                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-max max-w-xs bg-zinc-950 border border-zinc-800/80 rounded-2xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 shadow-2xl backdrop-blur-xl">
                                 <div class="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-3 border-b border-zinc-800/50 pb-2 italic">Endorsed By</div>
                                 <div class="flex flex-wrap gap-2">
-                                    @foreach($endorsements->take(5) as $endorsement)
-                                        @php 
-                                            // Handle case where $endorsement itself might be cast as an object/array/collection
-                                            $endorser = data_get($endorsement, 'endorser'); 
-                                        @endphp
+                                    @foreach($endorsersList->take(5) as $endorser)
                                         @if($endorser)
                                             <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner" title="{{ data_get($endorser, 'name', 'U') }}">
                                                 @if(!empty(data_get($endorser, 'profile_photo_path')))
@@ -233,9 +233,9 @@
                                             </div>
                                         @endif
                                     @endforeach
-                                    @if(count($endorsements) > 5)
+                                    @if($endorsersList->count() > 5)
                                         <div class="w-8 h-8 rounded-[0.4rem] bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[9px] font-black text-emerald-500/50">
-                                            +{{ count($endorsements) - 5 }}
+                                            +{{ $endorsersList->count() - 5 }}
                                         </div>
                                     @endif
                                 </div>
@@ -243,7 +243,8 @@
                             
                             <!-- Remove Endorsement Button if owner -->
                             @if(Auth::check() && Auth::id() === $user->id)
-                                <button wire:click.stop="removeEndorsement('{{ addslashes($skill) }}')" class="ml-2 w-6 h-6 rounded-full flex items-center justify-center text-zinc-600 hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/20 border border-transparent transition-all" title="Remove Endorsement">
+                                <div class="w-px h-4 bg-zinc-800 mx-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"></div>
+                                <button wire:click.stop="removeEndorsement('{{ addslashes($skillName) }}')" class="w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-zinc-600 hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/20 border border-transparent transition-all opacity-0 group-hover:opacity-100" title="Remove Endorsement">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                 </button>
                             @endif
