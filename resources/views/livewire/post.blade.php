@@ -19,7 +19,7 @@
     <!-- Actual content -->
     <div x-show="loaded" x-cloak>
         <!-- Sticky Header with Backdrop Blur -->
-        <div class="sticky top-0 z-40 bg-black/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+        <div class="sticky top-0 z-40 bg-black/95 backdrop-blur-2xl border-b border-white/10 transition-all duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-20 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <div class="flex flex-col">
@@ -33,7 +33,7 @@
                 <div class="flex items-center gap-3">
                     <button 
                         wire:click="toggleFilters"
-                        class="group px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-2 text-sm font-medium">
+                        class="group px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 hover:border-brand-purple/30 text-gray-200 hover:text-white transition-all duration-300 flex items-center gap-2 text-sm font-black uppercase tracking-widest shadow-lg shadow-black/50">
                         <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                         </svg>
@@ -304,7 +304,7 @@
                 <!-- Post Card -->
                 <article 
                     onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
-                    class="group relative flex flex-col rounded-3xl border border-white/5 bg-white/[0.03] backdrop-blur-md p-6 shadow-2xl hover:bg-white/[0.05] hover:border-brand-purple/20 transition-all duration-500 cursor-pointer overflow-hidden"
+                    class="group relative flex flex-col rounded-[2.5rem] border border-white/20 bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-2xl p-7 shadow-2xl hover:from-white/[0.12] hover:to-white/[0.05] hover:border-brand-purple/40 transition-all duration-500 cursor-pointer overflow-hidden"
                     x-data="{ show: false }"
                     x-init="setTimeout(() => show = true, {{ ($index % 10) * 100 }})"
                     x-show="show"
@@ -491,7 +491,7 @@
                     wire:click="loadMore"
                     wire:loading.attr="disabled"
                     class="group relative flex items-center gap-4 text-gray-500 hover:text-brand-violet transition-all duration-300 font-bold uppercase tracking-[0.2em] text-xs">
-                    <span class="h-px w-24 bg-gray-800 group-hover:bg-brand-purple/50 transition-colors"></span>
+                    <span class="h-px w-24 bg-white/20 group-hover:bg-brand-purple/50 transition-colors"></span>
                     <span class="flex items-center gap-2">
                         <span wire:loading.remove wire:target="loadMore">See more</span>
                         <span wire:loading wire:target="loadMore" class="flex items-center gap-2">
@@ -502,7 +502,7 @@
                             Loading...
                         </span>
                     </span>
-                    <span class="h-px w-24 bg-gray-800 group-hover:bg-indigo-500/50 transition-colors"></span>
+                    <span class="h-px w-24 bg-white/20 group-hover:bg-brand-purple/50 transition-colors"></span>
                 </button>
             </div>
         @endif
@@ -515,7 +515,7 @@
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity bg-black/95 backdrop-blur-md" wire:click="closeEditModal"></div>
 
-                <div class="inline-block align-bottom bg-gray-900 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-white/5" wire:click.stop>
+                <div class="inline-block align-bottom bg-black rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-white/5" wire:click.stop>
                     <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
                         <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest">Edit Post</h3>
                         <button wire:click="closeEditModal" class="text-gray-500 hover:text-white transition-colors">
@@ -531,7 +531,7 @@
                                 type="text"
                                 wire:model="editTitle"
                                 id="editTitle"
-                                class="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-sm font-medium"
+                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm font-medium"
                                 placeholder="Update your headline">
                             @error('editTitle') <span class="text-rose-400 text-xs mt-1 ml-1 block">{{ $message }}</span> @enderror
                         </div>
@@ -543,7 +543,7 @@
                                 wire:model="editContent"
                                 id="editContent"
                                 rows="6"
-                                class="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-sm resize-none shadow-inner"
+                                class="w-full px-4 py-3 bg-brand-deep/30 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 transition-all text-sm resize-none shadow-inner"
                                 placeholder="What's changing?"></textarea>
                             @error('editContent') <span class="text-rose-400 text-xs mt-1 ml-1 block">{{ $message }}</span> @enderror
                         </div>
@@ -662,7 +662,7 @@
                                     wire:model="suspendExpiresAt"
                                     id="suspendExpiresAt"
                                     min="{{ now()->format('Y-m-d\TH:i') }}"
-                                    class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                    class="w-full px-4 py-2 bg-brand-deep bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
                                 <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Leave empty for permanent suspension</p>
                                 @error('suspendExpiresAt')
                                     <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
@@ -687,13 +687,13 @@
                             </div>
                         </form>
                     @elseif($adminActionType === 'unsuspend')
-                        <div class="dark:bg-gray-900 bg-white px-6 py-4">
+                        <div class="bg-black px-6 py-4">
                             <p class="mb-4 dark:text-gray-300 text-gray-700">Are you sure you want to unsuspend this post? It will become publicly visible again.</p>
                             <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
                                 <button 
                                     type="button"
                                     wire:click="closeAdminActionsModal"
-                                    class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
                                     Cancel
                                 </button>
                                 <button 
@@ -708,14 +708,14 @@
                             </div>
                         </div>
                     @elseif($adminActionType === 'delete')
-                        <div class="dark:bg-gray-900 bg-white px-6 py-4">
+                        <div class="bg-black px-6 py-4">
                             <p class="mb-4 dark:text-red-400 text-red-600 font-semibold">Warning: This action cannot be undone!</p>
                             <p class="mb-4 dark:text-gray-300 text-gray-700">Are you sure you want to permanently remove this post?</p>
                             <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 border-gray-200">
                                 <button 
                                     type="button"
                                     wire:click="closeAdminActionsModal"
-                                    class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                    class="px-4 py-2 dark:text-gray-300 bg-brand-deep dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
                                     Cancel
                                 </button>
                                 <button 
@@ -746,14 +746,14 @@
                         <h3 class="text-xl font-black text-white uppercase tracking-tight">Suspend Post</h3>
                     </div>
                     
-                    <form wire:submit.prevent="suspendPost" class="dark:bg-gray-900 bg-white px-6 py-4">
+                    <form wire:submit.prevent="suspendPost" class="bg-black px-6 py-4">
                         <div class="mb-4">
                             <label for="suspendReason" class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Suspension Reason *</label>
                             <textarea
                                 wire:model="suspendReason"
                                 id="suspendReason"
                                 rows="3"
-                                class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                                class="w-full px-4 py-2 bg-brand-deep bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
                                 placeholder="Enter the reason for suspending this post..."></textarea>
                             @error('suspendReason')
                                 <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
@@ -767,7 +767,7 @@
                                 wire:model="suspendExpiresAt"
                                 id="suspendExpiresAt"
                                 min="{{ now()->format('Y-m-d\TH:i') }}"
-                                class="w-full px-4 py-2 dark:bg-gray-800 bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                class="w-full px-4 py-2 bg-brand-deep bg-gray-100 border dark:border-gray-700 border-gray-300 rounded-lg dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
                             <p class="text-xs dark:text-gray-400 text-gray-600 mt-1">Leave empty for permanent suspension</p>
                             @error('suspendExpiresAt')
                                 <span class="dark:text-red-400 text-red-600 text-sm mt-1 block">{{ $message }}</span>
@@ -778,7 +778,7 @@
                             <button 
                                 type="button"
                                 wire:click="closeSuspendModal"
-                                class="px-4 py-2 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
+                                class="px-4 py-2 dark:text-gray-300 bg-brand-deep dark:hover:bg-gray-700 text-white bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors">
                                 Cancel
                             </button>
                             <button 
@@ -826,7 +826,7 @@
                         <button
                             type="button"
                             wire:click="closeInlinePostModal"
-                            class="p-2 rounded-lg dark:text-gray-400 text-gray-600 hover:dark:bg-gray-800 hover:bg-gray-100 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            class="p-2 rounded-lg dark:text-gray-400 text-gray-600 hover:bg-brand-deep hover:bg-gray-100 hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

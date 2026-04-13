@@ -39,7 +39,7 @@
 >
     <div 
         @click.stop
-        class="bg-black border border-white/5 rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden transform transition-all duration-500 @if(!($inline ?? false)) w-full max-w-md max-h-[80vh] mx-4 @endif"
+        class="bg-white/[0.04] border border-white/10 rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden transform transition-all duration-500 @if(!($inline ?? false)) w-full max-w-md max-h-[80vh] mx-4 @endif"
         @if(!($inline ?? false))
             x-transition:enter="transition ease-out duration-500"
             x-transition:enter-start="opacity-0 scale-95 -translate-y-10"
