@@ -1,3 +1,4 @@
+<div 
     x-data="{ 
         isOpen: @entangle('isOpen'),
         activeTab: 'chats',
