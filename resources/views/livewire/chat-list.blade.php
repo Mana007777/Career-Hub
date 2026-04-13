@@ -1,6 +1,5 @@
-<div 
     x-data="{ 
-        isOpen: @js($inline ?? false),
+        isOpen: @entangle('isOpen'),
         activeTab: 'chats',
         init() {
             if (!@js($inline ?? false)) {
