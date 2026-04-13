@@ -53,19 +53,13 @@
                     <livewire:explore-users />
                 </section>
             @else
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <!-- Main Feed (Left) -->
-                    <main class="lg:col-span-8 xl:col-span-9 order-1">
+                <div class="max-w-5xl mx-auto">
+                    <!-- Main Feed -->
+                    <main>
                         <section>
                             <livewire:post />
                         </section>
                     </main>
-
-                    <!-- Sidebar (Right) -->
-                    <aside class="lg:col-span-4 xl:col-span-3 order-2">
-                        <!-- Unified Social Hub (Chats + Following Mixed) -->
-                        @livewire('chat-list', ['inline' => true])
-                    </aside>
                 </div>
             @endif
         </div>
