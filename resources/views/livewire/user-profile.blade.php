@@ -88,6 +88,29 @@
                                 <p class="text-zinc-400 text-sm leading-relaxed mb-8 max-w-none md:max-w-2xl italic font-medium selection:bg-emerald-500/20 opacity-80 border-l-2 border-emerald-500/20 pl-6">{{ $user->profile->bio }}</p>
                             @endif
 
+                            @if(collect($organizationMemberships)->isNotEmpty())
+                                <div class="mb-8 p-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/5">
+                                    <p class="text-[8px] font-black uppercase tracking-[0.35em] text-emerald-400 mb-4">Works at</p>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        @foreach(collect($organizationMemberships)->take(4) as $orgCompany)
+                                            <a
+                                                href="{{ route('user.profile', $orgCompany->username) }}"
+                                                class="inline-flex items-center gap-3 px-3 py-2 rounded-xl bg-zinc-900/70 border border-zinc-800/60 hover:border-emerald-500/30 transition-all"
+                                            >
+                                                <div class="w-8 h-8 rounded-lg overflow-hidden border border-zinc-700/60 bg-zinc-900 flex items-center justify-center">
+                                                    @if($orgCompany->profile_photo_path)
+                                                        <img src="{{ $orgCompany->profile_photo_url }}" alt="{{ $orgCompany->name }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        <span class="text-[10px] font-black text-emerald-500/70 uppercase">{{ strtoupper(substr($orgCompany->name ?? 'C', 0, 1)) }}</span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300">{{ $orgCompany->name }}</span>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="flex flex-wrap items-center gap-8 mb-8 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600">
                                 @if($user->profile && $user->profile->location)
                                     <div class="flex items-center gap-3">
