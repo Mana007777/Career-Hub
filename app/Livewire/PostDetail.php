@@ -38,6 +38,7 @@ class PostDetail extends Component
     public $showCvUpload = false;
     public $hasUploadedCv = false;
     public $hasSavedPost = false;
+    public $hasStarredPost = false;
 
     public function mount(string $slug, PostService $postService, PostCvRepository $postCvRepository): void
     {
@@ -95,8 +96,13 @@ class PostDetail extends Component
                 ->where('item_type', PostModel::class)
                 ->where('item_id', $this->post->id)
                 ->exists();
+
+            $this->hasStarredPost = $this->post->stars()
+                ->where('user_id', Auth::id())
+                ->exists();
         } else {
             $this->hasSavedPost = false;
+            $this->hasStarredPost = false;
         }
     }
 
@@ -115,6 +121,9 @@ class PostDetail extends Component
 
             $starPostAction->toggle($this->post);
             $this->post->refresh()->loadMissing(['stars.user', 'starredBy']);
+            $this->hasStarredPost = $this->post->stars()
+                ->where('user_id', Auth::id())
+                ->exists();
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to star post. Please try again.');
         }
