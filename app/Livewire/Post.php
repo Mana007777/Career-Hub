@@ -101,6 +101,14 @@ class Post extends Component
      */
     protected function hydrateFiltersFromUrl(): void
     {
+        // Force-read URL query params so filtering works even when Livewire query-string
+        // syncing is delayed or unavailable in specific navigation flows.
+        $this->feedMode = (string) request()->query('feed', $this->feedMode);
+        $this->sortOrder = (string) request()->query('sort', $this->sortOrder);
+        $this->selectedTags = request()->query('tags', $this->selectedTags);
+        $this->selectedSpecialties = request()->query('specialties', $this->selectedSpecialties);
+        $this->selectedJobType = (string) request()->query('job', $this->selectedJobType);
+
         $this->feedMode = $this->validateEnumParam($this->feedMode ?? 'new', ['new', 'popular', 'following'], 'new');
         $this->sortOrder = $this->validateEnumParam($this->sortOrder ?? 'desc', ['asc', 'desc'], 'desc');
         $allowedJobs = ['full-time', 'part-time', 'contract', 'freelance', 'internship', 'remote'];
@@ -129,13 +137,26 @@ class Post extends Component
     /**
      * Parse comma-separated IDs from URL/filter string to array.
      */
-    private function parseIdList(string $value): array
+    private function parseIdList(string|array|int|null $value): array
     {
-        if (empty(trim($value))) {
+        if (is_array($value)) {
+            return array_values(array_filter(
+                array_map('intval', $value),
+                fn (int $id) => $id > 0
+            ));
+        }
+
+        if ($value === null) {
             return [];
         }
+
+        $stringValue = (string) $value;
+        if (empty(trim($stringValue))) {
+            return [];
+        }
+
         return array_values(array_filter(
-            array_map('intval', explode(',', $value)),
+            array_map('intval', explode(',', $stringValue)),
             fn (int $id) => $id > 0
         ));
     }

@@ -1,5 +1,6 @@
 <div
     class="min-h-screen text-gray-100 pb-24"
+    x-data="{ loaded: true }"
     x-init="
         // Default to loaded if no navigation is happening
         loaded = true;
@@ -22,8 +23,8 @@
         <div class="sticky top-6 z-40 px-4 mb-6 transition-all duration-500">
             <div class="max-w-5xl mx-auto bg-zinc-950/60 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] h-24 flex items-center justify-between px-10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] relative overflow-hidden group">
                 <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
-                <div class="absolute -inset-x-0 -inset-y-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                <div class="flex items-center gap-4">
+                <div class="absolute -inset-x-0 -inset-y-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
+                <div class="relative z-10 flex items-center gap-4">
                     <div class="flex flex-col">
                         <h1 class="text-2xl font-black text-white tracking-tighter leading-none italic">
                             Career <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500 bg-[length:200%_auto] animate-gradient">Hub</span>
@@ -32,7 +33,7 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-4">
+                <div class="relative z-10 flex items-center gap-4">
                     <button 
                         wire:click="toggleFilters"
                         class="group px-6 py-3 rounded-2xl bg-zinc-900/50 hover:bg-zinc-800/50 border border-zinc-800/50 hover:border-emerald-500/30 text-zinc-400 hover:text-white transition-all duration-500 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl">

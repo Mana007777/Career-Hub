@@ -16,3 +16,15 @@ html, body {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+/* Force a single dropdown arrow (our custom SVG icon) across browsers */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none !important;
+}
+
+select::-ms-expand {
+    display: none;
+}
