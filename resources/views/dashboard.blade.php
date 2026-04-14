@@ -6,7 +6,6 @@
         isset($postSlug) => $postPageTitle ?? __('Post'),
         !empty($showSettings ?? false) => __('Settings'),
         !empty($showBookmarks ?? false) => __('Bookmarks'),
-        !empty($showExploreUsers ?? false) => __('Explore people'),
         !empty($openSearch ?? false) => $searchPageTitle ?? __('Search'),
         default => __('Home'),
     };
@@ -47,10 +46,6 @@
             @elseif(isset($showBookmarks) && $showBookmarks)
                 <section>
                     <livewire:saved-posts />
-                </section>
-            @elseif(isset($showExploreUsers) && $showExploreUsers)
-                <section>
-                    <livewire:explore-users />
                 </section>
             @else
                 <div class="max-w-5xl mx-auto">

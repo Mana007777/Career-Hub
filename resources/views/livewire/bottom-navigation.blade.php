@@ -1,4 +1,4 @@
-<div class="grid h-full max-w-xl grid-cols-10 gap-1 mx-auto relative px-2">
+<div class="grid h-full max-w-xl grid-cols-9 gap-1 mx-auto relative px-2">
     <!-- Home Sector -->
     <a href="{{ route('dashboard') }}" data-tooltip-target="tooltip-home"
         class="inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500 relative">
@@ -125,25 +125,6 @@
     <div id="tooltip-chat" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
         {{ __('Chat') }}
-        <div class="tooltip-arrow" data-popper-arrow></div>
-    </div>
-
-    <!-- Personnel Archive -->
-    <a 
-        href="{{ route('explore.users') }}"
-        data-tooltip-target="tooltip-explore"
-        class="inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500"
-    >
-        <svg class="w-6 h-6 text-zinc-600 group-hover:text-emerald-400 transition-all duration-500 transform group-hover:scale-110" aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2m12-10a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm5 5h3m-3-3h3m-3 6h3" />
-        </svg>
-        <span class="sr-only">{{ __('Network') }}</span>
-    </a>
-    <div id="tooltip-explore" role="tooltip"
-        class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('People') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 

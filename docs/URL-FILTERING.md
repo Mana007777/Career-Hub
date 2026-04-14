@@ -52,34 +52,9 @@ This document describes all URL query parameters used for filtering across the C
 
 ---
 
-## Explore Users (`/explore/users`)
-
-**Route:** `GET /explore/users`  
-**Component:** `Livewire\ExploreUsers`
-
-| Parameter | Alias | Values | Default | Description |
-|-----------|-------|--------|---------|-------------|
-| `q` | - | String | - | Search by name or username |
-| `role` | - | `seeker`, `employer`, `company`, `admin` | - | Filter by user role |
-| `sort` | - | `newest`, `name`, `username`, `followers` | `newest` | Sort order: newest first, name A-Z, username A-Z, or most followers |
-| `page` | - | Integer | `1` | Pagination |
-
-**Example URLs:**
-```
-/explore/users
-/explore/users?q=john
-/explore/users?role=seeker
-/explore/users?sort=followers
-/explore/users?q=developer&role=company&sort=name
-/explore/users?role=employer&sort=followers&page=2
-```
-
----
-
 ## Quick Reference
 
 | Page | Key Params |
 |------|------------|
 | Posts | `feed`, `sort`, `tags`, `specialties`, `job` |
 | Search | `q`, `type`, `search` |
-| Explore Users | `q`, `role`, `sort` |

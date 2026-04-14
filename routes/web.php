@@ -86,10 +86,6 @@ Route::middleware([
         ]);
     })->name('search');
 
-    Route::get('/explore/users', function () {
-        return view('dashboard', ['showExploreUsers' => true]);
-    })->name('explore.users');
-
     Route::prefix('/verification-payments')->name('verification-payments.')->group(function () {
         Route::post('/{verification}/checkout', [VerificationPaymentController::class, 'createCheckout'])->name('checkout');
         Route::get('/{verification}/status', [VerificationPaymentController::class, 'refreshStatus'])->name('status');
