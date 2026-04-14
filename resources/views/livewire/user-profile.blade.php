@@ -69,7 +69,7 @@
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                             <path d="M12 2l2.3 5.1L20 9l-4 4.1L17 19l-5-2.9L7 19l1-5.9L4 9l5.7-1.9L12 2z"/>
                                         </svg>
-                                        Shiny Star
+                                        Verified Badge
                                     </span>
                                 @endif
                                 @if($user->role)
@@ -287,7 +287,7 @@
                 
                 <div class="space-y-8">
                     @forelse ($posts as $index => $post)
-                        <!-- Archive Card Inline (Replaces missing post-card component) -->
+                        
                         <article
                             onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
                             class="group relative h-full flex flex-col bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] p-8 transition-all duration-700 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] shadow-[0_30px_60px_rgba(0,0,0,0.3)] backdrop-blur-3xl cursor-pointer overflow-hidden"
@@ -310,7 +310,7 @@
                                         <div class="flex items-center gap-2">
                                             <h3 class="text-[11px] font-black text-zinc-400 group-hover/author:text-white transition-colors truncate uppercase tracking-widest">{{ $post->user->name ?? __('Unknown') }}</h3>
                                             @if($post->user && $post->user->hasBlueTick())
-                                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="Verified Star">
+                                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="Verified">
                                                     <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                                         <path d="M12 2l2.3 5.1L20 9l-4 4.1L17 19l-5-2.9L7 19l1-5.9L4 9l5.7-1.9L12 2z"/>
                                                     </svg>
