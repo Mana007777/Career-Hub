@@ -20,7 +20,7 @@ class MessageSent implements ShouldBroadcast
      */
     public function __construct(Message $message)
     {
-        $this->message = $message->load('sender');
+        $this->message = $message->load(['sender', 'attachments']);
     }
 
     /**
@@ -56,6 +56,12 @@ class MessageSent implements ShouldBroadcast
                 'username' => $this->message->sender->username,
             ],
             'message' => $this->message->message,
+            'attachments' => $this->message->attachments->map(function ($attachment) {
+                return [
+                    'file_url' => $attachment->file_url,
+                    'file_type' => $attachment->file_type,
+                ];
+            })->values()->all(),
             'status' => $this->message->status ?? 'sent',
             'created_at' => $this->message->created_at->toIso8601String(),
         ];

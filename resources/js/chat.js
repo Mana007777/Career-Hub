@@ -56,6 +56,7 @@ function setupChatListener(chatId) {
                             sender_id: eventData.sender_id,
                             sender: eventData.sender || {},
                             message: eventData.message,
+                            attachments: eventData.attachments || [],
                             status: eventData.status || 'sent',
                             created_at: eventData.created_at
                         }

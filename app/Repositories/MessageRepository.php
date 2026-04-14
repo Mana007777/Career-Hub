@@ -46,6 +46,6 @@ class MessageRepository
      */
     public function loadSender(Message $message): Message
     {
-        return $message->load('sender');
+        return $message->load(['sender', 'attachments']);
     }
 }

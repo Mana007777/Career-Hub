@@ -211,12 +211,41 @@
                             $msgText = is_object($message) ? $message->message : ($message['message'] ?? '');
                             $msgStatus = is_object($message) ? $message->status : ($message['status'] ?? 'sent');
                             $msgTime = is_object($message) ? $message->created_at : ($message['created_at'] ?? null);
+                            $msgAttachments = is_object($message)
+                                ? ($message->attachments ?? collect())
+                                : collect($message['attachments'] ?? []);
                         @endphp
                         
                         <div data-chat-message class="flex {{ $isMe ? 'justify-end' : 'justify-start' }} group/msg">
                             <div class="max-w-[85%] space-y-2">
                                 <div class="relative px-6 py-4 rounded-[2rem] {{ $isMe ? 'bg-emerald-500 text-black rounded-br-none shadow-[0_10px_30px_rgba(16,185,129,0.1)]' : 'bg-zinc-800 text-white border border-zinc-700/30 rounded-bl-none shadow-[0_10px_30px_rgba(0,0,0,0.2)]' }}">
-                                    <p class="text-[11px] font-bold leading-relaxed selection:bg-black/20">{{ $msgText }}</p>
+                                    @if($msgText !== '')
+                                        <p class="text-[11px] font-bold leading-relaxed selection:bg-black/20">{{ $msgText }}</p>
+                                    @endif
+
+                                    @if($msgAttachments->count() > 0)
+                                        <div class="mt-3 space-y-2">
+                                            @foreach($msgAttachments as $attachment)
+                                                @php
+                                                    $fileUrl = is_object($attachment) ? ($attachment->file_url ?? null) : ($attachment['file_url'] ?? null);
+                                                    $fileType = strtolower((string) (is_object($attachment) ? ($attachment->file_type ?? '') : ($attachment['file_type'] ?? '')));
+                                                    $isImage = str_starts_with($fileType, 'image/');
+                                                @endphp
+                                                @if($fileUrl)
+                                                    @if($isImage)
+                                                        <a href="{{ $fileUrl }}" target="_blank" class="block">
+                                                            <img src="{{ $fileUrl }}" alt="Attachment" class="max-h-52 rounded-2xl border {{ $isMe ? 'border-black/10' : 'border-zinc-700/40' }} object-cover">
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ $fileUrl }}" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl {{ $isMe ? 'bg-black/10 hover:bg-black/20 text-black' : 'bg-zinc-900/70 hover:bg-zinc-900 text-zinc-200' }} text-[10px] font-black uppercase tracking-widest transition-colors">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M7 7h10M7 11h10M7 15h6m5 6H6a2 2 0 01-2-2V5a2 2 0 012-2h8l6 6v10a2 2 0 01-2 2z"></path></svg>
+                                                            Open file
+                                                        </a>
+                                                    @endif
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
                                     
                                     <!-- Status Matrix -->
                                     <div class="absolute -bottom-6 {{ $isMe ? 'right-2' : 'left-2' }} opacity-0 group-hover/msg:opacity-100 transition-opacity duration-500 flex items-center gap-3">
