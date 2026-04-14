@@ -13,6 +13,10 @@ class UserNotifications extends Component
 {
     use WithPagination;
 
+    protected $listeners = [
+        'notificationsUpdated' => '$refresh',
+    ];
+
     public function render(): View
     {
         $user = Auth::user();

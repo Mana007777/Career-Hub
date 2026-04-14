@@ -8,12 +8,14 @@ use App\Models\Message;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\UserSuspension;
+use App\Models\UserNotification;
 use App\Observers\CommentObserver;
 use App\Observers\JobApplicationObserver;
 use App\Observers\MessageObserver;
 use App\Observers\PostObserver;
 use App\Observers\UserObserver;
 use App\Observers\UserSuspensionObserver;
+use App\Observers\UserNotificationObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
         Comment::observe(CommentObserver::class);
         JobApplication::observe(JobApplicationObserver::class);
         Message::observe(MessageObserver::class);
+        UserNotification::observe(UserNotificationObserver::class);
     }
 
     protected function configureDefaults(): void

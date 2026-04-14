@@ -16,6 +16,10 @@ Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
     ] : false;
 });
 
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+
 // Presence channel for user online/offline status
 Broadcast::channel('presence.users', function ($user) {
     return [

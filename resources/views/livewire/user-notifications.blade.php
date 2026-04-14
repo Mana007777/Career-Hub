@@ -3,6 +3,18 @@
     x-init="
         show = false;
         window.openNotifications = () => { show = true };
+
+        const userId = @js(auth()->id());
+        if (userId && window.Echo && !window.__userNotificationsRealtimeBound) {
+            window.__userNotificationsRealtimeBound = true;
+            window.Echo.private(`user.${userId}`)
+                .listen('.notification.created', () => {
+                    $wire.$refresh();
+                    if (window.Livewire) {
+                        window.Livewire.dispatch('notificationsUpdated');
+                    }
+                });
+        }
     "
 >
     <!-- Notifications Modal -->
