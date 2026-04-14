@@ -22,7 +22,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
                     </div>
-                    <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Return to Command Center') }}</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Back to Home') }}</span>
                 </a>
             </div>
 
@@ -57,7 +57,7 @@
                     <div class="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
                 </div>
                 <h1 class="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter italic">
-                    {{ __('Node') }} <span class="text-emerald-500">{{ __('Profile') }}</span>
+                    {{ __('User') }} <span class="text-emerald-500">{{ __('Profile') }}</span>
                 </h1>
                 <p class="text-zinc-500 text-sm mt-6 uppercase tracking-[0.2em] italic font-medium">{{ __('Account details and security protocols.') }}</p>
             </div>

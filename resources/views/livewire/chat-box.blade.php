@@ -136,7 +136,7 @@
                     <div class="flex-1 min-w-0">
                         <h3 class="text-[11px] font-black text-white truncate uppercase tracking-widest italic">{{ $otherUser->name }}</h3>
                         <p class="text-[8px] font-black uppercase tracking-[0.2em] mt-1 {{ $otherUser->isActive() ? 'text-emerald-500' : 'text-zinc-600' }}">
-                            {{ $otherUser->isActive() ? 'Link Established' : 'Signal Lost' }}
+                            {{ $otherUser->isActive() ? 'Online' : 'Offline' }}
                         </p>
                     </div>
                 </div>
@@ -156,8 +156,8 @@
                     <div class="w-20 h-20 bg-zinc-950/40 border border-zinc-800 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
                         <svg class="w-10 h-10 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                     </div>
-                    <h4 class="text-sm font-black text-white uppercase tracking-widest italic mb-4">Encryption Locked</h4>
-                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-relaxed mb-8">Follow {{ $otherUser->name }} to initiate private data uplink.</p>
+                    <h4 class="text-sm font-black text-white uppercase tracking-widest italic mb-4">Chat unavailable</h4>
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-relaxed mb-8">Follow {{ $otherUser->name }} to start chatting.</p>
                     <a href="{{ route('user.profile', $otherUser->username ?? 'unknown') }}" class="px-10 py-4 bg-emerald-500 text-black text-[10px] font-black rounded-2xl uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(16,185,129,0.2)] hover:scale-105 transition-all">View Identity</a>
                 </div>
             @else
@@ -197,10 +197,10 @@
                     <!-- Interaction Requests Hub -->
                     @if($pendingRequest && !$isRequest)
                         <div class="p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-3xl animate-pulse">
-                            <p class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">Inbound Access Request</p>
+                            <p class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">Chat request</p>
                             <div class="flex gap-3">
-                                <button wire:click="acceptRequest" class="flex-1 py-3 bg-emerald-500 text-black text-[9px] font-black rounded-xl uppercase tracking-widest">Authorize</button>
-                                <button wire:click="rejectRequest" class="flex-1 py-3 bg-zinc-800 text-white text-[9px] font-black rounded-xl uppercase tracking-widest">Nullify</button>
+                                <button wire:click="acceptRequest" class="flex-1 py-3 bg-emerald-500 text-black text-[9px] font-black rounded-xl uppercase tracking-widest">Accept</button>
+                                <button wire:click="rejectRequest" class="flex-1 py-3 bg-zinc-800 text-white text-[9px] font-black rounded-xl uppercase tracking-widest">Reject</button>
                             </div>
                         </div>
                     @endif
@@ -264,7 +264,7 @@
                     @empty
                         <div class="flex flex-col items-center justify-center py-20 text-center">
                             <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping mb-6"></div>
-                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Establishing secure uplink...</p>
+                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">No messages yet...</p>
                         </div>
                     @endforelse
                 </div>
@@ -281,7 +281,7 @@
                                 wire:model.live="newMessage"
                                 wire:keydown.enter.prevent="sendMessage"
                                 rows="1"
-                                placeholder="INITIALIZE BROADCAST..."
+                                placeholder="Type a message..."
                                 data-chat-composer
                                 class="w-full px-8 py-5 bg-zinc-950/40 border border-zinc-800 rounded-3xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-xs font-black uppercase resize-none custom-scrollbar"
                                 style="min-height: 64px; max-height: 160px;"

@@ -20,7 +20,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Abort Archive Session</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Back to Home</span>
             </button>
         </div>
 
@@ -34,12 +34,12 @@
         >
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Satellite <span class="text-emerald-500">Archive</span></h1>
+                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Saved <span class="text-emerald-500">Posts</span></h1>
             </div>
-            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">Encrypted Repository of Critical Intelligence Logs · {{ $posts->total() }} units</p>
+            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">Your saved posts · {{ $posts->total() }} total</p>
         </div>
 
-        <!-- Archive Matrix -->
+        <!-- Saved Posts Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($posts as $index => $post)
                 <article
@@ -98,7 +98,7 @@
                                 $isImage = in_array(strtolower(pathinfo($post->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
                             @endphp
                             @if($isImage)
-                                <img src="{{ $mediaUrl }}" alt="Intelligence Media" class="w-full h-40 object-cover grayscale opacity-50 group-hover/media:grayscale-0 group-hover/media:opacity-100 transition-all duration-1000">
+                                <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-40 object-cover grayscale opacity-50 group-hover/media:grayscale-0 group-hover/media:opacity-100 transition-all duration-1000">
                                 <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent"></div>
                             @else
                                 <div class="bg-zinc-950 py-6 px-8 flex items-center justify-between group-hover:bg-emerald-500/5 transition-colors duration-700">
@@ -132,7 +132,7 @@
                     <div class="w-24 h-24 bg-zinc-950 border border-zinc-800/50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:scale-110 transition-all duration-1000">
                         <svg class="h-10 w-10 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z" /></svg>
                     </div>
-                    <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">Archive Null</h3>
+                    <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">No Saved Posts</h3>
                     <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Zero mission logs have been pinned to this node.</p>
                 </div>
             @endforelse

@@ -33,7 +33,7 @@
                         <div class="flex items-center justify-between mb-8">
                             <h2 class="text-[10px] font-black text-white uppercase tracking-[0.6em] flex items-center gap-4 italic font-bold">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Intelligence Scan
+                                Search
                             </h2>
                             <button 
                                 wire:click="closeSearch"
@@ -42,10 +42,10 @@
                             </button>
                         </div>
                         
-                        <!-- Protocol Filters -->
+                        <!-- Filters -->
                         @if($query && strlen(trim($query)) > 0)
                             <div class="flex gap-4 mb-8">
-                                @foreach(['all' => 'Global Stream', 'users' => 'Identity Nodes', 'posts' => 'Mission Logs'] as $type => $label)
+                                @foreach(['all' => 'All', 'users' => 'Users', 'posts' => 'Posts'] as $type => $label)
                                     <button 
                                         wire:click="setResultType('{{ $type }}')"
                                         class="px-8 py-3 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] italic transition-all duration-500 {{ ($resultType ?? 'all') === $type ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'bg-zinc-950 text-zinc-600 hover:text-zinc-400 border border-zinc-800' }}">
@@ -77,7 +77,7 @@
                             <!-- Identity Results -->
                             @if(in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0)
                                 <div class="px-8 py-10 border-b border-zinc-800/30">
-                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Recovered Identity Nodes</h3>
+                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Users</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         @php $displayUsers = ($this->resultType === 'all') ? $users->take(4) : $users; @endphp
                                         @foreach($displayUsers as $index => $user)
@@ -109,7 +109,7 @@
                                     
                                     @if($this->resultType === 'all' && $users->total() > 4)
                                         <div class="mt-8 flex justify-center">
-                                            <button wire:click="setResultType('users')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">Expand Node Index ({{ $users->total() }})</button>
+                                            <button wire:click="setResultType('users')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">View all users ({{ $users->total() }})</button>
                                         </div>
                                     @endif
                                 </div>
@@ -118,7 +118,7 @@
                             <!-- Log Results -->
                             @if(in_array($resultType ?? 'all', ['all', 'posts']) && $posts->count() > 0)
                                 <div class="px-8 py-10 transition-all">
-                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Recovered Mission Logs</h3>
+                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Posts</h3>
                                     <div class="space-y-4">
                                         @php $displayPosts = ($this->resultType === 'all') ? $posts->take(4) : $posts; @endphp
                                         @foreach($displayPosts as $index => $post)
@@ -128,7 +128,7 @@
                                                 class="block p-8 bg-zinc-950/40 border border-zinc-800/50 rounded-[2.5rem] hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all duration-500 group"
                                             >
                                                 <div class="flex items-center justify-between mb-4">
-                                                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ $post->user->username }} · Signal {{ $post->created_at->diffForHumans() }}</p>
+                                                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ $post->user->username }} · {{ $post->created_at->diffForHumans() }}</p>
                                                     <div class="flex gap-2">
                                                         @foreach($post->tags->take(2) as $tag)
                                                             <span class="px-2 py-0.5 bg-zinc-800 rounded-lg text-[7px] font-black text-zinc-500 uppercase tracking-widest">#{{ $tag->name }}</span>

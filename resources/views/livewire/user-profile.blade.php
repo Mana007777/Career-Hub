@@ -17,7 +17,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Return to Command Center') }}</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Back to Home') }}</span>
             </button>
         </div>
 
@@ -115,11 +115,11 @@
                                         <p class="text-white text-2xl font-black italic">{{ $postsCount }}</p>
                                     </div>
                                     <button wire:click="openFollowersModal" class="text-left group flex flex-col gap-2">
-                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em] group-hover:text-emerald-500/50 transition-colors">{{ __('Signal In') }}</span>
+                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em] group-hover:text-emerald-500/50 transition-colors">{{ __('Followers') }}</span>
                                         <p class="text-white text-2xl font-black italic group-hover:text-emerald-500 transition-colors">{{ $followersCount }}</p>
                                     </button>
                                     <button wire:click="openFollowingModal" class="text-left group flex flex-col gap-2">
-                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em] group-hover:text-emerald-500/50 transition-colors">{{ __('Signal Out') }}</span>
+                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em] group-hover:text-emerald-500/50 transition-colors">{{ __('Following') }}</span>
                                         <p class="text-white text-2xl font-black italic group-hover:text-emerald-500 transition-colors">{{ $followingCount }}</p>
                                     </button>
                                     <div class="flex flex-col gap-2">
@@ -139,7 +139,7 @@
                                         wire:click="toggleFollow"
                                         class="shrink-0 px-10 py-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-500 shadow-xl
                                             {{ $isFollowing ? 'bg-zinc-800 text-zinc-400 border border-zinc-700/50 hover:bg-zinc-700' : 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-emerald-500/10 hover:shadow-emerald-500/20' }}">
-                                        {{ $isFollowing ? __('Sever Signal') : __('Align Signal') }}
+                                        {{ $isFollowing ? __('Unfollow') : __('Follow') }}
                                     </button>
 
                                     <div class="relative shrink-0">
@@ -177,7 +177,7 @@
                             @if(Auth::check() && Auth::id() === $user->id)
                                 <a href="{{ route('profile.show') }}" class="shrink-0 px-8 py-3.5 bg-zinc-800 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl border border-zinc-700/50 hover:bg-zinc-700 transition-all flex items-center gap-3">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M15.232 5.232a3 3 0 014.243 4.243L9 19.95 4 21l1.05-5 10.182-10.768z" /></svg>
-                                    {{ __('Configure Node') }}
+                                    {{ __('Edit Profile') }}
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}" class="shrink-0">
                                     @csrf
@@ -340,7 +340,7 @@
                                         $isImage = in_array(strtolower(pathinfo($post->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
                                     @endphp
                                     @if($isImage)
-                                        <img src="{{ $mediaUrl }}" alt="{{ __('Intelligence Media') }}" class="w-full h-40 object-cover grayscale opacity-50 group-hover/media:grayscale-0 group-hover/media:opacity-100 transition-all duration-1000">
+                                        <img src="{{ $mediaUrl }}" alt="{{ __('Post media') }}" class="w-full h-40 object-cover grayscale opacity-50 group-hover/media:grayscale-0 group-hover/media:opacity-100 transition-all duration-1000">
                                         <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent"></div>
                                     @else
                                         <div class="bg-zinc-950 py-6 px-8 flex items-center justify-between group-hover:bg-emerald-500/5 transition-colors duration-700">
@@ -373,7 +373,7 @@
                                 <svg class="w-10 h-10 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                             </div>
                             <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">{{ __('Null Stream') }}</h3>
-                            <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('Node has not initialized any public broadcasts.') }}</p>
+                            <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('This user has not posted anything yet.') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -397,7 +397,7 @@
         <div class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-zinc-950/98 backdrop-blur-2xl" wire:click="{{ $closeModalSub }}">
             <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] max-w-lg w-full max-h-[85vh] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,1)]" wire:click.stop x-data>
                 <div class="flex items-center justify-between p-8 border-b border-zinc-800/50 bg-zinc-950/40">
-                    <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">{{ __($modalType) }} {{ __('Node Mapping') }}</h3>
+                    <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">{{ __($modalType) }} {{ __('List') }}</h3>
                     <button wire:click="{{ $closeModalSub }}" class="w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-rose-500 hover:bg-rose-500/10 transition-all flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"></path></svg></button>
                 </div>
 

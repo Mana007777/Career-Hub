@@ -1,4 +1,4 @@
-<x-guest-layout title="{{ __('Signal Intercepted') }}">
+<x-guest-layout title="{{ __('Account Suspended') }}">
     <div class="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden font-mono">
         <!-- Background Glows -->
         <div class="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-rose-500/10 rounded-full blur-[150px] animate-pulse"></div>
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-8 space-y-4">
-                        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 italic">Protocol Type</p>
+                        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 italic">Reason Type</p>
                         <span class="text-white text-xl font-black uppercase italic tracking-tighter block truncate">
                              {{ $suspendedUntil ? 'Timed Quarantine' : 'Permanent Purge' }}
                         </span>
@@ -77,7 +77,7 @@
                 {{-- Action Protocol --}}
                 <div class="space-y-6">
                     <div class="bg-zinc-950/40 p-10 rounded-[2.5rem] border border-zinc-800">
-                        <h4 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Counter-Protocol Options</h4>
+                        <h4 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">What you can do</h4>
                         <ul class="space-y-4">
                              <li class="flex items-start gap-4 text-[11px] text-zinc-500 italic font-bold">
                                 <span class="text-rose-500 font-black tracking-widest">[ERROR]</span>

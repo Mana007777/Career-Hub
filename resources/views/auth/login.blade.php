@@ -1,4 +1,4 @@
-<x-guest-layout title="{{ __('Signal Connection') }}">
+<x-guest-layout title="{{ __('Sign In') }}">
     <div class="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
         <!-- Background Glows -->
         <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse"></div>
@@ -64,7 +64,7 @@
                         @if (config('services.github.client_id') && config('services.github.client_secret'))
                             <div class="relative py-4">
                                 <div class="absolute inset-x-0 top-1/2 h-px bg-zinc-800"></div>
-                                <div class="relative flex justify-center"><span class="bg-zinc-900 px-4 text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">Alt Access Protocol</span></div>
+                                <div class="relative flex justify-center"><span class="bg-zinc-900 px-4 text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">Other sign in options</span></div>
                             </div>
                             <livewire:auth.github-login />
                         @endif

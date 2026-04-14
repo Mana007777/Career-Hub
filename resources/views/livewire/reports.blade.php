@@ -17,7 +17,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Return to Command Center</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Back to Home</span>
             </a>
         </div>
 
@@ -70,7 +70,7 @@
 
                             <div class="space-y-6">
                                 <div class="flex items-center gap-4 text-sm font-black italic">
-                                    <span class="text-rose-500/50 uppercase tracking-widest text-[9px]">Signal Source:</span>
+                                    <span class="text-rose-500/50 uppercase tracking-widest text-[9px]">Reported by:</span>
                                     <a href="{{ route('user.profile', $report->reporter->username ?? 'unknown') }}" class="text-white hover:text-rose-400 transition-colors uppercase tracking-tight">
                                         {{ $report->reporter->name }} <span class="text-zinc-600 block sm:inline text-[10px] sm:ml-2">@ {{ $report->reporter->username }}</span>
                                     </a>
@@ -104,7 +104,7 @@
                                         <div>
                                             <h3 class="text-xl font-black text-white uppercase italic tracking-tighter italic font-bold italic">{{ $report->target->name }}</h3>
                                             <p class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mt-1 italic">@ {{ $report->target->username }}</p>
-                                            <p class="text-[9px] font-black text-zinc-800 uppercase tracking-[0.2em] mt-3 italic italic font-bold">Node ID: {{ $report->target->id }}</p>
+                                            <p class="text-[9px] font-black text-zinc-800 uppercase tracking-[0.2em] mt-3 italic italic font-bold">ID: {{ $report->target->id }}</p>
                                         </div>
                                     </div>
                                 @elseif($report->target_type === 'comment' && $report->target)
@@ -159,7 +159,7 @@
                  <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/30 to-transparent"></div>
                  <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40">
                     <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">
-                        {{ $actionType === 'delete' ? 'Authorization Req: Purge ' . $selectedReport->target_type : 'Authorization Req: Dismiss Signal' }}
+                        {{ $actionType === 'delete' ? 'Confirm delete ' . $selectedReport->target_type : 'Confirm dismiss report' }}
                     </h3>
                  </div>
                  <div class="p-10">

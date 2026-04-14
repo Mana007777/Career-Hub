@@ -25,7 +25,7 @@
                 </svg>
 
                 <span wire:loading.remove wire:target="sendEmailVerification" class="relative z-10">{{ __('Initialize Verification Link') }}</span>
-                <span wire:loading wire:target="sendEmailVerification" class="relative z-10">{{ __('Transmitting Signal...') }}</span>
+                <span wire:loading wire:target="sendEmailVerification" class="relative z-10">{{ __('Sending...') }}</span>
             </button>
 
             @if ($verificationLinkSent)
@@ -36,7 +36,7 @@
                 >
                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                     <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">
-                        {{ __('Transmission Success: Check Signal Inbound.') }}
+                        {{ __('Email sent successfully. Please check your inbox.') }}
                     </p>
                 </div>
             @endif

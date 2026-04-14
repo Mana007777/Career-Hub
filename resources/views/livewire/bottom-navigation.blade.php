@@ -14,7 +14,7 @@
     </a>
     <div id="tooltip-home" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Command Center') }}
+        {{ __('Home') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -38,7 +38,7 @@
     </button>
     <div id="tooltip-notifications" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Inbound Comms') }}
+        {{ __('Notifications') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -54,11 +54,11 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7 7V5" />
             </svg>
         </div>
-        <span class="sr-only">{{ __('Deploy Node') }}</span>
+        <span class="sr-only">{{ __('Create Post') }}</span>
     </button>
     <div id="tooltip-post" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Deploy Node') }}
+        {{ __('Create Post') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -72,15 +72,15 @@
             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
             <path stroke="currentColor" stroke-linecap="round" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
         </svg>
-        <span class="sr-only">{{ __('Deep Scan') }}</span>
+        <span class="sr-only">{{ __('Search') }}</span>
     </button>
     <div id="tooltip-search" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Deep Scan') }}
+        {{ __('Search') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
-    <!-- Archive Sector -->
+    <!-- Bookmarks -->
     <a 
         href="{{ route('bookmarks') }}"
         data-tooltip-target="tooltip-bookmarks"
@@ -100,11 +100,11 @@
     </a>
     <div id="tooltip-bookmarks" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Archive Sector') }}
+        {{ __('Bookmarks') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
-    <!-- Direct Uplink -->
+    <!-- Chat -->
     <button 
         onclick="window.dispatchEvent(new CustomEvent('openChatList'))"
         data-tooltip-target="tooltip-chat" 
@@ -124,7 +124,7 @@
     </button>
     <div id="tooltip-chat" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Direct Uplink') }}
+        {{ __('Chat') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -143,7 +143,7 @@
     </a>
     <div id="tooltip-explore" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Intelligence Network') }}
+        {{ __('People') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
@@ -170,7 +170,7 @@
         </a>
         <div id="tooltip-reports" role="tooltip"
             class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-            {{ __('Overseer Protocol') }}
+            {{ __('Reports') }}
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
     @else
@@ -189,12 +189,12 @@
         </a>
         <div id="tooltip-cvs" role="tooltip"
             class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-            {{ __('Intel Dossier') }}
+            {{ __('CVs') }}
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
     @endif
 
-    <!-- System Config -->
+    <!-- Settings -->
     <a 
         href="{{ route('settings') }}"
         data-tooltip-target="tooltip-settings" 
@@ -209,11 +209,11 @@
     </a>
     <div id="tooltip-settings" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('System Config') }}
+        {{ __('Settings') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
-    <!-- Identity Node -->
+    <!-- Profile -->
     <a 
         href="{{ auth()->check() ? route('user.profile', auth()->user()->username ?? 'unknown') : route('profile.show') }}"
         data-tooltip-target="tooltip-profile"
@@ -235,7 +235,7 @@
     </a>
     <div id="tooltip-profile" role="tooltip"
         class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Identity Node') }}
+        {{ __('Profile') }}
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 </div>

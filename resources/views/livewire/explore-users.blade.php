@@ -16,7 +16,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Return to Command Center</span>
+            <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Back to Home</span>
         </a>
     </div>
 
@@ -32,10 +32,10 @@
             <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
             <h1 class="text-4xl font-black text-white uppercase tracking-tighter italic selection:bg-emerald-500/30">Personnel <span class="text-emerald-500">Archive</span></h1>
         </div>
-        <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic pl-6">Global Index of Registered Personnel Nodes</p>
+        <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic pl-6">Discover people across the platform</p>
     </div>
 
-    <!-- Scanner Protocols (Filters) -->
+    <!-- Filters -->
     <div 
         class="bg-zinc-950/60 border border-zinc-800/50 rounded-[2.5rem] p-10 backdrop-blur-3xl shadow-[0_30px_60px_rgba(0,0,0,0.3)] relative overflow-hidden group"
         x-show="loaded"
@@ -48,7 +48,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             <!-- Search Terminal -->
             <div class="space-y-4">
-                <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Signal Search</label>
+                <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Search users</label>
                 <div class="relative group/input">
                     <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-zinc-800 group-focus-within/input:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -142,7 +142,7 @@
                         @if(isset($user->followers_count))
                             <div class="flex items-center gap-2 mt-3">
                                 <div class="w-1 h-1 rounded-full bg-emerald-500/50"></div>
-                                <p class="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em]">{{ $user->followers_count }} Signals Synced</p>
+                                <p class="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em]">{{ $user->followers_count }} Followers</p>
                             </div>
                         @endif
                     </div>

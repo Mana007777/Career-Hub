@@ -66,7 +66,7 @@
                             <label for="terms" class="flex items-start group cursor-pointer">
                                 <input id="terms" name="terms" type="checkbox" required class="mt-1 w-4 h-4 bg-zinc-950 border-zinc-800 rounded focus:ring-emerald-500 text-emerald-500 cursor-pointer">
                                 <span class="ms-4 text-[9px] font-black text-zinc-600 group-hover:text-zinc-400 uppercase tracking-widest transition-colors italic leading-relaxed">
-                                    I acknowledge the <a target="_blank" href="{{ route('terms.show') }}" class="underline decoration-zinc-800 hover:decoration-emerald-500/30">Terms of Operation</a> and <a target="_blank" href="{{ route('policy.show') }}" class="underline decoration-zinc-800 hover:decoration-emerald-500/30">Privacy Protocol</a>
+                                    I acknowledge the <a target="_blank" href="{{ route('terms.show') }}" class="underline decoration-zinc-800 hover:decoration-emerald-500/30">Terms of Service</a> and <a target="_blank" href="{{ route('policy.show') }}" class="underline decoration-zinc-800 hover:decoration-emerald-500/30">Privacy Policy</a>
                                 </span>
                             </label>
                         </div>

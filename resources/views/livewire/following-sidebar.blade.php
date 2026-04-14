@@ -42,14 +42,14 @@
                 <button
                     onclick="window.dispatchEvent(new CustomEvent('open-chat', { detail: { userId: {{ $followingUser->id }} } }))"
                     class="w-10 h-10 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-800 hover:text-emerald-500 hover:border-emerald-500/30 transition-all shadow-inner"
-                    title="Initialize Uplink"
+                    title="Start chat"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                 </button>
             </div>
         @empty
             <div class="py-12 text-center">
-                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">Zero Synced Nodes.</p>
+                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">No connections yet.</p>
             </div>
         @endforelse
     </div>

@@ -20,7 +20,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Abort Database Session</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Back to Home</span>
             </button>
         </div>
 
@@ -34,9 +34,9 @@
         >
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Mission <span class="text-emerald-500 selection:bg-emerald-500/30">Intelligence</span></h1>
+                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Received <span class="text-emerald-500 selection:bg-emerald-500/30">CVs</span></h1>
             </div>
-            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">Archive of Received Personnel Data Streams</p>
+            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">All CV submissions from users</p>
         </div>
 
         <!-- CVs List -->
@@ -68,7 +68,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-black text-white uppercase tracking-tight italic">{{ $cv->user->name ?? 'Unknown Signal' }}</h3>
+                                    <h3 class="text-lg font-black text-white uppercase tracking-tight italic">{{ $cv->user->name ?? 'Unknown User' }}</h3>
                                     <p class="text-[9px] font-black text-emerald-500/50 uppercase tracking-[0.4em] mt-1">{{ $cv->created_at->format('Y.m.d // H:i') }}</p>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                                 </div>
                             </div>
 
-                            <!-- Intelligence Payload -->
+                            <!-- CV Details -->
                             @if($cv->message)
                                 <div class="bg-zinc-950/30 border-l-4 border-emerald-500/30 p-8 rounded-2xl mb-8">
                                     <p class="text-zinc-400 text-sm italic leading-relaxed selection:bg-emerald-500/20 font-medium">"{{ $cv->message }}"</p>
@@ -107,13 +107,13 @@
                             </div>
                         </div>
 
-                        <!-- Retrieval Node -->
+                        <!-- Download -->
                         <div class="w-full md:w-auto self-end">
                             <button
                                 wire:click="downloadCv({{ $cv->id }})"
                                 wire:loading.attr="disabled"
                                 class="w-full md:w-auto px-10 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl transition-all duration-500 shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:bg-emerald-400 group/btn flex items-center justify-center gap-4 disabled:opacity-30">
-                                <span wire:loading.remove wire:target="downloadCv">Retrieve Intelligence</span>
+                                <span wire:loading.remove wire:target="downloadCv">Download CV</span>
                                 <span wire:loading wire:target="downloadCv" class="flex items-center gap-3">
                                     <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                     Decrypting...
