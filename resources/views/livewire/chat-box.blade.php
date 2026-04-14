@@ -1,6 +1,22 @@
 <div 
     x-data="{
         chatId: @entangle('chatId'),
+        scrollToBottom() {
+            if (!this.chatId) return;
+            const target = document.getElementById(`chat-messages-${this.chatId}`);
+            if (!target) return;
+            const apply = () => { target.scrollTop = target.scrollHeight; };
+            apply();
+            requestAnimationFrame(apply);
+            setTimeout(apply, 60);
+            setTimeout(apply, 160);
+        },
+        resetComposer() {
+            const composer = this.$el.querySelector('[data-chat-composer]');
+            if (!composer) return;
+            composer.value = '';
+            composer.style.height = 'auto';
+        },
         init() {
             window.addEventListener('open-chat', (e) => {
                 @this.call('openChat', e.detail.userId);
@@ -32,13 +48,19 @@
                     @this.call('handleStatusUpdate', e.detail.messageId, e.detail.status).catch(console.error);
                 }
             };
+            const scrollHandler = () => this.scrollToBottom();
+            const composerResetHandler = () => this.resetComposer();
             
             window.addEventListener('new-message', messageHandler);
             window.addEventListener('message-status-updated', statusHandler);
+            window.addEventListener('scroll-to-bottom', scrollHandler);
+            window.addEventListener('composer-reset', composerResetHandler);
             
             this.$el.addEventListener('livewire:destroy', () => {
                 window.removeEventListener('new-message', messageHandler);
                 window.removeEventListener('message-status-updated', statusHandler);
+                window.removeEventListener('scroll-to-bottom', scrollHandler);
+                window.removeEventListener('composer-reset', composerResetHandler);
             });
         }
     }"
@@ -187,10 +209,11 @@
                     @else
                         <form wire:submit.prevent="sendMessage" class="relative group/input">
                             <textarea
-                                wire:model="newMessage"
+                                wire:model.live="newMessage"
                                 wire:keydown.enter.prevent="sendMessage"
                                 rows="1"
                                 placeholder="INITIALIZE BROADCAST..."
+                                data-chat-composer
                                 class="w-full px-8 py-5 bg-zinc-950/40 border border-zinc-800 rounded-3xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-xs font-black uppercase resize-none custom-scrollbar"
                                 style="min-height: 64px; max-height: 160px;"
                                 x-on:input="$el.style.height = 'auto'; $el.style.height = Math.min($el.scrollHeight, 160) + 'px';"

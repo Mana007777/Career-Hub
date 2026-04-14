@@ -372,6 +372,13 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-3">
                                     <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em] group-hover:text-emerald-400 transition-colors truncate">{{ $post->user->name ?? 'Unknown Operative' }}</h3>
+                                    @if($post->user && $post->user->hasBlueTick())
+                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="Verified Star">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                <path d="M12 2l2.3 5.1L20 9l-4 4.1L17 19l-5-2.9L7 19l1-5.9L4 9l5.7-1.9L12 2z"/>
+                                            </svg>
+                                        </span>
+                                    @endif
                                     @if($post->suspension)
                                         <span class="px-2.5 py-1 text-[8px] font-black uppercase tracking-widest rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 animate-pulse">
                                             Account Locked

@@ -65,11 +65,11 @@
                             <div class="flex flex-wrap items-center gap-4 mb-6">
                                 <h1 class="text-4xl font-black text-white uppercase tracking-tighter italic selection:bg-emerald-500/30">{{ $user->username }}</h1>
                                 @if($user->hasBlueTick())
-                                    <span class="inline-flex items-center gap-2 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M10 1.5a1 1 0 01.98.804l.355 1.706a1 1 0 00.753.753l1.706.355a1 1 0 01.554 1.688l-1.232 1.202a1 1 0 00-.287.885l.233 1.73a1 1 0 01-1.45 1.055L10.8 11.92a1 1 0 00-.932 0l-1.562.858a1 1 0 01-1.45-1.055l.233-1.73a1 1 0 00-.287-.885L5.57 7.906a1 1 0 01.554-1.688l1.706-.355a1 1 0 00.753-.753l.355-1.706A1 1 0 0110 1.5zm3.03 6.97a.75.75 0 00-1.06-1.06L9.25 10.13 8.03 8.91a.75.75 0 10-1.06 1.06l1.75 1.75a.75.75 0 001.06 0l3.25-3.25z" clip-rule="evenodd"/>
+                                    <span class="inline-flex items-center gap-2 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] rounded-xl bg-emerald-500/15 border border-emerald-400/40 text-emerald-200 shadow-[0_0_22px_rgba(16,185,129,0.35)] animate-pulse">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                            <path d="M12 2l2.3 5.1L20 9l-4 4.1L17 19l-5-2.9L7 19l1-5.9L4 9l5.7-1.9L12 2z"/>
                                         </svg>
-                                        Blue Tick
+                                        Shiny Star
                                     </span>
                                 @endif
                                 @if($user->role)
@@ -307,7 +307,16 @@
                                         @endif
                                     </div>
                                     <div class="min-w-0">
-                                        <h3 class="text-[11px] font-black text-zinc-400 group-hover/author:text-white transition-colors truncate uppercase tracking-widest">{{ $post->user->name ?? __('Unknown') }}</h3>
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="text-[11px] font-black text-zinc-400 group-hover/author:text-white transition-colors truncate uppercase tracking-widest">{{ $post->user->name ?? __('Unknown') }}</h3>
+                                            @if($post->user && $post->user->hasBlueTick())
+                                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="Verified Star">
+                                                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                        <path d="M12 2l2.3 5.1L20 9l-4 4.1L17 19l-5-2.9L7 19l1-5.9L4 9l5.7-1.9L12 2z"/>
+                                                    </svg>
+                                                </span>
+                                            @endif
+                                        </div>
                                         <p class="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em] mt-1 italic">{{ $post->created_at->diffForHumans() }}</p>
                                     </div>
                                 </div>

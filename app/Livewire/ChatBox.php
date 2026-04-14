@@ -157,7 +157,7 @@ class ChatBox extends Component
             $this->chatId = $this->chat->id;
         }
 
-        $text = trim($this->newMessage ?? '');
+        $text = trim((string) ($this->newMessage ?? ''));
         $attachmentsPayload = [];
 
         // Handle optional attachment upload
@@ -220,7 +220,8 @@ class ChatBox extends Component
             ]);
         }
         
-        // Scroll to bottom
+        // Reset composer UI and force scroll to latest message.
+        $this->dispatch('composer-reset');
         $this->dispatch('scroll-to-bottom');
     }
 
