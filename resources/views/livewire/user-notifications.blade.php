@@ -85,6 +85,38 @@
 
             <!-- Notifications List -->
             <div class="flex-1 overflow-y-auto custom-scrollbar bg-zinc-900/40 p-10 space-y-6">
+                @if($showInvitationDecision)
+                    <div class="p-8 rounded-[2rem] border border-cyan-500/30 bg-cyan-500/[0.04] shadow-[0_20px_40px_rgba(6,182,212,0.08)]">
+                        <p class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.35em]">Invitation</p>
+                        <p class="mt-3 text-white text-sm font-black uppercase tracking-tight">
+                            {{ $invitationCompanyName ?? 'Company' }} invited you to join.
+                        </p>
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <button
+                                type="button"
+                                wire:click="acceptInvitation"
+                                class="px-6 py-3 bg-emerald-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-400 transition-all"
+                            >
+                                Accept
+                            </button>
+                            <button
+                                type="button"
+                                wire:click="rejectInvitation"
+                                class="px-6 py-3 bg-rose-500/15 border border-rose-500/30 text-rose-400 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-500/25 transition-all"
+                            >
+                                Reject
+                            </button>
+                            <button
+                                type="button"
+                                wire:click="closeInvitationDecision"
+                                class="px-6 py-3 bg-zinc-950 border border-zinc-800 text-zinc-400 text-[9px] font-black uppercase tracking-widest rounded-xl hover:text-white transition-all"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
                 @forelse($notifications as $index => $notification)
                     <div 
                         class="p-8 rounded-[2rem] border transition-all duration-700 group/signal {{ !$notification->is_read ? 'bg-emerald-500/[0.03] border-emerald-500/20 shadow-[0_20px_40px_rgba(16,185,129,0.05)]' : 'bg-zinc-950/40 border-zinc-800/50 opacity-60 hover:opacity-100' }}"
@@ -131,7 +163,9 @@
                                     @endif
 
                                     @if($notification->type === 'organization_invite' && auth()->check() && auth()->id() === $notification->user_id)
-                                        <a href="{{ route('user.profile', auth()->user()->username ?? 'me') }}" class="text-[9px] font-black text-cyan-500 uppercase tracking-widest hover:text-cyan-400 transition-colors italic" @click="show = false">View profile →</a>
+                                        <button type="button" wire:click="openInvitationDecision({{ $notification->id }})" class="text-[9px] font-black text-cyan-500 uppercase tracking-widest hover:text-cyan-400 transition-colors italic">
+                                            View invitation →
+                                        </button>
                                     @endif
 
                                     @if(in_array($notification->type, ['organization_invite_accepted', 'organization_invite_rejected']) && $notification->sourceUser)

@@ -148,6 +148,11 @@ class UserProfile extends Component
             return;
         }
 
+        if ($this->user->isCompany()) {
+            session()->flash('error', 'You can only invite normal users to your organization.');
+            return;
+        }
+
         try {
             $companyId = Auth::id();
             $membership = \App\Models\OrganizationMembership::firstOrCreate(

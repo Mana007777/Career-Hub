@@ -166,8 +166,12 @@
                                     </button>
 
                                     <div class="relative shrink-0">
-                                        <button @click="openOptions = !openOptions" class="w-12 h-12 rounded-2xl bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-zinc-700 transition-all">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M5 12h.01M12 12h.01M19 12h.01" /></svg>
+                                        <button @click="openOptions = !openOptions" class="w-12 h-12 rounded-2xl bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-zinc-700 transition-all">
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <circle cx="12" cy="6" r="1.8"></circle>
+                                                <circle cx="12" cy="12" r="1.8"></circle>
+                                                <circle cx="12" cy="18" r="1.8"></circle>
+                                            </svg>
                                         </button>
 
                                         <div 
@@ -191,6 +195,24 @@
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                                                     <span>{{ __('Flag Discrepancy') }}</span>
                                                 </button>
+                                            @endif
+                                            @if(Auth::user()->isCompany() && ! $user->isCompany())
+                                                @if($viewerCompanyAlreadyMember)
+                                                    <div class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-emerald-400 bg-emerald-500/5 rounded-2xl uppercase tracking-widest">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                                        <span>Already in your company</span>
+                                                    </div>
+                                                @elseif($pendingOrganizationInvitationId)
+                                                    <div class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-amber-400 bg-amber-500/5 rounded-2xl uppercase tracking-widest">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" /></svg>
+                                                        <span>Invitation pending</span>
+                                                    </div>
+                                                @else
+                                                    <button wire:click="inviteToOrganization" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-cyan-400 hover:bg-cyan-500/10 rounded-2xl transition-all uppercase tracking-widest" @click="openOptions = false">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8m-4-4v8M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
+                                                        <span>Invite to company</span>
+                                                    </button>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
