@@ -269,6 +269,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->verifications()
             ->where('type', 'identity')
             ->where('payment_status', FibPayment::PAID)
+            ->whereNotNull('paid_at')
+            ->where('paid_at', '>', now()->subMonth())
             ->exists();
     }
 

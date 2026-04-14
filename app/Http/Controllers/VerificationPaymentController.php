@@ -17,7 +17,7 @@ class VerificationPaymentController extends Controller
             abort(403);
         }
 
-        if ($verification->payment_status === FibPayment::PAID) {
+        if ($this->isVerificationActive($verification)) {
             return response()->json([
                 'message' => 'Verification has already been paid.',
             ], 422);
@@ -59,6 +59,7 @@ class VerificationPaymentController extends Controller
             'fib_payment_id' => $fibPaymentId,
             'payment_status' => $paymentStatus,
             'payment_amount' => $amount,
+            'paid_at' => null,
         ]);
 
         return response()->json([
@@ -95,7 +96,7 @@ class VerificationPaymentController extends Controller
         $status = $this->normalizePaymentStatus(data_get($response->json(), 'status'));
         $verification->payment_status = $status;
 
-        if ($status === FibPayment::PAID) {
+        if ($status === FibPayment::PAID && ! $verification->paid_at) {
             $verification->paid_at = now();
         }
 
@@ -165,5 +166,12 @@ class VerificationPaymentController extends Controller
             'SUCCESS', 'COMPLETED' => FibPayment::PAID,
             default => $normalized,
         };
+    }
+
+    private function isVerificationActive(Verification $verification): bool
+    {
+        return $verification->payment_status === FibPayment::PAID
+            && $verification->paid_at
+            && $verification->paid_at->copy()->addMonth()->isFuture();
     }
 }

@@ -1,10 +1,10 @@
 @php
-    $isPaid = ($verification?->payment_status === \FirstIraqiBank\FIBPaymentSDK\Model\FibPayment::PAID);
+    $isPaid = $this->isVerificationActive();
 @endphp
 
 <div
     class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] overflow-hidden backdrop-blur-3xl transition-all duration-700 shadow-[0_50px_100px_rgba(0,0,0,0.5)] {{ $isPaid ? 'hover:border-emerald-500/30' : 'hover:border-cyan-500/30' }}"
-    @if($verification?->fib_payment_id && $verification?->payment_status !== \FirstIraqiBank\FIBPaymentSDK\Model\FibPayment::PAID)
+    @if($verification?->fib_payment_id && ! $isPaid)
         wire:poll.15s="refreshPaymentStatus"
     @endif
 >
@@ -39,8 +39,8 @@
                     <div class="absolute inset-0 rounded-full border-2 opacity-20 {{ $isPaid ? 'border-emerald-500' : 'border-cyan-500' }} {{ $isPaid ? '' : 'animate-ping' }}"></div>
                     <div class="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center text-white font-black text-xl italic tracking-tighter">FIB</div>
                 </div>
-                <div class="inline-flex items-center px-10 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] italic {{ $verification?->payment_status === \FirstIraqiBank\FIBPaymentSDK\Model\FibPayment::PAID ? 'text-emerald-500 border-emerald-500/20' : 'text-zinc-700' }}">
-                    {{ $verification?->payment_status === \FirstIraqiBank\FIBPaymentSDK\Model\FibPayment::PAID ? 'Payment Completed' : 'Not verified' }}
+                <div class="inline-flex items-center px-10 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] italic {{ $isPaid ? 'text-emerald-500 border-emerald-500/20' : 'text-zinc-700' }}">
+                    {{ $isPaid ? 'Payment Completed' : 'Not verified' }}
                 </div>
             </div>
         </div>

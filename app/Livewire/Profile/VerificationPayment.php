@@ -44,7 +44,9 @@ class VerificationPayment extends Component
                 ]
             );
 
-            if ($this->verification->fib_payment_id && ! $this->isPaidStatus($this->verification->payment_status)) {
+            $this->expireVerificationIfNeeded();
+
+            if ($this->verification->fib_payment_id && ! $this->isVerificationActive()) {
                 $this->refreshPaymentStatus();
             }
         }
@@ -58,7 +60,9 @@ class VerificationPayment extends Component
             return;
         }
 
-        if ($this->isPaidStatus($this->verification->payment_status)) {
+        $this->expireVerificationIfNeeded();
+
+        if ($this->isVerificationActive()) {
             $this->successMessage = 'Your blue tick is already paid.';
 
             return;
@@ -114,6 +118,7 @@ class VerificationPayment extends Component
                 'fib_payment_id' => data_get($payload, 'paymentId'),
                 'payment_status' => $this->normalizePaymentStatus(data_get($payload, 'status', FibPayment::PENDING)),
                 'payment_amount' => $this->amount,
+                'paid_at' => null,
             ]);
 
             $this->verification = $this->verification->fresh();
@@ -142,6 +147,8 @@ class VerificationPayment extends Component
         $this->errorMessage = null;
         $this->successMessage = null;
 
+        $this->expireVerificationIfNeeded();
+
         try {
             /** @var FIBPaymentIntegrationService $paymentService */
             $paymentService = app(FIBPaymentIntegrationService::class);
@@ -163,8 +170,9 @@ class VerificationPayment extends Component
             $this->verification->save();
 
             $this->verification = $this->verification->fresh();
+            $this->expireVerificationIfNeeded();
 
-            if ($this->isPaidStatus($this->verification->payment_status)) {
+            if ($this->isVerificationActive()) {
                 $this->successMessage = 'Payment confirmed. Your blue tick purchase is complete.';
             } else {
                 $this->successMessage = 'Payment status updated: '.$this->verification->payment_status;
@@ -223,6 +231,41 @@ class VerificationPayment extends Component
     private function isPaidStatus(?string $status): bool
     {
         return $this->normalizePaymentStatus($status) === FibPayment::PAID;
+    }
+
+    public function isVerificationActive(): bool
+    {
+        if (! $this->verification || ! $this->isPaidStatus($this->verification->payment_status)) {
+            return false;
+        }
+
+        if (! $this->verification->paid_at) {
+            return false;
+        }
+
+        return $this->verification->paid_at->copy()->addMonth()->isFuture();
+    }
+
+    private function expireVerificationIfNeeded(): void
+    {
+        if (! $this->verification || ! $this->isPaidStatus($this->verification->payment_status)) {
+            return;
+        }
+
+        if (! $this->verification->paid_at) {
+            return;
+        }
+
+        if ($this->verification->paid_at->copy()->addMonth()->isPast()) {
+            $this->verification->update([
+                'payment_status' => FibPayment::PENDING,
+            ]);
+
+            $this->verification = $this->verification->fresh();
+            $this->paymentLink = null;
+            $this->readableCode = null;
+            $this->qrCode = null;
+        }
     }
 
     public function render()
