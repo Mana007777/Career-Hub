@@ -40,7 +40,7 @@
                         <svg class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                         </svg>
-                        <span>Filter Hub</span>
+                        <span>Filters</span>
                         @if($selectedJobType || $selectedTags || $selectedSpecialties)
                             <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
                         @endif
@@ -65,13 +65,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
                 <!-- Sort Sector -->
                 <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Archive Sequence</label>
+                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Sort Order</label>
                     <div class="relative group">
                         <select 
                             wire:model.live="sortOrder"
                             class="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl text-zinc-100 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer group-hover:bg-zinc-900/50 uppercase tracking-widest">
-                            <option value="desc">Latest Intelligence</option>
-                            <option value="asc">Historical Logs</option>
+                            <option value="desc">Newest First</option>
+                            <option value="asc">Oldest First</option>
                         </select>
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="3"/></svg>
@@ -86,7 +86,7 @@
                         <select 
                             wire:model.live="selectedJobType"
                             class="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl text-zinc-100 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer group-hover:bg-zinc-900/50 uppercase tracking-widest">
-                            <option value="">Full Spectrum</option>
+                            <option value="">All Job Types</option>
                             @foreach($jobTypes as $jobType)
                                 <option value="{{ $jobType }}">{{ strtoupper($jobType) }}</option>
                             @endforeach
@@ -99,7 +99,7 @@
                 
                 <!-- Tag Matrix -->
                 <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Digital Markers</label>
+                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Tags</label>
                     <div class="relative group">
                         <select 
                             wire:model.live="selectedTags"
@@ -117,7 +117,7 @@
                 
                 <!-- Specialty Array -->
                 <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Skill Specialization</label>
+                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Specialties</label>
                     <div class="relative group">
                         <select 
                             wire:model.live="selectedSpecialties"
@@ -139,12 +139,12 @@
                 <button 
                     wire:click="clearFilters"
                     class="text-[10px] font-black text-zinc-500 hover:text-rose-500 uppercase tracking-[0.2em] transition-colors">
-                    Reset Matrix
+                    Reset Filters
                 </button>
                 <button 
                     wire:click="toggleFilters"
                     class="px-8 py-3 bg-emerald-500 text-black rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] active:scale-95">
-                    Sync Intelligence
+                    Apply Filters
                 </button>
             </div>
         </div>
@@ -166,7 +166,7 @@
                 <div class="px-10 py-6 bg-zinc-950/40 border-b border-zinc-800/50 flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em]">Construct New Broadcast</h3>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em]">Create New Post</h3>
                     </div>
                     <button wire:click="closeCreateForm" class="text-zinc-600 hover:text-white transition-colors p-2 hover:bg-zinc-800 rounded-xl">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
@@ -177,7 +177,7 @@
                 
                 <form wire:submit.prevent="create" wire:key="create-post-form" class="p-10 space-y-10">
                     <div class="space-y-4">
-                        <label for="title" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Mission Objective</label>
+                        <label for="title" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Title</label>
                         <input
                             type="text"
                             wire:model="title"
@@ -191,14 +191,14 @@
                     </div>
 
                     <div class="space-y-4">
-                        <label for="content" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Data Stream Integration</label>
+                        <label for="content" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Content</label>
                         <textarea 
                             wire:model="content"
                             wire:key="content-input"
                             id="content"
                             rows="6"
                             class="w-full px-8 py-5 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all resize-none text-sm leading-relaxed font-medium"
-                            placeholder="INITIATE BROADCAST SEQUENCE..."></textarea>
+                            placeholder="Write your post..."></textarea>
                         @error('content') 
                             <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 block ml-1">{{ $message }}</span> 
                         @enderror
@@ -207,14 +207,14 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Job Type -->
                         <div class="space-y-4">
-                            <label for="jobType" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Deployment Sector</label>
+                            <label for="jobType" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Job Type</label>
                             <div class="relative group">
                                 <select
                                     wire:model="jobType"
                                     wire:key="job-type-input"
                                     id="jobType"
                                     class="w-full px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer text-xs font-bold tracking-widest uppercase">
-                                    <option value="">Select Protocol</option>
+                                    <option value="">Select Job Type</option>
                                     <option value="full-time">Full-time</option>
                                     <option value="part-time">Part-time</option>
                                     <option value="contract">Contract</option>
@@ -230,13 +230,13 @@
 
                         <!-- Media Integration -->
                         <div class="space-y-4">
-                            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Visual Evidence</label>
+                            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Media</label>
                             <label for="media" class="relative group flex items-center justify-center w-full px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 border-dashed rounded-2xl hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all cursor-pointer">
                                 <div class="flex items-center gap-4 text-zinc-500 group-hover:text-emerald-400 transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
-                                    <span class="text-[10px] font-black uppercase tracking-widest">{{ $media ? strtoupper($media->getClientOriginalName()) : 'Inject Media Data' }}</span>
+                                    <span class="text-[10px] font-black uppercase tracking-widest">{{ $media ? strtoupper($media->getClientOriginalName()) : 'Upload media' }}</span>
                                 </div>
                                 <input type="file" wire:model="media" wire:key="media-input" id="media" accept="image/*,video/*" class="hidden">
                             </label>
@@ -248,17 +248,17 @@
 
                     <!-- Specialty Synthesis -->
                     <div class="space-y-6 pt-8 border-t border-zinc-800/50">
-                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Technical Specialization</label>
+                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Add Specialty</label>
                         <div class="flex flex-col sm:flex-row gap-4">
                             <input 
                                 type="text"
                                 wire:model="specialtyName"
-                                placeholder="PRIMARY SECTOR"
+                                placeholder="Specialty"
                                 class="flex-1 px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-[10px] font-black uppercase tracking-widest">
                             <input 
                                 type="text"
                                 wire:model="subSpecialtyName"
-                                placeholder="SUB-MODULE"
+                                placeholder="Sub-specialty"
                                 class="flex-1 px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-[10px] font-black uppercase tracking-widest">
                             <button 
                                 type="button"
@@ -288,7 +288,7 @@
                             type="button"
                             wire:click="closeCreateForm"
                             class="text-[10px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.3em]">
-                            Abort Sequence
+                            Cancel
                         </button>
                         <button 
                             type="submit"
@@ -296,11 +296,11 @@
                             wire:target="create"
                             class="relative group px-12 py-5 bg-emerald-500 text-black text-[10px] font-black rounded-2xl transition-all shadow-[0_0_40px_rgba(16,185,129,0.2)] hover:bg-emerald-400 hover:shadow-[0_0_50px_rgba(16,185,129,0.4)] active:scale-95 disabled:opacity-50 uppercase tracking-[0.3em] overflow-hidden">
                             <span wire:loading.remove wire:target="create" class="relative z-10 flex items-center gap-3">
-                                Initialize Broadcast
+                                Publish Post
                             </span>
                             <span wire:loading wire:target="create" class="relative z-10 flex items-center gap-3">
                                 <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                Synchronizing...
+                                Publishing...
                             </span>
                             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
                         </button>
