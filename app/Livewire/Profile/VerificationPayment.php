@@ -18,6 +18,8 @@ class VerificationPayment extends Component
 
     public ?string $readableCode = null;
 
+    public ?string $qrCode = null;
+
     public ?string $errorMessage = null;
 
     public ?string $successMessage = null;
@@ -41,10 +43,14 @@ class VerificationPayment extends Component
                     'status' => 'pending',
                 ]
             );
+
+            if ($this->verification->fib_payment_id && ! $this->isPaidStatus($this->verification->payment_status)) {
+                $this->refreshPaymentStatus();
+            }
         }
     }
 
-    public function startPayment(FIBPaymentIntegrationService $paymentService): void
+    public function startPayment(): void
     {
         if (! $this->canUsePayments || ! $this->verification) {
             $this->errorMessage = 'Payment setup is not ready yet. Please contact support.';
@@ -52,7 +58,7 @@ class VerificationPayment extends Component
             return;
         }
 
-        if ($this->verification->payment_status === FibPayment::PAID) {
+        if ($this->isPaidStatus($this->verification->payment_status)) {
             $this->successMessage = 'Your blue tick is already paid.';
 
             return;
@@ -60,18 +66,33 @@ class VerificationPayment extends Component
 
         $this->errorMessage = null;
         $this->successMessage = null;
+        $this->qrCode = null;
 
         try {
-            $callbackUrl = config('verification-payment.callback_url') ?: route('payments.fib.callback');
-            $redirectUrl = config('verification-payment.redirect_url') ?: route('settings');
+            /** @var FIBPaymentIntegrationService $paymentService */
+            $paymentService = app(FIBPaymentIntegrationService::class);
+
+            $missingConfig = collect([
+                'FIB_BASE_URL' => env('FIB_BASE_URL'),
+                'FIB_CLIENT_ID' => env('FIB_CLIENT_ID'),
+                'FIB_CLIENT_SECRET' => env('FIB_CLIENT_SECRET'),
+            ])->filter(fn (?string $value) => blank($value))->keys()->all();
+
+            if (! empty($missingConfig)) {
+                $this->errorMessage = 'Missing payment config: '.implode(', ', $missingConfig);
+
+                return;
+            }
+
+            $callbackUrl = $this->normalizeFibUrl(config('verification-payment.callback_url') ?: route('payments.fib.callback'));
+            $redirectUrl = $this->normalizeFibUrl(config('verification-payment.redirect_url') ?: route('settings'));
             $description = sprintf('Blue tick verification for user #%d', (int) Auth::id());
 
             $response = $paymentService->createPayment(
                 $this->amount,
                 $callbackUrl,
                 $description,
-                $redirectUrl,
-                ['verification_id' => $this->verification->id, 'type' => 'blue_tick']
+                $redirectUrl
             );
 
             if (! $response || ! $response->successful()) {
@@ -87,10 +108,11 @@ class VerificationPayment extends Component
             $payload = $response->json();
             $this->paymentLink = data_get($payload, 'personalAppLink');
             $this->readableCode = data_get($payload, 'readableCode');
+            $this->qrCode = data_get($payload, 'qrCode');
 
             $this->verification->update([
                 'fib_payment_id' => data_get($payload, 'paymentId'),
-                'payment_status' => FibPayment::PENDING,
+                'payment_status' => $this->normalizePaymentStatus(data_get($payload, 'status', FibPayment::PENDING)),
                 'payment_amount' => $this->amount,
             ]);
 
@@ -103,11 +125,13 @@ class VerificationPayment extends Component
                 'error' => $e->getMessage(),
             ]);
 
-            $this->errorMessage = 'Payment failed to start. Please try again in a moment.';
+            $this->errorMessage = app()->hasDebugModeEnabled()
+                ? 'Payment failed to start: '.$e->getMessage()
+                : 'Payment failed to start. Please try again in a moment.';
         }
     }
 
-    public function refreshPaymentStatus(FIBPaymentIntegrationService $paymentService): void
+    public function refreshPaymentStatus(): void
     {
         if (! $this->verification?->fib_payment_id) {
             $this->errorMessage = 'No active payment found yet.';
@@ -119,6 +143,9 @@ class VerificationPayment extends Component
         $this->successMessage = null;
 
         try {
+            /** @var FIBPaymentIntegrationService $paymentService */
+            $paymentService = app(FIBPaymentIntegrationService::class);
+
             $response = $paymentService->checkPaymentStatus($this->verification->fib_payment_id);
 
             if (! $response || ! $response->successful()) {
@@ -127,17 +154,17 @@ class VerificationPayment extends Component
                 return;
             }
 
-            $status = data_get($response->json(), 'status');
+            $status = $this->normalizePaymentStatus(data_get($response->json(), 'status'));
 
             $this->verification->payment_status = $status;
-            if ($status === FibPayment::PAID && ! $this->verification->paid_at) {
+            if ($this->isPaidStatus($status) && ! $this->verification->paid_at) {
                 $this->verification->paid_at = now();
             }
             $this->verification->save();
 
             $this->verification = $this->verification->fresh();
 
-            if ($this->verification->payment_status === FibPayment::PAID) {
+            if ($this->isPaidStatus($this->verification->payment_status)) {
                 $this->successMessage = 'Payment confirmed. Your blue tick purchase is complete.';
             } else {
                 $this->successMessage = 'Payment status updated: '.$this->verification->payment_status;
@@ -149,15 +176,53 @@ class VerificationPayment extends Component
                 'error' => $e->getMessage(),
             ]);
 
-            $this->errorMessage = 'Failed to refresh payment status.';
+            $this->errorMessage = app()->hasDebugModeEnabled()
+                ? 'Failed to refresh payment status: '.$e->getMessage()
+                : 'Failed to refresh payment status.';
         }
     }
 
     private function hasRequiredTables(): bool
     {
-        return Schema::hasTable('verifications')
-            && Schema::hasTable('fib_payments')
+        return Auth::check()
+            && Schema::hasTable('verifications')
             && Schema::hasColumns('verifications', ['fib_payment_id', 'payment_status', 'payment_amount', 'paid_at']);
+    }
+
+    private function normalizeFibUrl(?string $url): ?string
+    {
+        if (blank($url) || ! filter_var($url, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+
+        if (in_array($host, ['localhost', '127.0.0.1'], true)) {
+            return null;
+        }
+
+        // Stage rejects many non-https URLs; fall back to null when uncertain.
+        return $scheme === 'https' ? $url : null;
+    }
+
+    private function normalizePaymentStatus(?string $status): string
+    {
+        $normalized = strtoupper((string) $status);
+
+        if ($normalized === '') {
+            return FibPayment::PENDING;
+        }
+
+        return match ($normalized) {
+            'SUCCESS', 'COMPLETED' => FibPayment::PAID,
+            default => $normalized,
+        };
+    }
+
+    private function isPaidStatus(?string $status): bool
+    {
+        return $this->normalizePaymentStatus($status) === FibPayment::PAID;
     }
 
     public function render()

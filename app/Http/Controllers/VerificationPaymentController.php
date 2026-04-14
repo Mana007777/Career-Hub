@@ -24,8 +24,8 @@ class VerificationPaymentController extends Controller
         }
 
         $amount = (int) config('verification-payment.amount');
-        $callbackUrl = config('verification-payment.callback_url') ?: route('payments.fib.callback');
-        $redirectUrl = config('verification-payment.redirect_url') ?: route('settings');
+        $callbackUrl = $this->normalizeFibUrl(config('verification-payment.callback_url') ?: route('payments.fib.callback'));
+        $redirectUrl = $this->normalizeFibUrl(config('verification-payment.redirect_url') ?: route('settings'));
         $description = sprintf(
             'Verification payment for verification #%d (%s)',
             $verification->id,
@@ -36,8 +36,7 @@ class VerificationPaymentController extends Controller
             $amount,
             $callbackUrl,
             $description,
-            $redirectUrl,
-            ['verification_id' => $verification->id]
+            $redirectUrl
         );
 
         if (! $response || ! $response->successful()) {
@@ -54,11 +53,11 @@ class VerificationPaymentController extends Controller
 
         $payload = $response->json();
         $fibPaymentId = data_get($payload, 'paymentId');
-        $payment = FibPayment::query()->where('fib_payment_id', $fibPaymentId)->first();
+        $paymentStatus = $this->normalizePaymentStatus(data_get($payload, 'status', FibPayment::PENDING));
 
         $verification->update([
             'fib_payment_id' => $fibPaymentId,
-            'payment_status' => $payment?->status ?? FibPayment::PENDING,
+            'payment_status' => $paymentStatus,
             'payment_amount' => $amount,
         ]);
 
@@ -93,7 +92,7 @@ class VerificationPaymentController extends Controller
             ], 502);
         }
 
-        $status = data_get($response->json(), 'status');
+        $status = $this->normalizePaymentStatus(data_get($response->json(), 'status'));
         $verification->payment_status = $status;
 
         if ($status === FibPayment::PAID) {
@@ -127,14 +126,44 @@ class VerificationPaymentController extends Controller
             ], 404);
         }
 
-        $verification->payment_status = $validated['status'];
+        $verification->payment_status = $this->normalizePaymentStatus($validated['status']);
 
-        if ($validated['status'] === FibPayment::PAID && ! $verification->paid_at) {
+        if ($verification->payment_status === FibPayment::PAID && ! $verification->paid_at) {
             $verification->paid_at = now();
         }
 
         $verification->save();
 
         return response()->json(['message' => 'Callback processed successfully.']);
+    }
+
+    private function normalizeFibUrl(?string $url): ?string
+    {
+        if (blank($url) || ! filter_var($url, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+
+        if (in_array($host, ['localhost', '127.0.0.1'], true)) {
+            return null;
+        }
+
+        return $scheme === 'https' ? $url : null;
+    }
+
+    private function normalizePaymentStatus(?string $status): string
+    {
+        $normalized = strtoupper((string) $status);
+
+        if ($normalized === '') {
+            return FibPayment::PENDING;
+        }
+
+        return match ($normalized) {
+            'SUCCESS', 'COMPLETED' => FibPayment::PAID,
+            default => $normalized,
+        };
     }
 }

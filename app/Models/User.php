@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use FirstIraqiBank\FIBPaymentSDK\Model\FibPayment;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -261,6 +262,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function verifications()
     {
         return $this->hasMany(Verification::class);
+    }
+
+    public function hasBlueTick(): bool
+    {
+        return $this->verifications()
+            ->where('type', 'identity')
+            ->where('payment_status', FibPayment::PAID)
+            ->exists();
     }
 
     public function adminLogs()

@@ -64,6 +64,14 @@
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-4 mb-6">
                                 <h1 class="text-4xl font-black text-white uppercase tracking-tighter italic selection:bg-emerald-500/30">{{ $user->username }}</h1>
+                                @if($user->hasBlueTick())
+                                    <span class="inline-flex items-center gap-2 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 1.5a1 1 0 01.98.804l.355 1.706a1 1 0 00.753.753l1.706.355a1 1 0 01.554 1.688l-1.232 1.202a1 1 0 00-.287.885l.233 1.73a1 1 0 01-1.45 1.055L10.8 11.92a1 1 0 00-.932 0l-1.562.858a1 1 0 01-1.45-1.055l.233-1.73a1 1 0 00-.287-.885L5.57 7.906a1 1 0 01.554-1.688l1.706-.355a1 1 0 00.753-.753l.355-1.706A1 1 0 0110 1.5zm3.03 6.97a.75.75 0 00-1.06-1.06L9.25 10.13 8.03 8.91a.75.75 0 10-1.06 1.06l1.75 1.75a.75.75 0 001.06 0l3.25-3.25z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Blue Tick
+                                    </span>
+                                @endif
                                 @if($user->role)
                                     <span class="px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                                         {{ $user->role }}

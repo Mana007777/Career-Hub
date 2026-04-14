@@ -34,7 +34,6 @@
                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
             </span>
         @endif
-        @endif
         <span class="sr-only">{{ __('Notifications') }}</span>
     </button>
     <div id="tooltip-notifications" role="tooltip"
@@ -55,7 +54,6 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7 7V5" />
             </svg>
         </div>
-        </div>
         <span class="sr-only">{{ __('Deploy Node') }}</span>
     </button>
     <div id="tooltip-post" role="tooltip"
@@ -73,7 +71,6 @@
         <svg class="w-6 h-6 text-zinc-600 group-hover:text-emerald-400 transition-all duration-500 transform group-hover:scale-110" aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
             <path stroke="currentColor" stroke-linecap="round" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-        </svg>
         </svg>
         <span class="sr-only">{{ __('Deep Scan') }}</span>
     </button>
@@ -99,7 +96,6 @@
                 {{ $savedPostsCount > 99 ? '99+' : $savedPostsCount }}
             </span>
         @endif
-        @endif
         <span class="sr-only">{{ __('Archive') }}</span>
     </a>
     <div id="tooltip-bookmarks" role="tooltip"
@@ -124,7 +120,6 @@
                 {{ $totalUnreadMessages > 99 ? '99+' : $totalUnreadMessages }}
             </span>
         @endif
-        @endif
         <span class="sr-only">{{ __('Uplink') }}</span>
     </button>
     <div id="tooltip-chat" role="tooltip"
@@ -143,7 +138,6 @@
             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                 d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2m12-10a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm5 5h3m-3-3h3m-3 6h3" />
-        </svg>
         </svg>
         <span class="sr-only">{{ __('Network') }}</span>
     </a>
@@ -172,7 +166,6 @@
                     {{ $pendingReportsCount > 99 ? '99+' : $pendingReportsCount }}
                 </span>
             @endif
-            @endif
             <span class="sr-only">{{ __('Overseer') }}</span>
         </a>
         <div id="tooltip-reports" role="tooltip"
@@ -191,7 +184,6 @@
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
             </svg>
             <span class="sr-only">{{ __('Dossier') }}</span>
         </a>
@@ -212,7 +204,6 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924-1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-        </svg>
         </svg>
         <span class="sr-only">{{ __('Config') }}</span>
     </a>

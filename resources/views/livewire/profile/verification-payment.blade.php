@@ -1,4 +1,9 @@
-<div class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] overflow-hidden backdrop-blur-3xl hover:border-cyan-500/30 transition-all duration-700 shadow-[0_50px_100px_rgba(0,0,0,0.5)]">
+<div
+    class="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] overflow-hidden backdrop-blur-3xl hover:border-cyan-500/30 transition-all duration-700 shadow-[0_50px_100px_rgba(0,0,0,0.5)]"
+    @if($verification?->fib_payment_id && $verification?->payment_status !== \FirstIraqiBank\FIBPaymentSDK\Model\FibPayment::PAID)
+        wire:poll.15s="refreshPaymentStatus"
+    @endif
+>
     <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent"></div>
     
     <div class="p-10 sm:p-14">
@@ -64,6 +69,12 @@
                                     <code class="px-5 py-2 bg-zinc-950 rounded-xl text-cyan-400 font-mono text-[11px] border border-cyan-500/20 shadow-inner">{{ $readableCode }}</code>
                                 </div>
                             @endif
+                            @if ($qrCode)
+                                <div class="mt-6 inline-flex flex-col items-center gap-3 p-4 rounded-2xl border border-cyan-500/20 bg-zinc-950/80">
+                                    <img src="{{ $qrCode }}" alt="FIB payment QR code" class="w-40 h-40 rounded-xl bg-white p-2 border border-zinc-800">
+                                    <p class="text-[9px] text-zinc-500 uppercase tracking-[0.25em] font-black italic">Scan to pay with FIB app</p>
+                                </div>
+                            @endif
                         </div>
                         <a href="{{ $paymentLink }}" target="_blank"
                            class="w-full lg:w-auto px-16 py-6 rounded-[2rem] bg-cyan-500 text-black text-[11px] font-black uppercase tracking-[0.4em] hover:bg-cyan-400 shadow-[0_20px_60px_rgba(6,182,212,0.3)] hover:shadow-cyan-500/40 transition-all duration-700 flex items-center justify-center gap-4 italic italic font-bold">
@@ -93,6 +104,18 @@
                     <span wire:loading wire:target="refreshPaymentStatus">Syncing...</span>
                 </button>
             </div>
+
+            @if ($errorMessage)
+                <div class="mt-8 p-6 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-300 text-[10px] font-black uppercase tracking-[0.25em] text-center break-words">
+                    {{ $errorMessage }}
+                </div>
+            @endif
+
+            @if ($successMessage)
+                <div class="mt-4 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-300 text-[10px] font-black uppercase tracking-[0.25em] text-center break-words">
+                    {{ $successMessage }}
+                </div>
+            @endif
         @endif
     </div>
 </div>
