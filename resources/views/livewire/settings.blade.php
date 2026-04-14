@@ -150,7 +150,7 @@
             @endif
 
             <!-- Interface Environment -->
-            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] transition-all duration-700" x-data="{ isOpen: false }">
+            <div class="group relative bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl hover:bg-emerald-500/[0.02] transition-all duration-700">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="flex items-center gap-8">
                         <div class="w-20 h-20 rounded-[1.8rem] bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center p-0.5 group-hover:scale-105 group-hover:border-emerald-500/30 transition-all duration-700">
@@ -161,19 +161,19 @@
                         <div>
                             <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Visual Environment') }}</h3>
                             <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Interface Calibration') }}</p>
+                            <p class="mt-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">-------------------- {{ __('Soon') }} --------------------</p>
                         </div>
                     </div>
-                    <button @click="isOpen = !isOpen" class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-emerald-500/70 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-zinc-800 hover:text-emerald-400 transition-all flex items-center justify-center gap-4 italic group/btn">
-                        <span>{{ __('Modify Mode') }}</span>
-                        <svg class="w-4 h-4 transition-transform duration-500" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7" /></svg>
+                    <button type="button" disabled class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl cursor-not-allowed transition-all flex items-center justify-center gap-4 italic opacity-70">
+                        <span>{{ __('Soon') }}</span>
                     </button>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50" x-show="isOpen" x-transition:enter="transition cubic-bezier(0.16, 1, 0.3, 1) duration-500" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display:none">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50 opacity-50 pointer-events-none select-none">
                     @foreach(['light' => [__('Light'), __('Light mode')], 'dark' => [__('Dark'), __('Dark mode')], 'system' => [__('Auto'), __('Use system setting')]] as $mode => $labels)
-                        <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl hover:border-emerald-500/30 transition-all cursor-pointer group/mode {{ $themePreference === $mode ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
+                        <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl transition-all cursor-not-allowed group/mode {{ $themePreference === $mode ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
                             <div class="relative flex items-center justify-center">
-                                <input type="radio" wire:model="themePreference" wire:change="updateThemePreference" value="{{ $mode }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
+                                <input type="radio" disabled value="{{ $mode }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-not-allowed">
                                 <div class="absolute w-3 h-3 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                             </div>
                             <div>
