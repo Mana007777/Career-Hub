@@ -3,13 +3,31 @@
         chatId: @entangle('chatId'),
         scrollToBottom() {
             if (!this.chatId) return;
-            const target = document.getElementById(`chat-messages-${this.chatId}`);
+            const target = this.$refs.messagesContainer ?? document.getElementById(`chat-messages-${this.chatId}`);
             if (!target) return;
-            const apply = () => { target.scrollTop = target.scrollHeight; };
+            const scrollLastMessage = () => {
+                const lastMessage = target.querySelector('[data-chat-message]:last-of-type');
+                if (lastMessage) {
+                    lastMessage.scrollIntoView({ block: 'end', behavior: 'auto' });
+                }
+            };
+            const apply = () => {
+                target.scrollTop = target.scrollHeight;
+                scrollLastMessage();
+            };
             apply();
             requestAnimationFrame(apply);
             setTimeout(apply, 60);
             setTimeout(apply, 160);
+            setTimeout(apply, 320);
+        },
+        forceScrollAfterSend() {
+            const run = () => this.scrollToBottom();
+            run();
+            setTimeout(run, 80);
+            setTimeout(run, 180);
+            setTimeout(run, 320);
+            setTimeout(run, 650);
         },
         resetComposer() {
             const composer = this.$el.querySelector('[data-chat-composer]');
@@ -147,11 +165,33 @@
                     x-show="!isMinimized"
                     class="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-zinc-950/20"
                     id="chat-messages-{{ $chatId }}"
+                    x-ref="messagesContainer"
                     x-init="
-                        $watch('$wire.messages', () => {
-                            setTimeout(() => { $el.scrollTop = $el.scrollHeight; }, 50);
+                        const scrollNow = () => {
+                            $el.scrollTop = $el.scrollHeight;
+                            const lastMessage = $el.querySelector('[data-chat-message]:last-of-type');
+                            if (lastMessage) {
+                                lastMessage.scrollIntoView({ block: 'end', behavior: 'auto' });
+                            }
+                        };
+                        const scrollWithRetries = () => {
+                            scrollNow();
+                            requestAnimationFrame(scrollNow);
+                            setTimeout(scrollNow, 60);
+                            setTimeout(scrollNow, 180);
+                            setTimeout(scrollNow, 360);
+                        };
+                        const observer = new MutationObserver(() => {
+                            scrollWithRetries();
                         });
-                        setTimeout(() => { $el.scrollTop = $el.scrollHeight; }, 100);
+                        observer.observe($el, { childList: true, subtree: true });
+                        $el._chatObserver = observer;
+
+                        $watch('$wire.messages', () => {
+                            scrollWithRetries();
+                        });
+
+                        scrollWithRetries();
                     "
                 >
                     <!-- Interaction Requests Hub -->
@@ -173,7 +213,7 @@
                             $msgTime = is_object($message) ? $message->created_at : ($message['created_at'] ?? null);
                         @endphp
                         
-                        <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }} group/msg">
+                        <div data-chat-message class="flex {{ $isMe ? 'justify-end' : 'justify-start' }} group/msg">
                             <div class="max-w-[85%] space-y-2">
                                 <div class="relative px-6 py-4 rounded-[2rem] {{ $isMe ? 'bg-emerald-500 text-black rounded-br-none shadow-[0_10px_30px_rgba(16,185,129,0.1)]' : 'bg-zinc-800 text-white border border-zinc-700/30 rounded-bl-none shadow-[0_10px_30px_rgba(0,0,0,0.2)]' }}">
                                     <p class="text-[11px] font-bold leading-relaxed selection:bg-black/20">{{ $msgText }}</p>
@@ -207,7 +247,7 @@
                             <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Awaiting access authorization</p>
                         </div>
                     @else
-                        <form wire:submit.prevent="sendMessage" class="relative group/input">
+                        <form wire:submit.prevent="sendMessage" x-on:submit="forceScrollAfterSend()" class="relative group/input">
                             <textarea
                                 wire:model.live="newMessage"
                                 wire:keydown.enter.prevent="sendMessage"
