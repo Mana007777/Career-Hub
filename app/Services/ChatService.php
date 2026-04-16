@@ -217,27 +217,61 @@ class ChatService
     public function getUserChats()
     {
         $user = Auth::user();
-        
-        // Get IDs of users that the current user follows
-        $followingIds = $this->userRepository->getFollowingIds($user);
-
         $chats = $this->chatQueries->getChatsForUser($user);
 
         return $chats
         ->map(function ($chat) use ($user) {
             $otherUser = $chat->users->where('id', '!=', $user->id)->first();
             $chat->other_user = $otherUser;
+            $chat->last_message = $chat->messages->first();
             return $chat;
         })
-        ->filter(function ($chat) use ($user, $followingIds) {
-            // Only show chats with users that the current user follows
-            return $chat->other_user !== null && in_array($chat->other_user->id, $followingIds);
+        ->filter(function ($chat) {
+            // Show only real chats that have at least one message
+            return $chat->other_user !== null && $chat->last_message !== null;
         })
         ->sortByDesc(function ($chat) {
-            $lastMessage = $chat->messages->first();
-            return $lastMessage ? $lastMessage->created_at : $chat->created_at;
+            return $chat->last_message?->created_at ?? $chat->created_at;
         })
         ->values();
+    }
+
+    /**
+     * Get mutual-follow users that don't have a message history chat yet.
+     */
+    public function getFriendsWithoutChats()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $followingIds = $this->userRepository->getFollowingIds($user);
+        $followerIds = $user->followers()->pluck('follower_id')->toArray();
+        $mutualFriendIds = array_values(array_intersect($followingIds, $followerIds));
+
+        if (empty($mutualFriendIds)) {
+            return collect();
+        }
+
+        $chatPartnerIdsWithMessages = $this->chatQueries->getChatsForUser($user)
+            ->filter(function ($chat) use ($user) {
+                $otherUser = $chat->users->where('id', '!=', $user->id)->first();
+                return $otherUser !== null && $chat->messages->isNotEmpty();
+            })
+            ->map(function ($chat) use ($user) {
+                return $chat->users->where('id', '!=', $user->id)->first()?->id;
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        $friendIdsWithoutChats = array_values(array_diff($mutualFriendIds, $chatPartnerIdsWithMessages));
+
+        if (empty($friendIdsWithoutChats)) {
+            return collect();
+        }
+
+        return \App\Models\User::whereIn('id', $friendIdsWithoutChats)
+            ->orderBy('name')
+            ->get();
     }
 
     /**

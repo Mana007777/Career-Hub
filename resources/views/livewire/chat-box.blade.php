@@ -195,7 +195,7 @@
                     "
                 >
                     <!-- Interaction Requests Hub -->
-                    @if($pendingRequest && !$isRequest)
+                    @if($pendingRequest)
                         <div class="p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-3xl animate-pulse">
                             <p class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">Chat request</p>
                             <div class="flex gap-3">
@@ -271,7 +271,7 @@
 
                 <!-- Uplink Terminal -->
                 <div class="px-8 py-8 bg-zinc-950/40 border-t border-zinc-800/30" x-show="!isMinimized">
-                    @if($pendingRequest && !$isRequest)
+                    @if($pendingRequest)
                         <div class="text-center py-4 bg-zinc-950/40 border border-dashed border-zinc-800 rounded-2xl">
                             <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Awaiting access authorization</p>
                         </div>

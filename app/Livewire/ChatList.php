@@ -13,6 +13,7 @@ class ChatList extends Component
     public $isOpen = false;
     public $inline = false;
     public $chats = [];
+    public $friends = [];
 
     public $unreadCounts = [];
     public $requests = [];
@@ -51,6 +52,7 @@ class ChatList extends Component
     {
         if (!Auth::check()) {
             $this->chats = [];
+            $this->friends = [];
             $this->unreadCounts = [];
             $this->requests = [];
             return;
@@ -58,6 +60,7 @@ class ChatList extends Component
 
         $chatService = app(ChatService::class);
         $this->chats = $chatService->getUserChats();
+        $this->friends = $chatService->getFriendsWithoutChats();
         $this->unreadCounts = $chatService->getUnreadCountsPerUser(Auth::id());
         $this->requests = $chatService->getPendingRequests();
     }

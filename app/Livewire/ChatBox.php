@@ -51,7 +51,6 @@ class ChatBox extends Component
         
         // Check if current user follows the other user
         $isFollowing = $chatService->isFollowing($currentUser, $otherUser);
-        $isFollowedBack = $chatService->isFollowedBack($currentUser, $otherUser);
         
         $this->otherUser = $otherUser;
         $this->otherUserId = $userId;
@@ -66,20 +65,17 @@ class ChatBox extends Component
             return;
         }
         
-        // If following but not followed back, it's a request scenario (outgoing)
-        if ($isFollowing && !$isFollowedBack) {
-            $this->isRequest = true;
-        } else {
-            $this->isRequest = false;
-        }
+        // Outgoing messages should not be treated as request-only on the frontend.
+        // Only an actual incoming pending request should block sending until user responds.
+        $this->isRequest = false;
         
         $this->chat = $chatService->getOrCreateChat($otherUser);
         $this->chatId = $this->chat->id;
         $this->messages = collect($chatService->getMessages($this->chat));
         $this->isOpen = true;
         
-        // Mark messages as read when opening chat (only if not a request scenario)
-        if (!$this->isRequest) {
+        // Mark messages as read when opening chat unless there is an incoming pending request.
+        if (!$this->pendingRequest) {
             $chatService->markMessagesAsRead($this->chat, Auth::id());
             // Refresh messages to get updated status
             $this->messages = collect($chatService->getMessages($this->chat));

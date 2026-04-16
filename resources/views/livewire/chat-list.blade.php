@@ -115,13 +115,16 @@
                     </div>
                 @endif
 
+                <div class="px-8 pb-3">
+                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">Chats</p>
+                </div>
                 @if(count($chats) > 0)
                     <div class="space-y-1">
                         @foreach($chats as $chat)
                             @php
                                 $otherUser = $chat->other_user ?? null;
                                 if (!$otherUser) continue;
-                                $lastMessage = $chat->messages->first();
+                                $lastMessage = $chat->last_message ?? $chat->messages->first();
                                 $unreadCount = $unreadCounts[$otherUser->id] ?? 0;
                             @endphp
                             <button
@@ -166,14 +169,45 @@
                         @endforeach
                     </div>
                 @else
-                    <div class="py-32 text-center px-12">
-                        <div class="w-20 h-20 bg-zinc-950/40 border border-zinc-800/50 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner group">
-                            <svg class="w-10 h-10 text-zinc-800 group-hover:text-emerald-500/30 transition-all duration-1000" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">No chats</h3>
-                        <p class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] mt-4">You don't have any chats yet.</p>
+                    <div class="px-8 pb-6">
+                        <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.2em]">No active chats yet.</p>
+                    </div>
+                @endif
+
+                <div class="px-8 pt-6 pb-3">
+                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">Friends</p>
+                </div>
+                @if(count($friends) > 0)
+                    <div class="space-y-1 mb-4">
+                        @foreach($friends as $friend)
+                            <button
+                                wire:click="openChat({{ $friend->id }})"
+                                class="w-full flex items-center gap-5 px-8 py-5 hover:bg-emerald-500/5 transition-all duration-500 text-left group relative border-b border-zinc-800/20 last:border-0"
+                            >
+                                <div class="relative flex-shrink-0">
+                                    <div class="w-16 h-16 rounded-[1.25rem] overflow-hidden border-2 border-transparent group-hover:border-emerald-500/30 transition-all duration-500 bg-zinc-950/40 p-0.5">
+                                        <div class="w-full h-full rounded-[1rem] overflow-hidden bg-zinc-950">
+                                            <img src="{{ $friend->profile_photo_url }}" class="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                                        </div>
+                                    </div>
+                                    @if($friend->isActive())
+                                        <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-4 border-zinc-900 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.4)]"></span>
+                                    @endif
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-[0.1em] italic">
+                                        {{ $friend->name }}
+                                    </p>
+                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mt-1">
+                                        Friend - no chat yet
+                                    </p>
+                                </div>
+                            </button>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="px-8 pb-6">
+                        <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.2em]">No friends without chats.</p>
                     </div>
                 @endif
             </div>

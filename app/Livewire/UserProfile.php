@@ -123,6 +123,7 @@ class UserProfile extends Component
 
             $this->user->loadCount('followers');
             $this->followersCount = $this->user->followers_count;
+            $this->dispatch('unread-counts-updated');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update follow status. Please try again.');
         }
