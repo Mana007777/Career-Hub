@@ -17,30 +17,30 @@
     <main class="relative min-h-screen flex items-center justify-center px-6 py-24 overflow-hidden">
         <div class="text-center max-w-5xl mx-auto relative z-10">
             
-            <!-- Operational Tag -->
+            <!-- Status Tag -->
             <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 mb-10 overflow-hidden group">
                 <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ring-4 ring-emerald-500/20"></div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/80 group-hover:text-emerald-400 transition-colors">{{ __('Career Intelligence System Online') }}</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/80 group-hover:text-emerald-400 transition-colors">{{ __('Career Hub Is Live') }}</span>
             </div>
 
             <!-- PRIMARY HEADLINE -->
             <div class="mb-12 relative">
                 <h1 class="text-4xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 text-white leading-[0.9] uppercase italic">
-                    {{ __('Career') }} <span class="text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-500 animate-gradient">{{ __('Hub') }}</span> {{ __('Protocols') }}
+                    {{ __('Career') }} <span class="text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-500 animate-gradient">{{ __('Hub') }}</span>
                 </h1>
                 <p class="text-xl md:text-2xl text-zinc-400 font-medium max-w-2xl mx-auto leading-relaxed tracking-tight">
-                    {{ __('Optimize your professional trajectory through our high-performance') }} <span class="text-emerald-400">{{ __('Emerald-class') }}</span> {{ __('navigation matrix.') }}
+                    {{ __('Discover jobs, share your work, and grow your professional network in one place.') }}
                 </p>
             </div>
 
-            <!-- ACTION ARRAY -->
+            <!-- Actions -->
             <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mt-16">
-                <!-- Deployment Button -->
+                <!-- Primary Action -->
                 <button
                     wire:click="getStarted"
                     class="group relative inline-flex items-center justify-center min-w-[240px] px-12 py-6 rounded-[1.5rem] bg-emerald-500 text-black overflow-hidden hover:bg-emerald-400 hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] active:scale-95 transition-all duration-300">
                     <span class="relative z-10 flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em]">
-                        {{ __('Initialize Hunt') }}
+                        {{ __('Get Started') }}
                         <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
@@ -48,12 +48,12 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
                 </button>
 
-                <!-- Knowledge Base Button -->
+                <!-- Secondary Action -->
                 <button
                     wire:click="aboutUs"
                     class="group relative inline-flex items-center justify-center min-w-[240px] px-12 py-6 rounded-[1.5rem] border border-zinc-800 bg-zinc-900/50 backdrop-blur-2xl text-zinc-400 overflow-hidden hover:text-white hover:border-zinc-600 transition-all duration-300 active:scale-95">
                     <span class="relative z-10 text-xs font-black uppercase tracking-[0.2em]">
-                        {{ __('Station Intel') }}
+                        {{ __('About Us') }}
                     </span>
                 </button>
             </div>
@@ -62,25 +62,25 @@
             @guest
             <div class="mt-12 opacity-60 hover:opacity-100 transition-opacity">
                 <p class="text-xs font-bold text-zinc-500 uppercase tracking-widest leading-relaxed">
-                    {{ __('Existing operative?') }} 
-                    <a href="{{ route('login') }}" class="text-white hover:text-emerald-400 underline decoration-emerald-500/20 underline-offset-8 transition-all">{{ __('Establish session') }}</a>
+                    {{ __('Already have an account?') }}
+                    <a href="{{ route('login') }}" class="text-white hover:text-emerald-400 underline decoration-emerald-500/20 underline-offset-8 transition-all">{{ __('Sign in') }}</a>
                 </p>
             </div>
             @endguest
 
-            <!-- STATUS INDICATORS -->
+            <!-- Quick Highlights -->
             <div class="mt-20 flex justify-center items-center gap-8">
                 <div class="flex flex-col items-center gap-2">
                     <div class="h-10 w-px bg-gradient-to-b from-transparent via-emerald-500/50 to-transparent"></div>
-                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em] vertical-rl">{{ __('Node 01') }}</span>
+                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em] vertical-rl">{{ __('Jobs') }}</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
                     <div class="h-10 w-px bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent"></div>
-                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em] vertical-rl">{{ __('Node 02') }}</span>
+                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em] vertical-rl">{{ __('Posts') }}</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
                     <div class="h-10 w-px bg-gradient-to-b from-transparent via-teal-500/50 to-transparent"></div>
-                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em] vertical-rl">{{ __('Node 03') }}</span>
+                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em] vertical-rl">{{ __('Network') }}</span>
                 </div>
             </div>
         </div>

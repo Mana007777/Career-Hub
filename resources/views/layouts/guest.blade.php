@@ -36,6 +36,11 @@
                 background-color: #111827; /* gray-900 */
                 color: white;
             }
+
+            html.light select option {
+                background-color: #f8fafc;
+                color: #0f172a;
+            }
             
             select:focus option:checked {
                 background-color: #374151; /* gray-700 */
@@ -48,9 +53,16 @@
             input:-webkit-autofill,
             input:-webkit-autofill:hover,
             input:-webkit-autofill:focus {
-                -webkit-text-fill-color: white;
-                -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset;
+                -webkit-text-fill-color: #0f172a;
+                -webkit-box-shadow: 0 0 0px 1000px #f8fafc inset;
                 transition: background-color 5000s ease-in-out 0s;
+            }
+
+            html.dark input:-webkit-autofill,
+            html.dark input:-webkit-autofill:hover,
+            html.dark input:-webkit-autofill:focus {
+                -webkit-text-fill-color: #ffffff;
+                -webkit-box-shadow: 0 0 0px 1000px rgba(15, 23, 42, 0.9) inset;
             }
         </style>
     </head>
