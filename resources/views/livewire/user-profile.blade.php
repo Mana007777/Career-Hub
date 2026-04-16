@@ -162,7 +162,7 @@
                                         wire:click="toggleFollow"
                                         class="shrink-0 px-10 py-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-500 shadow-xl
                                             {{ $isFollowing ? 'bg-zinc-800 text-zinc-400 border border-zinc-700/50 hover:bg-zinc-700' : 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-emerald-500/10 hover:shadow-emerald-500/20' }}">
-                                        {{ $isFollowing ? __('Unfollow') : __('Follow') }}
+                                        {{ $isFollowing ? __('Unfollow') : ($isFollowedBy ? __('Follow Back') : __('Follow')) }}
                                     </button>
 
                                     <button

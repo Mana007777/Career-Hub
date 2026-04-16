@@ -24,6 +24,7 @@ class UserProfile extends Component
     public $username;
     public $user;
     public $isFollowing = false;
+    public $isFollowedBy = false;
     public $isBlocked = false;
     public $isBlockedBy = false;
     public $followersCount = 0;
@@ -77,6 +78,8 @@ class UserProfile extends Component
             }
             
             $this->isFollowing = $followUserAction->isFollowing($this->user);
+            $authUser = $this->authUser();
+            $this->isFollowedBy = $authUser ? $userRepository->isFollowedBack($authUser, $this->user) : false;
             $this->isBlocked = $blockUserAction->isBlocked($this->user);
         }
         
@@ -123,6 +126,8 @@ class UserProfile extends Component
 
             $this->user->loadCount('followers');
             $this->followersCount = $this->user->followers_count;
+            $authUser = $this->authUser();
+            $this->isFollowedBy = $authUser ? app(UserRepository::class)->isFollowedBack($authUser, $this->user) : false;
             $this->dispatch('unread-counts-updated');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update follow status. Please try again.');
