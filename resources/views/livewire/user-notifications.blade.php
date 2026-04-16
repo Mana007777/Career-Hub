@@ -162,6 +162,16 @@
                                         <a href="{{ route('posts.show', $notification->post->slug) }}" class="text-[9px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors italic border-b border-emerald-500/20 pb-0.5" @click="show = false">View post →</a>
                                     @endif
 
+                                    @if($notification->type === 'follow' && $notification->sourceUser)
+                                        <a
+                                            href="{{ route('user.profile', $notification->sourceUser->username ?? 'unknown') }}"
+                                            class="text-[9px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors italic border-b border-emerald-500/20 pb-0.5"
+                                            @click="show = false"
+                                        >
+                                            View profile →
+                                        </a>
+                                    @endif
+
                                     @if($notification->type === 'organization_invite' && auth()->check() && auth()->id() === $notification->user_id)
                                         <button type="button" wire:click="openInvitationDecision({{ $notification->id }})" class="text-[9px] font-black text-cyan-500 uppercase tracking-widest hover:text-cyan-400 transition-colors italic">
                                             View invitation →
