@@ -27,7 +27,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-bold">Back</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-bold">{{ __('Back') }}</span>
             </a>
         </div>
 
@@ -55,16 +55,16 @@
                         </div>
                         <div>
                             <div class="flex items-center gap-3">
-                                <h3 class="text-sm font-black text-white uppercase tracking-tight italic group-hover/author:text-emerald-400 transition-colors">{{ $post->user->name ?? 'Unknown' }}</h3>
+                                <h3 class="text-sm font-black text-white uppercase tracking-tight italic group-hover/author:text-emerald-400 transition-colors">{{ $post->user->name ?? __('Unknown') }}</h3>
                                 @if($post->user && $post->user->hasBlueTick())
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="Verified">
+                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="{{ __('Verified') }}">
                                         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                             <path d="M12 2l2.3 5.1L20 9l-4 4.1L17 19l-5-2.9L7 19l1-5.9L4 9l5.7-1.9L12 2z"/>
                                         </svg>
                                     </span>
                                 @endif
                                 @if($post->suspension)
-                                    <span class="px-4 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 italic">Quarantined</span>
+                                    <span class="px-4 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 italic">{{ __('Suspended') }}</span>
                                 @endif
                             </div>
                             <p class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mt-1 italic">{{ $post->created_at->format('Y.m.d // H:i') }}</p>
@@ -103,7 +103,7 @@
                         <div class="mb-8 p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl flex items-center gap-4">
                             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div>
                             <div>
-                                <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest italic">Operational Designation</p>
+                                <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest italic">{{ __('Job Type') }}</p>
                                 <p class="text-[13px] font-black text-emerald-400 uppercase tracking-tight italic">{{ ucfirst(str_replace('-', ' ', $post->job_type)) }}</p>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                         @endphp
                         
                         @if ($isImage)
-                            <img src="{{ $mediaUrl }}" alt="Intelligence Payload" class="w-full h-full object-cover grayscale-0 opacity-80 group-hover/media:opacity-100 transition-opacity duration-1000">
+                            <img src="{{ $mediaUrl }}" alt="{{ __('Post media') }}" class="w-full h-full object-cover grayscale-0 opacity-80 group-hover/media:opacity-100 transition-opacity duration-1000">
                             <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/50 to-transparent"></div>
                         @else
                             <div class="bg-zinc-950 p-12 flex flex-col items-center justify-center group-hover/media:bg-emerald-500/[0.02] transition-colors duration-1000">
@@ -131,7 +131,7 @@
                                     <div class="w-20 h-20 rounded-[2rem] bg-emerald-500/10 border-2 border-emerald-500/20 flex items-center justify-center group-hover/btn:scale-110 group-hover/btn:border-emerald-500/50 transition-all duration-700">
                                         <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                                     </div>
-                                    <span class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em] group-hover/btn:text-emerald-400 transition-colors">Retrieve Video Payload</span>
+                                    <span class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em] group-hover/btn:text-emerald-400 transition-colors">{{ __('View Attachment') }}</span>
                                 </a>
                             </div>
                         @endif
@@ -166,7 +166,7 @@
                         <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center group-hover/stat:border-cyan-500/30 transition-all">
                              <svg class="w-5 h-5 {{ $hasSavedPost ? 'fill-cyan-500' : '' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z" /></svg>
                         </div>
-                        <span>{{ $hasSavedPost ? 'Archived' : 'Pin to Archive' }}</span>
+                        <span>{{ $hasSavedPost ? __('Saved') : __('Save Post') }}</span>
                     </button>
                 </div>
             </article>
@@ -177,9 +177,9 @@
                     <div class="mt-12 group">
                         <div class="bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl group-hover:border-emerald-500/20 transition-all duration-700">
                              <div class="flex items-center justify-between mb-10">
-                                <h2 class="text-2xl font-black text-white uppercase tracking-tighter italic">Application <span class="text-emerald-500">Uplink</span></h2>
+                                <h2 class="text-2xl font-black text-white uppercase tracking-tighter italic">{{ __('Apply to Post') }}</h2>
                                 @if($hasUploadedCv)
-                                    <div class="px-8 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-500 text-[10px] font-black uppercase tracking-widest italic">CV Payload Synced ✓</div>
+                                    <div class="px-8 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-500 text-[10px] font-black uppercase tracking-widest italic">{{ __('CV submitted') }} ✓</div>
                                 @endif
                              </div>
 
@@ -187,23 +187,23 @@
                                 <form wire:submit.prevent="uploadCv" class="space-y-10">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div class="space-y-4">
-                                            <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">CV File Payload (.PDF, .DOCX)</label>
+                                            <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ __('CV File') }} (.PDF, .DOCX)</label>
                                             <div class="relative group/file">
                                                 <input type="file" wire:model="cvFile" id="cvFile" accept=".pdf,.doc,.docx" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                                                 <div class="w-full px-8 py-4 bg-zinc-950 border-2 border-dashed border-zinc-800 rounded-3xl group-hover/file:border-emerald-500/30 transition-all flex items-center justify-between">
-                                                    <span class="text-[10px] font-black uppercase tracking-widest {{ $cvFile ? 'text-emerald-500' : 'text-zinc-700' }}">{{ $cvFile ? $cvFile->getClientOriginalName() : 'Initialize File Scan...' }}</span>
+                                                    <span class="text-[10px] font-black uppercase tracking-widest {{ $cvFile ? 'text-emerald-500' : 'text-zinc-700' }}">{{ $cvFile ? $cvFile->getClientOriginalName() : __('Select file...') }}</span>
                                                     <svg class="w-6 h-6 text-zinc-800 group-hover/file:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                                                 </div>
                                             </div>
                                             @error('cvFile') <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4">{{ $message }}</p> @enderror
                                         </div>
                                         <div class="space-y-4">
-                                            <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Operational Message (Optional)</label>
-                                            <textarea wire:model="cvMessage" rows="2" class="w-full px-8 py-4 bg-zinc-950 border border-zinc-800 rounded-3xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-xs resize-none italic font-bold" placeholder="Transmitting additional context..."></textarea>
+                                            <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ __('Message (Optional)') }}</label>
+                                            <textarea wire:model="cvMessage" rows="2" class="w-full px-8 py-4 bg-zinc-950 border border-zinc-800 rounded-3xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-xs resize-none italic font-bold" placeholder="{{ __('Add additional details...') }}"></textarea>
                                         </div>
                                     </div>
                                     <div class="flex justify-end">
-                                        <button type="submit" wire:loading.attr="disabled" class="px-12 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">Commit Application</button>
+                                        <button type="submit" wire:loading.attr="disabled" class="px-12 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">{{ __('Submit Application') }}</button>
                                     </div>
                                 </form>
                              @endif

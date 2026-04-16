@@ -202,7 +202,7 @@
     >
         <div class="w-6 h-6 rounded-lg overflow-hidden border-2 border-zinc-700/50 group-hover:border-emerald-500/50 transition-all duration-500 flex items-center justify-center bg-zinc-800/50">
             @if(auth()->check() && auth()->user()->profile_photo_path)
-                <img src="{{ auth()->user()->profile_photo_url }}" alt="Me" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                <img src="{{ auth()->user()->profile_photo_url }}" alt="{{ __('Me') }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
             @else
                 <svg class="w-4 h-4 text-zinc-600 group-hover:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 7.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 19.5a7.5 7.5 0 0 1 15 0v.75H4.5v-.75Z" />

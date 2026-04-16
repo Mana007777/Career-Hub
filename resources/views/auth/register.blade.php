@@ -24,19 +24,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-3">
                             <label for="name" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Full Name') }}</label>
-                            <input id="name" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="JOHN DOE" />
+                            <input id="name" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="{{ __('Your full name') }}" />
                         </div>
 
                         <div class="space-y-3">
                             <label for="email" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Email Address') }}</label>
-                            <input id="email" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="email" name="email" :value="old('email')" required autocomplete="email" placeholder="NAME@DOMAIN.COM" />
+                            <input id="email" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="email" name="email" :value="old('email')" required autocomplete="email" placeholder="{{ __('name@example.com') }}" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-3">
                             <label for="username" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Username (Optional)') }}</label>
-                            <input id="username" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="text" name="username" :value="old('username')" autocomplete="username" placeholder="OPERATIVE_X" />
+                            <input id="username" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="text" name="username" :value="old('username')" autocomplete="username" placeholder="{{ __('username') }}" />
                         </div>
 
                         <div class="space-y-3">

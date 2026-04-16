@@ -34,7 +34,7 @@
 
                     <div class="space-y-3">
                         <label for="email" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Email Address') }}</label>
-                        <input id="email" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="NAME@DOMAIN.COM" />
+                        <input id="email" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="{{ __('name@example.com') }}" />
                     </div>
 
                     <div class="space-y-3">

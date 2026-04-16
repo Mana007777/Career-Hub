@@ -5,9 +5,9 @@
             <div>
                 <div class="flex items-center gap-3">
                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">Sync <span class="text-emerald-500">Stream</span></h2>
+                    <h2 class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">{{ __('Following') }}</h2>
                 </div>
-                <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.2em] mt-2 italic">{{ $followingCount }} Active Connections</p>
+                <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.2em] mt-2 italic">{{ __(':count active connections', ['count' => $followingCount]) }}</p>
             </div>
         </div>
     </div>
@@ -35,21 +35,21 @@
                     <div class="flex-1 min-w-0">
                         <h4 class="text-[11px] font-black text-white uppercase tracking-tight italic group-hover/node:text-emerald-400 transition-colors truncate">{{ $followingUser->name }}</h4>
                         <div class="flex items-center gap-2 mt-1">
-                            <span class="text-[8px] font-black uppercase tracking-widest {{ $isActive ? 'text-emerald-500/70' : 'text-zinc-700' }}">{{ $isActive ? 'Sync Active' : 'Offline' }}</span>
+                            <span class="text-[8px] font-black uppercase tracking-widest {{ $isActive ? 'text-emerald-500/70' : 'text-zinc-700' }}">{{ $isActive ? __('Online') : __('Offline') }}</span>
                         </div>
                     </div>
                 </a>
                 <button
                     onclick="window.dispatchEvent(new CustomEvent('open-chat', { detail: { userId: {{ $followingUser->id }} } }))"
                     class="w-10 h-10 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-800 hover:text-emerald-500 hover:border-emerald-500/30 transition-all shadow-inner"
-                    title="Start chat"
+                    title="{{ __('Start chat') }}"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                 </button>
             </div>
         @empty
             <div class="py-12 text-center">
-                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">No connections yet.</p>
+                <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">{{ __('No connections yet.') }}</p>
             </div>
         @endforelse
     </div>

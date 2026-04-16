@@ -39,17 +39,17 @@
 @endphp
 
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="Pagination Navigation" class="mt-12 mb-8">
+    <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="mt-12 mb-8">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
             {{-- Page Info --}}
             <div class="text-sm dark:text-gray-300 text-gray-700 font-medium">
-                Showing 
+                {{ __('Showing') }} 
                 <span class="dark:text-white text-gray-900 font-bold">{{ $paginator->firstItem() }}</span>
-                to
+                {{ __('to') }}
                 <span class="dark:text-white text-gray-900 font-bold">{{ $paginator->lastItem() }}</span>
-                of
+                {{ __('of') }}
                 <span class="dark:text-white text-gray-900 font-bold">{{ $paginator->total() }}</span>
-                posts
+                {{ __('posts') }}
             </div>
 
             <div class="flex items-center gap-2">
@@ -59,7 +59,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                         </svg>
-                        <span class="ml-2 hidden sm:inline">Previous</span>
+                        <span class="ml-2 hidden sm:inline">{{ __('Previous') }}</span>
                     </span>
                 @else
                     <button 
@@ -70,7 +70,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                         </svg>
-                        <span class="ml-2 hidden sm:inline">Previous</span>
+                        <span class="ml-2 hidden sm:inline">{{ __('Previous') }}</span>
                     </button>
                 @endif
 
@@ -104,14 +104,14 @@
                         wire:loading.attr="disabled" 
                         rel="next" 
                         class="relative inline-flex items-center px-4 py-2.5 text-sm font-medium dark:text-gray-200 text-gray-700 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="mr-2 hidden sm:inline">Next</span>
+                        <span class="mr-2 hidden sm:inline">{{ __('Next') }}</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </button>
                 @else
                     <span class="relative inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-400 dark:text-gray-600 bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-xl cursor-not-allowed opacity-60">
-                        <span class="mr-2 hidden sm:inline">Next</span>
+                        <span class="mr-2 hidden sm:inline">{{ __('Next') }}</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
