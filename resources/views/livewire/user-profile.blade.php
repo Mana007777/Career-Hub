@@ -134,7 +134,7 @@
                             <div class="flex flex-wrap items-center gap-x-12 gap-y-8">
                                 <div class="flex items-center gap-12">
                                     <div class="flex flex-col gap-2">
-                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em]">{{ __('Logs') }}</span>
+                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em]">{{ __('Posts') }}</span>
                                         <p class="text-white text-2xl font-black italic">{{ $postsCount }}</p>
                                     </div>
                                     <button wire:click="openFollowersModal" class="text-left group flex flex-col gap-2">
@@ -146,7 +146,7 @@
                                         <p class="text-white text-2xl font-black italic group-hover:text-emerald-500 transition-colors">{{ $followingCount }}</p>
                                     </button>
                                     <div class="flex flex-col gap-2">
-                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em]">{{ __('Integrity') }}</span>
+                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em]">{{ __('Endorsements') }}</span>
                                         <p class="text-white text-2xl font-black italic">{{ $endorsementCount }}</p>
                                     </div>
                                 </div>
@@ -156,7 +156,7 @@
                         <div class="flex flex-wrap items-center gap-3 sm:gap-4 w-full" x-data="{ openOptions: false }">
                             @if(Auth::check() && Auth::id() !== $user->id)
                                 @if($isBlocked)
-                                    <button wire:click="toggleBlock" class="shrink-0 px-8 py-3 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-400 transition-all shadow-lg shadow-rose-900/20">{{ __('Authorize Unit') }}</button>
+                                    <button wire:click="toggleBlock" class="shrink-0 px-8 py-3 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-400 transition-all shadow-lg shadow-rose-900/20">{{ __('Unblock User') }}</button>
                                 @else
                                     <button 
                                         wire:click="toggleFollow"
@@ -195,16 +195,16 @@
                                         >
                                             <button wire:click="toggleBlock" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all uppercase tracking-widest" @click="openOptions = false">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-                                                <span>{{ __('Terminate Unit') }}</span>
+                                                <span>{{ __('Block User') }}</span>
                                             </button>
                                             <button wire:click="openEndorseModal" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-emerald-400 hover:bg-emerald-500/10 rounded-2xl transition-all uppercase tracking-widest" @click="openOptions = false">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
-                                                <span>{{ __('Validate Integrity') }}</span>
+                                                <span>{{ __('Endorse User') }}</span>
                                             </button>
                                             @if(!Auth::user()->isAdmin())
                                                 <button onclick="window.dispatchEvent(new CustomEvent('open-report-modal', { detail: { targetType: 'user', targetId: {{ $user->id }} } }))" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-amber-500 hover:bg-amber-500/10 rounded-2xl transition-all uppercase tracking-widest" @click="openOptions = false">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                                    <span>{{ __('Flag Discrepancy') }}</span>
+                                                    <span>{{ __('Report User') }}</span>
                                                 </button>
                                             @endif
                                             @if(Auth::user()->isCompany() && ! $user->isCompany())
@@ -239,7 +239,7 @@
                                     @csrf
                                     <button type="submit" class="px-8 py-3.5 bg-rose-500/10 text-rose-500 text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-3 whitespace-nowrap">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3-3m0 0l3 3m-3-3v12" /></svg>
-                                        {{ __('Disconnect') }}
+                                        {{ __('Log Out') }}
                                     </button>
                                 </form>
                             @endif
@@ -249,10 +249,10 @@
                                     <button @click="open = !open" class="p-3.5 bg-zinc-900 border border-amber-500/30 text-amber-500 rounded-2xl hover:bg-amber-500/10 transition-all"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg></button>
                                     <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-4 w-64 bg-zinc-950 border border-zinc-800 rounded-[2rem] shadow-3xl z-50 p-3">
                                         <button wire:click="{{ $user->isSuspended() ? 'openUnsuspendUserModal' : 'openSuspendUserModal' }}" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black {{ $user->isSuspended() ? 'text-emerald-500' : 'text-amber-500' }} hover:bg-zinc-800 rounded-2xl transition-all uppercase tracking-widest italic" @click="open = false">
-                                            <span>{{ $user->isSuspended() ? __('RESURRECT IDENTITY') : __('SUSPEND IDENTITY') }}</span>
+                                            <span>{{ $user->isSuspended() ? __('Unsuspend User') : __('Suspend User') }}</span>
                                         </button>
                                         <button wire:click="openDeleteUserModal" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all uppercase tracking-widest italic" @click="open = false">
-                                            <span>{{ __('PURGE DATA NODE') }}</span>
+                                            <span>{{ __('Delete User') }}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -326,19 +326,19 @@
         <!-- Mission Stream -->
         @if($isBlocked)
             <div class="p-20 bg-zinc-900/40 border border-dashed border-rose-500/30 rounded-[3rem] text-center backdrop-blur-3xl relative">
-                <div class="absolute -top-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-[0_0_20px_rgba(244,63,94,0.4)]">{{ __('Communications Severed') }}</div>
+                <div class="absolute -top-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.4em] rounded-full shadow-[0_0_20px_rgba(244,63,94,0.4)]">{{ __('User Blocked') }}</div>
                 <div class="w-24 h-24 bg-rose-500/10 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 border border-rose-500/20">
                     <svg class="w-10 h-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
                 </div>
-                <h3 class="text-2xl font-black text-white uppercase tracking-tighter italic mb-4">{{ __('Signal Lost') }}</h3>
-                <p class="text-[10px] font-black text-rose-500/60 uppercase tracking-[0.3em] leading-relaxed">{{ __('This node has been blacklisted. Uplink protocols are disabled.') }}</p>
+                <h3 class="text-2xl font-black text-white uppercase tracking-tighter italic mb-4">{{ __('Profile Unavailable') }}</h3>
+                <p class="text-[10px] font-black text-rose-500/60 uppercase tracking-[0.3em] leading-relaxed">{{ __('This user is blocked. Unblock them to view posts and interact.') }}</p>
             </div>
         @else
             <!-- Feed Matrix -->
             <div class="space-y-12">
                 <h2 class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] flex items-center gap-4 px-4 italic">
                     <span class="w-4 h-px bg-zinc-800"></span>
-                    {{ __('Operational Chronology') }}
+                    {{ __('Recent Posts') }}
                 </h2>
                 
                 <div class="space-y-8">
@@ -428,7 +428,7 @@
                             <div class="w-24 h-24 bg-zinc-950 border border-zinc-900/50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
                                 <svg class="w-10 h-10 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                             </div>
-                            <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">{{ __('Null Stream') }}</h3>
+                            <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">{{ __('No Posts Yet') }}</h3>
                             <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('This user has not posted anything yet.') }}</p>
                         </div>
                     @endforelse
@@ -494,14 +494,14 @@
     <div class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-zinc-950/98 backdrop-blur-2xl" wire:click="closeEndorseModal">
         <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] max-w-md w-full shadow-[0_50px_100px_rgba(0,0,0,1)]" wire:click.stop>
             <div class="flex items-center justify-between p-8 border-b border-zinc-800/50 bg-zinc-950/40">
-                <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">{{ __('Integrity Validation') }}</h3>
+                <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em] italic">{{ __('Endorse User') }}</h3>
                 <button wire:click="closeEndorseModal" class="w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-rose-500 transition-all flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
 
             <form wire:submit.prevent="endorseUser" class="p-8 space-y-8">
                 @if(count($endorsableSkills) > 0)
                     <div class="space-y-4">
-                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ __('Established Core') }}</label>
+                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ __('Existing Skills') }}</label>
                         <select wire:model.live="selectedSkillToEndorse" class="w-full px-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-emerald-500/30 transition-all appearance-none cursor-pointer">
                             @foreach($endorsableSkills as $skill)
                                 <option value="{{ $skill }}" class="bg-zinc-950">{{ $skill }}</option>
@@ -511,13 +511,13 @@
                 @endif
 
                 <div class="space-y-4">
-                    <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ __('Initialize New Capability') }}</label>
-                    <input type="text" wire:model="customSkill" placeholder="{{ __('SPECIFY TAG...') }}" class="w-full px-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest placeholder:text-zinc-800 focus:ring-2 focus:ring-emerald-500/10 transition-all">
+                    <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ __('Add Custom Skill') }}</label>
+                    <input type="text" wire:model="customSkill" placeholder="{{ __('Type a skill...') }}" class="w-full px-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest placeholder:text-zinc-800 focus:ring-2 focus:ring-emerald-500/10 transition-all">
                 </div>
 
                 <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" wire:click="closeEndorseModal" class="px-8 py-3 text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-white transition-colors">{{ __('Abort') }}</button>
-                    <button type="submit" class="px-10 py-4 bg-emerald-500 text-black text-[10px] font-black rounded-2xl uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all">{{ __('Confirm Data') }}</button>
+                    <button type="button" wire:click="closeEndorseModal" class="px-8 py-3 text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-white transition-colors">{{ __('Cancel') }}</button>
+                    <button type="submit" class="px-10 py-4 bg-emerald-500 text-black text-[10px] font-black rounded-2xl uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all">{{ __('Submit Endorsement') }}</button>
                 </div>
             </form>
         </div>
@@ -529,11 +529,11 @@
     <div class="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-rose-950/20 backdrop-blur-3xl" wire:click="closeDeleteUserModal">
         <div class="bg-zinc-950 border border-rose-500/30 rounded-[3rem] max-w-md w-full p-10 text-center shadow-[0_0_100px_rgba(244,63,94,0.1)]" wire:click.stop>
             <div class="w-20 h-20 bg-rose-500/10 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 border border-rose-500/20"><svg class="w-10 h-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
-            <h3 class="text-2xl font-black text-white uppercase tracking-tighter italic mb-4">{{ __('PURGE IDENTITY?') }}</h3>
+            <h3 class="text-2xl font-black text-white uppercase tracking-tighter italic mb-4">{{ __('Delete User?') }}</h3>
             <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-relaxed mb-10">{{ __('This will permanently delete all data linked to') }} <span class="text-rose-500">{{ $user->username }}</span>. {{ __('This action is IRREVERSIBLE.') }}</p>
             <div class="flex gap-4">
-                <button wire:click="closeDeleteUserModal" class="flex-1 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-white transition-all">{{ __('ABORT') }}</button>
-                <button wire:click="deleteUser" class="flex-1 py-4 bg-rose-600 text-white text-[10px] font-black rounded-2xl uppercase tracking-widest shadow-xl shadow-rose-900/30 hover:bg-rose-500">{{ __('EXECUTE PURGE') }}</button>
+                <button wire:click="closeDeleteUserModal" class="flex-1 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-white transition-all">{{ __('Cancel') }}</button>
+                <button wire:click="deleteUser" class="flex-1 py-4 bg-rose-600 text-white text-[10px] font-black rounded-2xl uppercase tracking-widest shadow-xl shadow-rose-900/30 hover:bg-rose-500">{{ __('Delete User') }}</button>
             </div>
         </div>
     </div>
