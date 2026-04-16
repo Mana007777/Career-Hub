@@ -236,6 +236,16 @@ class Settings extends Component
         }
     }
 
+    public function setThemePreference(string $theme): void
+    {
+        if (!in_array($theme, ['light', 'dark', 'system'], true)) {
+            return;
+        }
+
+        $this->themePreference = $theme;
+        $this->updateThemePreference();
+    }
+
     public function updateLocale(): void
     {
         try {
