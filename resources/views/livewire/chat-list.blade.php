@@ -124,7 +124,7 @@
                             @php
                                 $otherUser = $chat->other_user ?? null;
                                 if (!$otherUser) continue;
-                                $lastMessage = $chat->last_message ?? $chat->messages->first();
+                                $lastMessage = $chat->last_message ?? null;
                                 $unreadCount = $unreadCounts[$otherUser->id] ?? 0;
                             @endphp
                             <button

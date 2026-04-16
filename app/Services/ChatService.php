@@ -223,7 +223,7 @@ class ChatService
         ->map(function ($chat) use ($user) {
             $otherUser = $chat->users->where('id', '!=', $user->id)->first();
             $chat->other_user = $otherUser;
-            $chat->last_message = $chat->messages->first();
+            $chat->last_message = $chat->latestMessage;
             return $chat;
         })
         ->filter(function ($chat) {
@@ -254,7 +254,7 @@ class ChatService
         $chatPartnerIdsWithMessages = $this->chatQueries->getChatsForUser($user)
             ->filter(function ($chat) use ($user) {
                 $otherUser = $chat->users->where('id', '!=', $user->id)->first();
-                return $otherUser !== null && $chat->messages->isNotEmpty();
+                return $otherUser !== null && (int) ($chat->messages_count ?? 0) > 0;
             })
             ->map(function ($chat) use ($user) {
                 return $chat->users->where('id', '!=', $user->id)->first()?->id;

@@ -48,9 +48,8 @@ class ChatQueries
                     $query->where('users.id', $user->id);
                 })
                 ->where('is_group', false)
-                ->with(['users', 'messages' => function ($query) {
-                    $query->latest()->limit(1)->with('sender');
-                }])
+                ->with(['users', 'latestMessage.sender'])
+                ->withCount('messages')
                 ->get();
             }
         );
