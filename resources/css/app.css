@@ -28,3 +28,38 @@ select {
 select::-ms-expand {
     display: none;
 }
+
+/* Light theme remapping while preserving accent colors */
+html.light body {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+html.light [class*="bg-zinc-950"] { background-color: #ffffff !important; }
+html.light [class*="bg-zinc-900"] { background-color: #f8fafc !important; }
+html.light [class*="bg-zinc-800"] { background-color: #f1f5f9 !important; }
+html.light [class^="bg-black"],
+html.light [class*=" bg-black"] { background-color: #ffffff !important; }
+
+html.light [class*="text-zinc-100"],
+html.light [class*="text-zinc-200"],
+html.light [class*="text-zinc-300"],
+html.light [class*="text-zinc-400"],
+html.light [class*="text-zinc-500"],
+html.light [class*="text-zinc-600"],
+html.light [class*="text-zinc-700"],
+html.light [class*="text-zinc-800"],
+html.light [class*="text-zinc-900"],
+html.light [class*="text-white"] { color: #0f172a !important; }
+
+html.light [class*="border-zinc-950"],
+html.light [class*="border-zinc-900"],
+html.light [class*="border-zinc-800"],
+html.light [class*="border-zinc-700"],
+html.light [class*="border-zinc-600"] { border-color: #cbd5e1 !important; }
+
+html.light [class*="shadow-[0_50px_100px_rgba(0,0,0,0.8)]"],
+html.light [class*="shadow-[0_50px_100px_rgba(0,0,0,1)]"],
+html.light [class*="shadow-[0_30px_60px_rgba(0,0,0,0.3)]"] {
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08) !important;
+}

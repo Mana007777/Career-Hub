@@ -18,8 +18,15 @@
         <!-- Inline theme bootstrapping to avoid light flash before JS loads -->
         <script>
             (function () {
-                document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
+                var html = document.documentElement;
+                var meta = document.querySelector('meta[name="theme-preference"]');
+                var preference = (meta && meta.getAttribute('content')) || localStorage.getItem('theme-preference') || 'system';
+                var effective = preference === 'system'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : preference;
+
+                html.classList.toggle('dark', effective === 'dark');
+                html.classList.toggle('light', effective === 'light');
             })();
         </script>
 

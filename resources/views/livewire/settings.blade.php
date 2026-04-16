@@ -161,19 +161,19 @@
                         <div>
                             <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-1">{{ __('Visual Environment') }}</h3>
                             <p class="text-2xl font-black text-white uppercase tracking-tight italic">{{ __('Interface Calibration') }}</p>
-                            <p class="mt-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">-------------------- {{ __('Soon') }} --------------------</p>
+                            <p class="mt-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">{{ __('Choose your preferred theme') }}</p>
                         </div>
                     </div>
-                    <button type="button" disabled class="w-full md:w-auto px-10 py-5 bg-zinc-950 border border-zinc-800 text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl cursor-not-allowed transition-all flex items-center justify-center gap-4 italic opacity-70">
-                        <span>{{ __('Soon') }}</span>
-                    </button>
+                    <div class="w-full md:w-auto px-6 py-4 bg-zinc-950 border border-zinc-800 text-zinc-500 text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl italic">
+                        {{ __('Active') }}: {{ ucfirst($themePreference) }}
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50 opacity-50 pointer-events-none select-none">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-12 border-t border-zinc-800/50">
                     @foreach(['light' => [__('Light'), __('Light mode')], 'dark' => [__('Dark'), __('Dark mode')], 'system' => [__('Auto'), __('Use system setting')]] as $mode => $labels)
-                        <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl transition-all cursor-not-allowed group/mode {{ $themePreference === $mode ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
+                        <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl transition-all cursor-pointer hover:border-emerald-500/30 group/mode {{ $themePreference === $mode ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
                             <div class="relative flex items-center justify-center">
-                                <input type="radio" disabled value="{{ $mode }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-not-allowed">
+                                <input type="radio" wire:model="themePreference" wire:change="updateThemePreference" value="{{ $mode }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
                                 <div class="absolute w-3 h-3 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                             </div>
                             <div>

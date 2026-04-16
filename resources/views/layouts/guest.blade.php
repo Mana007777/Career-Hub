@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-preference" content="{{ auth()->check() ? (auth()->user()->theme_preference ?? 'system') : 'system' }}">
 
         <title>{{ \App\Support\PageTitle::format($title ?? null) }}</title>
 
@@ -12,6 +13,18 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
+        <script>
+            (function () {
+                var html = document.documentElement;
+                var meta = document.querySelector('meta[name="theme-preference"]');
+                var preference = (meta && meta.getAttribute('content')) || localStorage.getItem('theme-preference') || 'system';
+                var effective = preference === 'system'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : preference;
+                html.classList.toggle('dark', effective === 'dark');
+                html.classList.toggle('light', effective === 'light');
+            })();
+        </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <!-- Styles -->
@@ -42,7 +55,7 @@
         </style>
     </head>
     <body>
-        <div class="font-sans antialiased bg-gray-900 text-gray-100 min-h-screen">
+        <div class="font-sans antialiased bg-zinc-950 text-zinc-100 min-h-screen">
             {{ $slot }}
         </div>
 

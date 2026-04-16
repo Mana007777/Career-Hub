@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-preference" content="{{ auth()->check() ? (auth()->user()->theme_preference ?? 'system') : 'system' }}">
 
         <title>{{ \App\Support\PageTitle::format(__('Welcome')) }}</title>
 
@@ -16,6 +17,18 @@
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
         <!-- Styles / Scripts -->
+        <script>
+            (function () {
+                var html = document.documentElement;
+                var meta = document.querySelector('meta[name="theme-preference"]');
+                var preference = (meta && meta.getAttribute('content')) || localStorage.getItem('theme-preference') || 'system';
+                var effective = preference === 'system'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : preference;
+                html.classList.toggle('dark', effective === 'dark');
+                html.classList.toggle('light', effective === 'light');
+            })();
+        </script>
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
