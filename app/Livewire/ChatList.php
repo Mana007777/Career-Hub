@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Chat;
 use App\Models\Message;
+use App\Repositories\UserRepository;
 use App\Services\ChatService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -86,6 +87,14 @@ class ChatList extends Component
         
         // Follow back the user
         Auth::user()->following()->syncWithoutDetaching([$request->from_user_id]);
+
+        // Clear follow/friend caches so chat and follow states update immediately
+        $userRepository = app(UserRepository::class);
+        $userRepository->clearFollowCache(Auth::id(), $request->from_user_id);
+        $userRepository->clearUserCache(Auth::user());
+        if ($request->fromUser) {
+            $userRepository->clearUserCache($request->fromUser);
+        }
         
         // Refresh the list
         $this->loadChats();

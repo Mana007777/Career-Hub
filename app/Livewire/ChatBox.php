@@ -101,6 +101,14 @@ class ChatBox extends Component
         
         // Follow back the user
         Auth::user()->following()->syncWithoutDetaching([$this->pendingRequest->from_user_id]);
+
+        // Clear follow/friend caches so chat state refreshes immediately
+        $userRepository = app(UserRepository::class);
+        $userRepository->clearFollowCache(Auth::id(), $this->pendingRequest->from_user_id);
+        $userRepository->clearUserCache(Auth::user());
+        if ($this->otherUser) {
+            $userRepository->clearUserCache($this->otherUser);
+        }
         
         $this->pendingRequest = null;
         $this->isRequest = false;
