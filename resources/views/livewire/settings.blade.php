@@ -174,7 +174,7 @@
                         <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl transition-all cursor-pointer hover:border-emerald-500/30 group/mode {{ $themePreference === $mode ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
                             <div class="relative flex items-center justify-center">
                                 <input type="radio" wire:model="themePreference" wire:change="updateThemePreference" value="{{ $mode }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
-                                <div class="absolute w-3 h-3 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                <div class="absolute w-3 h-3 rounded-full bg-emerald-500 transition-opacity {{ $themePreference === $mode ? 'opacity-100' : 'opacity-0' }}"></div>
                             </div>
                             <div>
                                 <span class="block text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover/mode:text-emerald-500 transition-colors">{{ $labels[0] }}</span>
@@ -210,7 +210,7 @@
                         <label class="relative flex items-center gap-6 p-8 bg-zinc-950 border border-zinc-800 rounded-2xl hover:border-emerald-500/30 transition-all cursor-pointer group/mode {{ $locale === $lang ? 'border-emerald-500/50 ring-2 ring-emerald-500/10' : '' }}">
                             <div class="relative flex items-center justify-center">
                                 <input type="radio" wire:model="locale" wire:change="updateLocale" value="{{ $lang }}" class="peer appearance-none w-6 h-6 rounded-full border-2 border-zinc-800 checked:border-emerald-500 transition-all cursor-pointer">
-                                <div class="absolute w-3 h-3 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                <div class="absolute w-3 h-3 rounded-full bg-emerald-500 transition-opacity {{ $locale === $lang ? 'opacity-100' : 'opacity-0' }}"></div>
                             </div>
                             <div>
                                 <span class="block text-[8px] font-black text-zinc-600 uppercase tracking-widest group-hover/mode:text-emerald-500 transition-colors">{{ $labels[0] }}</span>
