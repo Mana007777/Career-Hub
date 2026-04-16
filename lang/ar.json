@@ -322,4 +322,12 @@
     "Light mode": "الوضع الفاتح",
     "Dark mode": "الوضع الداكن",
     "Use system setting": "استخدام إعداد النظام"
+    ,
+    "Chat": "دردشة",
+    "Already in your company": "هو عضو بالفعل في شركتك",
+    "Invitation pending": "الدعوة قيد الانتظار",
+    "Invite to company": "دعوة إلى الشركة",
+    "I agree to the :terms and :privacy": "أوافق على :terms و :privacy",
+    "Terms of Service": "شروط الخدمة",
+    "Privacy Policy": "سياسة الخصوصية"
 }

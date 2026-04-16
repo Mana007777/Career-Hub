@@ -90,7 +90,7 @@
 
                             @if(collect($organizationMemberships)->isNotEmpty())
                                 <div class="mb-8 p-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/5">
-                                    <p class="text-[8px] font-black uppercase tracking-[0.35em] text-emerald-400 mb-4">Works at</p>
+                                    <p class="text-[8px] font-black uppercase tracking-[0.35em] text-emerald-400 mb-4">{{ __('Works at') }}</p>
                                     <div class="flex flex-wrap items-center gap-3">
                                         @foreach(collect($organizationMemberships)->take(4) as $orgCompany)
                                             <a
@@ -169,7 +169,7 @@
                                         type="button"
                                         wire:click="openChat"
                                         class="shrink-0 w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all flex items-center justify-center"
-                                        title="Chat with {{ $user->name }}"
+                                        title="{{ __('Chat') }}"
                                     >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5m-8 6l2.5-2.5A3 3 0 0 1 9.62 17H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7a3 3 0 0 0 3 3h1.5L5 20z" />
@@ -211,17 +211,17 @@
                                                 @if($viewerCompanyAlreadyMember)
                                                     <div class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-emerald-400 bg-emerald-500/5 rounded-2xl uppercase tracking-widest">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                                        <span>Already in your company</span>
+                                                        <span>{{ __('Already in your company') }}</span>
                                                     </div>
                                                 @elseif($pendingOrganizationInvitationId)
                                                     <div class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-amber-400 bg-amber-500/5 rounded-2xl uppercase tracking-widest">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" /></svg>
-                                                        <span>Invitation pending</span>
+                                                        <span>{{ __('Invitation pending') }}</span>
                                                     </div>
                                                 @else
                                                     <button wire:click="inviteToOrganization" class="w-full flex items-center gap-4 px-6 py-4 text-[10px] font-black text-cyan-400 hover:bg-cyan-500/10 rounded-2xl transition-all uppercase tracking-widest" @click="openOptions = false">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8m-4-4v8M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
-                                                        <span>Invite to company</span>
+                                                        <span>{{ __('Invite to company') }}</span>
                                                     </button>
                                                 @endif
                                             @endif

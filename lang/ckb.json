@@ -322,4 +322,12 @@
     "Light mode": "دۆخی ڕووناک",
     "Dark mode": "دۆخی تاریک",
     "Use system setting": "بەکارهێنانی ڕێکخستنی سیستەم"
+    ,
+    "Chat": "چات",
+    "Already in your company": "پێشتر لە کۆمپانیای تۆدایە",
+    "Invitation pending": "بانگهێشتەکە چاوەڕوانە",
+    "Invite to company": "بانگهێشت بۆ کۆمپانیا",
+    "I agree to the :terms and :privacy": "ڕازیم بە :terms و :privacy",
+    "Terms of Service": "مەرجەکانی خزمەتگوزاری",
+    "Privacy Policy": "سیاسەتی تایبەتێتی"
 }
