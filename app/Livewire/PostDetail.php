@@ -18,6 +18,7 @@ use App\Models\UserNotification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -61,13 +62,13 @@ class PostDetail extends Component
         $id = end($parts);
 
         if (!is_numeric($id)) {
-            abort(404, 'Invalid post slug');
+            abort(404, __('Invalid post slug'));
         }
 
         $this->post = $postService->getPostById((int) $id);
         
         if (!$this->post) {
-            abort(404, 'Post not found');
+            abort(404, __('Post not found'));
         }
 
         // Ensure suspension relationship is loaded
@@ -77,12 +78,12 @@ class PostDetail extends Component
 
         // If post is suspended and current user is not admin, show 404
         if ($this->post->isSuspended() && (!Auth::check() || !Auth::user()->isAdmin())) {
-            abort(404, 'Post not found');
+            abort(404, __('Post not found'));
         }
 
         // If post author is suspended and current user is not admin, show 404
         if ($this->post->user && $this->post->user->isSuspended() && (!Auth::check() || !Auth::user()->isAdmin())) {
-            abort(404, 'Post not found');
+            abort(404, __('Post not found'));
         }
 
         // Check if current user has already uploaded a CV for this post
@@ -115,7 +116,7 @@ class PostDetail extends Component
     {
         try {
             if (!$this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
@@ -125,7 +126,7 @@ class PostDetail extends Component
                 ->where('user_id', Auth::id())
                 ->exists();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to star post. Please try again.');
+            session()->flash('error', __('Failed to star post. Please try again.'));
         }
     }
 
@@ -133,14 +134,14 @@ class PostDetail extends Component
     {
         try {
             if (! $this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
             $saved = $savePostAction->toggle($this->post);
             $this->hasSavedPost = $saved;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to save post. Please try again.');
+            session()->flash('error', __('Failed to save post. Please try again.'));
         }
     }
 
@@ -150,7 +151,7 @@ class PostDetail extends Component
         
         try {
             if (!$this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
@@ -172,7 +173,7 @@ class PostDetail extends Component
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add comment. Please try again.');
+            session()->flash('error', __('Failed to add comment. Please try again.'));
         }
     }
 
@@ -182,7 +183,7 @@ class PostDetail extends Component
         
         try {
             if (!$this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
@@ -219,7 +220,7 @@ class PostDetail extends Component
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add reply. Please try again.');
+            session()->flash('error', __('Failed to add reply. Please try again.'));
         }
     }
 
@@ -227,7 +228,7 @@ class PostDetail extends Component
     {
         try {
             if (! $this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
@@ -241,7 +242,7 @@ class PostDetail extends Component
                 'comments.replies.claps',
             ]);
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to clap comment. Please try again.');
+            session()->flash('error', __('Failed to clap comment. Please try again.'));
         }
     }
 
@@ -269,7 +270,7 @@ class PostDetail extends Component
         
         try {
             if (!$this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
@@ -278,16 +279,16 @@ class PostDetail extends Component
                 'cvFile' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'], // 5MB max
                 'cvMessage' => ['nullable', 'string', 'max:1000'],
             ], [
-                'cvFile.required' => 'Please select a CV file to upload.',
-                'cvFile.file' => 'The CV must be a valid file.',
-                'cvFile.mimes' => 'The CV must be a PDF, DOC, or DOCX file.',
-                'cvFile.max' => 'The CV file size must not exceed 5MB.',
-                'cvMessage.max' => 'The message may not be greater than 1000 characters.',
+                'cvFile.required' => __('Please select a CV file to upload.'),
+                'cvFile.file' => __('The CV must be a valid file.'),
+                'cvFile.mimes' => __('The CV must be a PDF, DOC, or DOCX file.'),
+                'cvFile.max' => __('The CV file size must not exceed 5MB.'),
+                'cvMessage.max' => __('The message may not be greater than 1000 characters.'),
             ]);
 
             $uploadCvAction->upload($this->post, $this->cvFile, $this->cvMessage);
 
-            session()->flash('success', 'CV uploaded successfully!');
+            session()->flash('success', __('CV uploaded successfully!'));
             $this->cvFile = null;
             $this->cvMessage = '';
             $this->showCvUpload = false;
@@ -295,7 +296,7 @@ class PostDetail extends Component
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to upload CV. Please try again.');
+            session()->flash('error', __('Failed to upload CV. Please try again.'));
         }
     }
 
@@ -310,12 +311,12 @@ class PostDetail extends Component
             // Delete the post
             app(\App\Actions\Post\DeletePost::class)->delete($post);
             
-            session()->flash('success', 'Post deleted successfully!');
+            session()->flash('success', __('Post deleted successfully!'));
             $this->redirect(route('dashboard'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            session()->flash('error', 'You are not authorized to delete this post.');
+            session()->flash('error', __('You are not authorized to delete this post.'));
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete post. Please try again.');
+            session()->flash('error', __('Failed to delete post. Please try again.'));
         }
     }
 
@@ -338,11 +339,11 @@ class PostDetail extends Component
                 'comments.replies.claps',
             ]);
             
-            session()->flash('success', 'Comment deleted successfully!');
+            session()->flash('success', __('Comment deleted successfully!'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            session()->flash('error', 'You are not authorized to delete this comment.');
+            session()->flash('error', __('You are not authorized to delete this comment.'));
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete comment. Please try again.');
+            session()->flash('error', __('Failed to delete comment. Please try again.'));
         }
     }
 
@@ -350,12 +351,12 @@ class PostDetail extends Component
     {
         try {
             if (!$this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
             if (!Auth::check() || !Auth::user()->isAdmin()) {
-                session()->flash('error', 'You are not authorized to suspend posts.');
+                session()->flash('error', __('You are not authorized to suspend posts.'));
                 return;
             }
 
@@ -363,7 +364,7 @@ class PostDetail extends Component
             $this->suspendExpiresAt = null;
             $this->showSuspendModal = true;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to load suspension form. Please try again.');
+            session()->flash('error', __('Failed to load suspension form. Please try again.'));
         }
     }
 
@@ -377,7 +378,7 @@ class PostDetail extends Component
     public function suspendPost(): void
     {
         try {
-            \Log::info('suspendPost method called (PostDetail)', [
+            Log::info('suspendPost method called (PostDetail)', [
                 'post_id' => $this->post->id ?? null,
                 'admin_id' => Auth::id(),
                 'suspendReason' => $this->suspendReason ?? 'empty',
@@ -385,14 +386,14 @@ class PostDetail extends Component
             ]);
 
             if (!$this->post) {
-                session()->flash('error', 'Post not found.');
-                \Log::error('Post not found in suspendPost (PostDetail)');
+                session()->flash('error', __('Post not found.'));
+                Log::error('Post not found in suspendPost (PostDetail)');
                 return;
             }
 
             if (!Auth::check() || !Auth::user()->isAdmin()) {
-                session()->flash('error', 'You are not authorized to suspend posts.');
-                \Log::error('Not authorized to suspend post (PostDetail)', ['admin_id' => Auth::id()]);
+                session()->flash('error', __('You are not authorized to suspend posts.'));
+                Log::error('Not authorized to suspend post (PostDetail)', ['admin_id' => Auth::id()]);
                 return;
             }
 
@@ -406,15 +407,15 @@ class PostDetail extends Component
             ];
             
             $messages = [
-                'suspendReason.required' => 'Please provide a reason for suspending this post.',
-                'suspendReason.max' => 'The reason cannot exceed 1000 characters.',
+                'suspendReason.required' => __('Please provide a reason for suspending this post.'),
+                'suspendReason.max' => __('The reason cannot exceed 1000 characters.'),
             ];
 
             // Only validate expires_at if it's not null
             if ($this->suspendExpiresAt !== null) {
                 $rules['suspendExpiresAt'] = 'required|date|after:now';
-                $messages['suspendExpiresAt.required'] = 'If provided, expiration date is required.';
-                $messages['suspendExpiresAt.after'] = 'The expiration date must be in the future.';
+                $messages['suspendExpiresAt.required'] = __('If provided, expiration date is required.');
+                $messages['suspendExpiresAt.after'] = __('The expiration date must be in the future.');
             }
 
             $this->validate($rules, $messages);
@@ -429,11 +430,11 @@ class PostDetail extends Component
                     try {
                         $expiresAt = \Carbon\Carbon::parse($this->suspendExpiresAt);
                     } catch (\Exception $e2) {
-                        \Log::error('Failed to parse expiration date', [
+                        Log::error('Failed to parse expiration date', [
                             'date' => $this->suspendExpiresAt,
                             'error' => $e2->getMessage(),
                         ]);
-                        throw new \App\Exceptions\InvalidExpirationDateException('Invalid expiration date format.');
+                        throw new \App\Exceptions\InvalidExpirationDateException(__('Invalid expiration date format.'));
                     }
                 }
             }
@@ -446,7 +447,7 @@ class PostDetail extends Component
                 ]
             );
 
-            \Log::info('Post suspension created (PostDetail)', [
+            Log::info('Post suspension created (PostDetail)', [
                 'suspension_id' => $suspension->post_id,
                 'reason' => $suspension->reason,
                 'expires_at' => $suspension->expires_at,
@@ -479,20 +480,20 @@ class PostDetail extends Component
                 'target_id' => $this->post->id,
             ]);
 
-            session()->flash('success', 'Post suspended successfully!');
+            session()->flash('success', __('Post suspended successfully!'));
             $this->closeSuspendModal();
             $this->post->refresh();
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation error in suspendPost (PostDetail)', [
+            Log::error('Validation error in suspendPost (PostDetail)', [
                 'errors' => $e->errors(),
             ]);
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Error in suspendPost (PostDetail): ' . $e->getMessage(), [
+            Log::error('Error in suspendPost (PostDetail): ' . $e->getMessage(), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
             ]);
-            session()->flash('error', 'Failed to suspend post: ' . $e->getMessage());
+            session()->flash('error', __('Failed to suspend post: :error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -500,12 +501,12 @@ class PostDetail extends Component
     {
         try {
             if (!$this->post) {
-                session()->flash('error', 'Post not found.');
+                session()->flash('error', __('Post not found.'));
                 return;
             }
 
             if (!Auth::check() || !Auth::user()->isAdmin()) {
-                session()->flash('error', 'You are not authorized to unsuspend posts.');
+                session()->flash('error', __('You are not authorized to unsuspend posts.'));
                 return;
             }
 
@@ -519,10 +520,10 @@ class PostDetail extends Component
                 'target_id' => $this->post->id,
             ]);
 
-            session()->flash('success', 'Post unsuspended successfully!');
+            session()->flash('success', __('Post unsuspended successfully!'));
             $this->post->refresh();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to unsuspend post. Please try again.');
+            session()->flash('error', __('Failed to unsuspend post. Please try again.'));
         }
     }
 

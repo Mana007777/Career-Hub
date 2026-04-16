@@ -215,16 +215,16 @@
             <!-- Comments Matrix -->
             <div class="mt-20">
                 <div class="flex items-center gap-6 mb-10">
-                     <h2 class="text-3xl font-black text-white uppercase tracking-tighter italic"><span class="text-emerald-500">Intelligence</span> Feedback</h2>
+                     <h2 class="text-3xl font-black text-white uppercase tracking-tighter italic">{{ __('Comments') }}</h2>
                      <div class="h-px flex-1 bg-gradient-to-r from-emerald-500/20 to-transparent"></div>
                 </div>
 
                 @auth
                     <form wire:submit.prevent="addComment" class="mb-12">
                         <div class="relative group/input">
-                            <textarea wire:model.defer="content" rows="3" class="w-full px-10 py-8 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm italic font-bold focus:bg-zinc-900" placeholder="Transmit your analysis..."></textarea>
+                            <textarea wire:model.defer="content" rows="3" class="w-full px-10 py-8 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm italic font-bold focus:bg-zinc-900" placeholder="{{ __('Write a comment...') }}"></textarea>
                             <div class="absolute bottom-6 right-8">
-                                <button type="submit" class="px-8 py-3 bg-emerald-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-400 shadow-xl shadow-emerald-500/10 transition-all italic">Send Reply</button>
+                                <button type="submit" class="px-8 py-3 bg-emerald-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-400 shadow-xl shadow-emerald-500/10 transition-all italic">{{ __('Post Comment') }}</button>
                             </div>
                         </div>
                     </form>
@@ -267,16 +267,16 @@
                                     <div class="mt-6 flex items-center gap-6" x-data="{ open: false }">
                                         <button wire:click="toggleCommentClap({{ $comment->id }})" class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest {{ $comment->claps->where('user_id', auth()->id())->first() ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400' }} transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M7 11l2-2m0 0l2-2m-2 2l2 2m-2-2L7 9m6 2l2-2m0 0l2-2m-2 2l2 2m-2-2l-2 2M5 15a4 4 0 004 4h6a4 4 0 004-4v-1H5v1z" /></svg>
-                                            <span>{{ $comment->claps->count() }} claps</span>
+                                            <span>{{ __(':count claps', ['count' => $comment->claps->count()]) }}</span>
                                         </button>
                                         @auth
-                                            <button @click="open = !open" class="flex items-center gap-2 text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors"><span>Reply</span></button>
+                                            <button @click="open = !open" class="flex items-center gap-2 text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors"><span>{{ __('Reply') }}</span></button>
                                         @endauth
 
                                         <div x-show="open" class="mt-6 w-full" x-transition>
                                             <form wire:submit.prevent="addReply({{ $comment->id }})" class="space-y-4">
-                                                <textarea wire:model.defer="replyContent.{{ $comment->id }}" rows="2" class="w-full px-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-xs text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all italic" placeholder="Transmitting response..."></textarea>
-                                                <div class="flex justify-end"><button type="submit" class="px-6 py-2 bg-emerald-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-400 transition-all italic">Commit Reply</button></div>
+                                                <textarea wire:model.defer="replyContent.{{ $comment->id }}" rows="2" class="w-full px-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-xs text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all italic" placeholder="{{ __('Write a reply...') }}"></textarea>
+                                                <div class="flex justify-end"><button type="submit" class="px-6 py-2 bg-emerald-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-400 transition-all italic">{{ __('Post Reply') }}</button></div>
                                             </form>
                                         </div>
                                     </div>
@@ -298,7 +298,7 @@
                             </div>
                         </div>
                     @empty
-                        <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.4em] text-center py-20 italic">Zero intelligence feedback strings detected.</p>
+                        <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.4em] text-center py-20 italic">{{ __('No comments yet.') }}</p>
                     @endforelse
                 </div>
             </div>
@@ -311,21 +311,21 @@
              <div class="bg-zinc-900 border border-amber-500/30 rounded-[3rem] max-w-lg w-full overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,1)] relative" wire:click.stop>
                  <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
                  <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40">
-                    <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Isolation Authorization Matrix</h3>
+                    <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">{{ __('Suspend Post') }}</h3>
                  </div>
                  <form wire:submit.prevent="suspendPost" class="p-10 space-y-8">
                     <div class="space-y-4">
-                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Isolation Logic *</label>
+                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ __('Reason') }} *</label>
                         <textarea wire:model="suspendReason" rows="3" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-3xl text-sm text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all italic font-bold"></textarea>
                         @error('suspendReason') <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4">{{ $message }}</p> @enderror
                     </div>
                     <div class="space-y-4">
-                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Expiry date (Optional)</label>
+                        <label class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ __('Expiry date (Optional)') }}</label>
                         <input type="datetime-local" wire:model="suspendExpiresAt" class="w-full px-8 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-xs text-white uppercase focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all">
                     </div>
                     <div class="flex justify-end gap-6 pt-6">
-                        <button type="button" wire:click="closeSuspendModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic">Abort</button>
-                        <button type="submit" class="px-10 py-4 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-xl shadow-xl shadow-amber-500/10 hover:bg-amber-400 transition-all font-bold italic">Execute Quarantine</button>
+                        <button type="button" wire:click="closeSuspendModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic">{{ __('Cancel') }}</button>
+                        <button type="submit" class="px-10 py-4 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-xl shadow-xl shadow-amber-500/10 hover:bg-amber-400 transition-all font-bold italic">{{ __('Suspend') }}</button>
                     </div>
                  </form>
              </div>
