@@ -1,4 +1,4 @@
-<x-guest-layout title="{{ __('Initialize Profile') }}">
+<x-guest-layout title="{{ __('Create Account') }}">
     <div class="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
         <!-- Background Glows -->
         <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse"></div>
@@ -10,8 +10,8 @@
                     <x-authentication-card-logo class="w-full h-full text-emerald-500 group-hover:scale-110 transition-transform" />
                 </div>
             </div>
-            <h2 class="text-4xl font-black text-white uppercase tracking-tighter italic">Create <span class="text-emerald-500">Identity</span></h2>
-            <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic leading-relaxed">Initialize a new operative profile into the central network</p>
+            <h2 class="text-4xl font-black text-white uppercase tracking-tighter italic">{{ __('Create Account') }}</h2>
+            <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic leading-relaxed">{{ __('Join Career Hub and start building your profile') }}</p>
         </div>
 
         <div class="sm:mx-auto sm:w-full sm:max-w-xl relative z-10 px-4">
@@ -23,40 +23,40 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-3">
-                            <label for="name" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">Full Designation</label>
+                            <label for="name" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Full Name') }}</label>
                             <input id="name" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="JOHN DOE" />
                         </div>
 
                         <div class="space-y-3">
-                            <label for="email" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">Comm Link (Email)</label>
+                            <label for="email" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Email Address') }}</label>
                             <input id="email" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="email" name="email" :value="old('email')" required autocomplete="email" placeholder="NAME@DOMAIN.COM" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-3">
-                            <label for="username" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">Alias (Optional)</label>
+                            <label for="username" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Username (Optional)') }}</label>
                             <input id="username" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="text" name="username" :value="old('username')" autocomplete="username" placeholder="OPERATIVE_X" />
                         </div>
 
                         <div class="space-y-3">
-                            <label for="role" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">Directorial Role</label>
+                            <label for="role" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Role') }}</label>
                             <select id="role" name="role" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" required>
-                                <option value="" class="bg-zinc-950 text-zinc-700 italic">SELECT ROLE</option>
-                                <option value="seeker" {{ old('role') == 'seeker' ? 'selected' : '' }} class="bg-zinc-950 text-white italic">SEEKER // ASSET DISCOVERY</option>
-                                <option value="company" {{ old('role') == 'company' ? 'selected' : '' }} class="bg-zinc-950 text-white italic">COMPANY // NODE EXPANSION</option>
+                                <option value="" class="bg-zinc-950 text-zinc-700 italic">{{ __('Select Role') }}</option>
+                                <option value="seeker" {{ old('role') == 'seeker' ? 'selected' : '' }} class="bg-zinc-950 text-white italic">{{ __('Seeker') }}</option>
+                                <option value="company" {{ old('role') == 'company' ? 'selected' : '' }} class="bg-zinc-950 text-white italic">{{ __('Company') }}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-3">
-                            <label for="password" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">Access Key</label>
+                            <label for="password" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Password') }}</label>
                             <input id="password" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" />
                         </div>
 
                         <div class="space-y-3">
-                            <label for="password_confirmation" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">Re-Enter Key</label>
+                            <label for="password_confirmation" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Confirm Password') }}</label>
                             <input id="password_confirmation" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" />
                         </div>
                     </div>
@@ -74,13 +74,13 @@
 
                     <div class="space-y-6 pt-6">
                         <button class="w-full py-7 bg-emerald-500 text-black text-[11px] font-black uppercase tracking-[0.5em] rounded-2xl hover:bg-emerald-400 shadow-xl shadow-emerald-500/10 transition-all active:scale-95 italic font-bold">
-                            Initialize Operational Profile
+                            {{ __('Create Account') }}
                         </button>
 
                         @if (config('services.github.client_id') && config('services.github.client_secret'))
                             <div class="relative py-4">
                                 <div class="absolute inset-x-0 top-1/2 h-px bg-zinc-800"></div>
-                                <div class="relative flex justify-center"><span class="bg-zinc-900 px-6 text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">Alt Connection Port</span></div>
+                                <div class="relative flex justify-center"><span class="bg-zinc-900 px-6 text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">{{ __('Other Sign Up Options') }}</span></div>
                             </div>
                             <livewire:auth.github-login />
                         @endif
@@ -88,9 +88,9 @@
 
                     <div class="mt-10 text-center">
                         <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">
-                            {{ __('Legacy Profile Detected?') }}
+                            {{ __('Already Have an Account?') }}
                             <a href="{{ route('login') }}" class="text-zinc-400 hover:text-emerald-400 underline decoration-zinc-800 underline-offset-8 transition-all hover:decoration-emerald-500/30">
-                                {{ __('Re-Establish Connection') }}
+                                {{ __('Sign In') }}
                             </a>
                         </p>
                     </div>
