@@ -513,5 +513,7 @@
     "Access denied": "تم رفض الوصول",
     "name@example.com": "name@example.com",
     "Your full name": "اسمك الكامل",
-    "username": "اسم المستخدم"
+    "username": "اسم المستخدم",
+    "Fresh": "الأحدث",
+    "Trends": "الرائج"
 }

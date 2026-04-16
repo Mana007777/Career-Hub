@@ -913,19 +913,19 @@
                     type="button"
                     wire:click="setFeedMode('new')"
                     class="px-6 py-3 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all {{ $feedMode === 'new' ? 'text-black bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50' }}">
-                    Fresh
+                    {{ __('Fresh') }}
                 </button>
                 <button
                     type="button"
                     wire:click="setFeedMode('popular')"
                     class="px-6 py-3 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all {{ $feedMode === 'popular' ? 'text-black bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50' }}">
-                    Trends
+                    {{ __('Trends') }}
                 </button>
                 <button
                     type="button"
                     wire:click="setFeedMode('following')"
                     class="px-6 py-3 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all {{ $feedMode === 'following' ? 'text-black bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50' }}">
-                    Network
+                    {{ __('Network') }}
                 </button>
             </div>
         </div>
