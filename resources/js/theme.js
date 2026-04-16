@@ -29,13 +29,16 @@ function initTheme() {
     // Get theme preference from user data or localStorage
     let themePreference = 'system';
     
-    // Try to get from meta tag (set by Laravel)
-    const themeMeta = document.querySelector('meta[name="theme-preference"]');
-    if (themeMeta) {
-        themePreference = themeMeta.getAttribute('content') || 'system';
+    // Prefer localStorage first so guest pages still honor user's last choice
+    const storedPreference = localStorage.getItem('theme-preference');
+    if (storedPreference) {
+        themePreference = storedPreference;
     } else {
-        // Fallback to localStorage
-        themePreference = localStorage.getItem('theme-preference') || 'system';
+        // Fallback to meta tag (set by Laravel)
+        const themeMeta = document.querySelector('meta[name="theme-preference"]');
+        if (themeMeta) {
+            themePreference = themeMeta.getAttribute('content') || 'system';
+        }
     }
     
     const effectiveTheme = getEffectiveTheme(themePreference);

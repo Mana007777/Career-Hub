@@ -21,7 +21,7 @@
             (function () {
                 var html = document.documentElement;
                 var meta = document.querySelector('meta[name="theme-preference"]');
-                var preference = (meta && meta.getAttribute('content')) || localStorage.getItem('theme-preference') || 'system';
+                var preference = localStorage.getItem('theme-preference') || ((meta && meta.getAttribute('content')) || 'system');
                 var effective = preference === 'system'
                     ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                     : preference;
