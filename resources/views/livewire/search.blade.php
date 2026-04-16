@@ -128,7 +128,7 @@
                                                 class="block p-8 bg-zinc-950/40 border border-zinc-800/50 rounded-[2.5rem] hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all duration-500 group"
                                             >
                                                 <div class="flex items-center justify-between mb-4">
-                                                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ $post->user->username }} · {{ $post->created_at->diffForHumans() }}</p>
+                                                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ $post->user->username }} · {{ \App\Support\SoraniTime::human($post->created_at) }}</p>
                                                     <div class="flex gap-2">
                                                         @foreach($post->tags->take(2) as $tag)
                                                             <span class="px-2 py-0.5 bg-zinc-800 rounded-lg text-[7px] font-black text-zinc-500 uppercase tracking-widest">#{{ $tag->name }}</span>

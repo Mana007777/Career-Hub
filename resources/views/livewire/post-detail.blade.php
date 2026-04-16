@@ -265,7 +265,7 @@
                                     <div class="flex items-center justify-between mb-4">
                                         <div>
                                             <h4 class="text-[11px] font-black text-white uppercase tracking-widest italic group-hover/comment:text-emerald-400 transition-colors">{{ $comment->user->name }}</h4>
-                                            <p class="text-[8px] font-black text-zinc-700 uppercase tracking-widest mt-1 italic">{{ $comment->created_at->diffForHumans() }}</p>
+                                            <p class="text-[8px] font-black text-zinc-700 uppercase tracking-widest mt-1 italic">{{ \App\Support\SoraniTime::human($comment->created_at) }}</p>
                                         </div>
                                         <div class="flex items-center gap-2">
                                             @if(auth()->check() && (auth()->user()->isAdmin() || auth()->id() === $comment->user_id))

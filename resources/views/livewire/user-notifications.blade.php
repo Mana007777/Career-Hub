@@ -190,7 +190,7 @@
                                 @endphp
                                 <p class="text-[13px] font-black italic {{ !$notification->is_read ? 'text-white' : 'text-zinc-500' }} tracking-tight uppercase leading-relaxed font-medium">"{{ $displayMessage }}"</p>
                                 <div class="flex items-center gap-6 mt-4 flex-wrap">
-                                    <span class="text-[9px] font-black text-zinc-700 uppercase tracking-widest italic">{{ __('Logged') }} {{ $notification->created_at->diffForHumans() }}</span>
+                                    <span class="text-[9px] font-black text-zinc-700 uppercase tracking-widest italic">{{ __('Logged') }} {{ \App\Support\SoraniTime::human($notification->created_at) }}</span>
 
                                     @if($notification->post)
                                         <a href="{{ route('posts.show', $notification->post->slug) }}" class="text-[9px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors italic border-b border-emerald-500/20 pb-0.5" @click="show = false">{{ __('View post') }} →</a>

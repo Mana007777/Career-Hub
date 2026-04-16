@@ -151,7 +151,7 @@
                                             {{ $otherUser->name }}
                                         </p>
                                         @if($lastMessage)
-                                            <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">{{ \Carbon\Carbon::parse($lastMessage->created_at)->shortRelativeDiffForHumans() }}</span>
+                                            <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">{{ \App\Support\SoraniTime::human($lastMessage->created_at) }}</span>
                                         @endif
                                     </div>
                                     <div class="flex items-center justify-between gap-3">

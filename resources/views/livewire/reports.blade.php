@@ -78,7 +78,7 @@
                                 <div class="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8 shadow-inner">
                                     <p class="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] mb-4 italic">{{ __('Reason') }}</p>
                                     <p class="text-lg font-black text-white italic tracking-tight uppercase">{{ $report->reason }}</p>
-                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-6">{{ __('Logged') }} {{ $report->created_at->diffForHumans() }}</p>
+                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-6">{{ __('Logged') }} {{ \App\Support\SoraniTime::human($report->created_at) }}</p>
                                 </div>
                             </div>
 

@@ -106,7 +106,7 @@
                         <div>
                             <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em]">{{ __('Deployed') }}</span>
                             <p class="mt-1 text-zinc-300">{{ auth()->user()->created_at->format('F d, Y') }}</p>
-                            <p class="text-[10px] text-zinc-600 mt-0.5">{{ auth()->user()->created_at->diffForHumans() }}</p>
+                            <p class="text-[10px] text-zinc-600 mt-0.5">{{ \App\Support\SoraniTime::human(auth()->user()->created_at) }}</p>
                         </div>
                     </div>
                 </div>

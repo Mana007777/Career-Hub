@@ -369,7 +369,7 @@
     "Contract": "گرێبەست",
     "Freelance": "ئازاد",
     "Internship": "فێربوونی کار",
-    "Remote": "لە دوورەوە",
+    "Remote": "ڕیمۆت",
     "Media": "میدیا",
     "Upload media": "بارکردنی میدیا",
     "Add Specialty": "زیادکردنی پسپۆڕی",
@@ -557,6 +557,6 @@
     "You are not authorized to unsuspend posts.": "تۆ مۆڵەتت نییە بۆ هەڵوەشاندنەوەی ڕاگرتنی پۆستەکان.",
     "Post unsuspended successfully!": "ڕاگرتنی پۆست بە سەرکەوتوویی هەڵوەشایەوە!",
     "Failed to unsuspend post. Please try again.": "هەڵوەشاندنەوەی ڕاگرتنی پۆست سەرکەوتوو نەبوو. تکایە دووبارە هەوڵبدەوە.",
-    ":count reactions": ":count وەڵام",
+    ":count reactions": ":count ڵایک",
     "Apply to Job": "داواکاری بۆ کار"
 }

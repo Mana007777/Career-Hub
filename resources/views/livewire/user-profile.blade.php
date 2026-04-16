@@ -373,7 +373,7 @@
                                                 </span>
                                             @endif
                                         </div>
-                                        <p class="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em] mt-1 italic">{{ $post->created_at->diffForHumans() }}</p>
+                                        <p class="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em] mt-1 italic">{{ \App\Support\SoraniTime::human($post->created_at) }}</p>
                                     </div>
                                 </div>
                             </div>
