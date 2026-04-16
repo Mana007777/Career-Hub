@@ -31,6 +31,7 @@ class SavePost
             $existing->delete();
 
             return false; 
+        }
 
         SavedItem::create([
             'user_id' => $userId,
