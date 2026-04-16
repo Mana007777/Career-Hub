@@ -556,5 +556,7 @@
     "Failed to suspend post: :error": "ڕاگرتنی پۆست سەرکەوتوو نەبوو: :error",
     "You are not authorized to unsuspend posts.": "تۆ مۆڵەتت نییە بۆ هەڵوەشاندنەوەی ڕاگرتنی پۆستەکان.",
     "Post unsuspended successfully!": "ڕاگرتنی پۆست بە سەرکەوتوویی هەڵوەشایەوە!",
-    "Failed to unsuspend post. Please try again.": "هەڵوەشاندنەوەی ڕاگرتنی پۆست سەرکەوتوو نەبوو. تکایە دووبارە هەوڵبدەوە."
+    "Failed to unsuspend post. Please try again.": "هەڵوەشاندنەوەی ڕاگرتنی پۆست سەرکەوتوو نەبوو. تکایە دووبارە هەوڵبدەوە.",
+    ":count reactions": ":count وەڵام",
+    "Apply to Job": "داواکاری بۆ کار"
 }

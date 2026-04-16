@@ -100,11 +100,22 @@
                     @endif
                     
                     @if($post->job_type)
+                        @php
+                            $jobTypeLabel = match($post->job_type) {
+                                'full-time' => __('Full-time'),
+                                'part-time' => __('Part-time'),
+                                'contract' => __('Contract'),
+                                'freelance' => __('Freelance'),
+                                'internship' => __('Internship'),
+                                'remote' => __('Remote'),
+                                default => __($post->job_type),
+                            };
+                        @endphp
                         <div class="mb-8 p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl flex items-center gap-4">
                             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div>
                             <div>
                                 <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest italic">{{ __('Job Type') }}</p>
-                                <p class="text-[13px] font-black text-emerald-400 uppercase tracking-tight italic">{{ ucfirst(str_replace('-', ' ', $post->job_type)) }}</p>
+                                <p class="text-[13px] font-black text-emerald-400 uppercase tracking-tight italic">{{ $jobTypeLabel }}</p>
                             </div>
                         </div>
                     @endif
@@ -159,7 +170,7 @@
                         <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center group-hover/stat:border-emerald-500/30 transition-all">
                             <svg class="w-5 h-5 {{ $hasStarredPost ? 'fill-emerald-500' : '' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783-.57-1.838-.197-1.538-1.118l1.518-4.674c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
                         </div>
-                        <span>{{ $post->stars->count() }} Reactions</span>
+                        <span>{{ __(':count reactions', ['count' => $post->stars->count()]) }}</span>
                     </button>
 
                     <button wire:click="togglePostSave" class="flex items-center gap-4 text-xs font-black uppercase tracking-widest {{ $hasSavedPost ? 'text-cyan-500' : 'text-zinc-600 hover:text-cyan-400' }} transition-all group/stat italic">
@@ -177,7 +188,7 @@
                     <div class="mt-12 group">
                         <div class="bg-zinc-900/40 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl group-hover:border-emerald-500/20 transition-all duration-700">
                              <div class="flex items-center justify-between mb-10">
-                                <h2 class="text-2xl font-black text-white uppercase tracking-tighter italic">{{ __('Apply to Post') }}</h2>
+                                <h2 class="text-2xl font-black text-white uppercase tracking-tighter italic">{{ __('Apply to Job') }}</h2>
                                 @if($hasUploadedCv)
                                     <div class="px-8 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-500 text-[10px] font-black uppercase tracking-widest italic">{{ __('CV submitted') }} ✓</div>
                                 @endif

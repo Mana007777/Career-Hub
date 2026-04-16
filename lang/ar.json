@@ -556,5 +556,7 @@
     "Failed to suspend post: :error": "فشل تعليق المنشور: :error",
     "You are not authorized to unsuspend posts.": "لست مخولًا بإلغاء تعليق المنشورات.",
     "Post unsuspended successfully!": "تم إلغاء تعليق المنشور بنجاح!",
-    "Failed to unsuspend post. Please try again.": "فشل إلغاء تعليق المنشور. يرجى المحاولة مرة أخرى."
+    "Failed to unsuspend post. Please try again.": "فشل إلغاء تعليق المنشور. يرجى المحاولة مرة أخرى.",
+    ":count reactions": ":count تفاعل",
+    "Apply to Job": "التقديم على وظيفة"
 }
