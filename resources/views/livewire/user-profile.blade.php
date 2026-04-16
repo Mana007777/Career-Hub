@@ -165,6 +165,17 @@
                                         {{ $isFollowing ? __('Unfollow') : __('Follow') }}
                                     </button>
 
+                                    <button
+                                        type="button"
+                                        wire:click="openChat"
+                                        class="shrink-0 w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all flex items-center justify-center"
+                                        title="Chat with {{ $user->name }}"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5m-8 6l2.5-2.5A3 3 0 0 1 9.62 17H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7a3 3 0 0 0 3 3h1.5L5 20z" />
+                                        </svg>
+                                    </button>
+
                                     <div class="relative shrink-0">
                                         <button @click="openOptions = !openOptions" class="w-12 h-12 rounded-2xl bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-zinc-700 transition-all">
                                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

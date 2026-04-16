@@ -129,6 +129,15 @@ class UserProfile extends Component
         }
     }
 
+    public function openChat(): void
+    {
+        if (!Auth::check() || !$this->user || Auth::id() === $this->user->id) {
+            return;
+        }
+
+        $this->dispatch('openChat', userId: $this->user->id);
+    }
+
     /**
      * Company invites this user to join their organization.
      */
