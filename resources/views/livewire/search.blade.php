@@ -33,7 +33,7 @@
                         <div class="flex items-center justify-between mb-8">
                             <h2 class="text-[10px] font-black text-white uppercase tracking-[0.6em] flex items-center gap-4 italic font-bold">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Search
+                                {{ __('Search') }}
                             </h2>
                             <button 
                                 wire:click="closeSearch"
@@ -45,7 +45,7 @@
                         <!-- Filters -->
                         @if($query && strlen(trim($query)) > 0)
                             <div class="flex gap-4 mb-8">
-                                @foreach(['all' => 'All', 'users' => 'Users', 'posts' => 'Posts'] as $type => $label)
+                                @foreach(['all' => __('All'), 'users' => __('Users'), 'posts' => __('Posts')] as $type => $label)
                                     <button 
                                         wire:click="setResultType('{{ $type }}')"
                                         class="px-8 py-3 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] italic transition-all duration-500 {{ ($resultType ?? 'all') === $type ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'bg-zinc-950 text-zinc-600 hover:text-zinc-400 border border-zinc-800' }}">
@@ -65,7 +65,7 @@
                             <input 
                                 type="text"
                                 wire:model.live.debounce.300ms="query"
-                                placeholder="INITIALIZE KEYWORD SEARCH..."
+                                placeholder="{{ __('Type to search...') }}"
                                 class="w-full pl-20 pr-8 py-6 bg-zinc-950 border border-zinc-800/50 rounded-[2rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all text-xs font-black uppercase tracking-widest shadow-inner italic"
                                 autofocus>
                         </div>
@@ -77,7 +77,7 @@
                             <!-- Identity Results -->
                             @if(in_array($resultType ?? 'all', ['all', 'users']) && $users->count() > 0)
                                 <div class="px-8 py-10 border-b border-zinc-800/30">
-                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Users</h3>
+                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">{{ __('Users') }}</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         @php $displayUsers = ($this->resultType === 'all') ? $users->take(4) : $users; @endphp
                                         @foreach($displayUsers as $index => $user)
@@ -109,7 +109,7 @@
                                     
                                     @if($this->resultType === 'all' && $users->total() > 4)
                                         <div class="mt-8 flex justify-center">
-                                            <button wire:click="setResultType('users')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">View all users ({{ $users->total() }})</button>
+                                            <button wire:click="setResultType('users')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">{{ __('View all users') }} ({{ $users->total() }})</button>
                                         </div>
                                     @endif
                                 </div>
@@ -118,7 +118,7 @@
                             <!-- Log Results -->
                             @if(in_array($resultType ?? 'all', ['all', 'posts']) && $posts->count() > 0)
                                 <div class="px-8 py-10 transition-all">
-                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">Posts</h3>
+                                    <h3 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 ml-2 italic">{{ __('Posts') }}</h3>
                                     <div class="space-y-4">
                                         @php $displayPosts = ($this->resultType === 'all') ? $posts->take(4) : $posts; @endphp
                                         @foreach($displayPosts as $index => $post)
@@ -136,7 +136,7 @@
                                                     </div>
                                                 </div>
                                                 <h3 class="text-[13px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-tight italic mb-3">
-                                                    {!! str_ireplace(e($query), '<mark class="bg-emerald-500/20 text-emerald-300">'.e($query).'</mark>', e($post->title ?? 'Log Capture')) !!}
+                                                    {!! str_ireplace(e($query), '<mark class="bg-emerald-500/20 text-emerald-300">'.e($query).'</mark>', e($post->title ?? __('Post'))) !!}
                                                 </h3>
                                                 <p class="text-[11px] font-medium text-zinc-500 line-clamp-2 leading-relaxed italic selection:bg-emerald-500/20">
                                                     {{ Str::limit($post->content, 180) }}
@@ -147,7 +147,7 @@
 
                                     @if($this->resultType === 'all' && $posts->total() > 4)
                                         <div class="mt-8 flex justify-center">
-                                            <button wire:click="setResultType('posts')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">Expand Log Archive ({{ $posts->total() }})</button>
+                                            <button wire:click="setResultType('posts')" class="px-8 py-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white hover:bg-zinc-800 transition-all italic font-bold">{{ __('View all posts') }} ({{ $posts->total() }})</button>
                                         </div>
                                     @endif
                                 </div>
@@ -159,8 +159,8 @@
                                     <div class="w-20 h-20 bg-zinc-950 border border-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
                                         <svg class="w-10 h-10 text-zinc-800 group-hover:text-rose-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                     </div>
-                                    <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">Null Result</h3>
-                                    <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">Zero data nodes matching your scan parameters.</p>
+                                    <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">{{ __('No Results') }}</h3>
+                                    <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('No matches found for your search.') }}</p>
                                 </div>
                             @endif
                         @else
@@ -169,8 +169,8 @@
                                 <div class="w-20 h-20 bg-zinc-950 border border-zinc-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
                                     <svg class="w-10 h-10 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 </div>
-                                <h3 class="text-xl font-black text-white italic uppercase tracking-tighter italic">Scanner Online</h3>
-                                <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">Initialize keywords to scan the global intelligence stream.</p>
+                                <h3 class="text-xl font-black text-white italic uppercase tracking-tighter italic">{{ __('Search Ready') }}</h3>
+                                <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('Type keywords to start searching.') }}</p>
                             </div>
                         @endif
                     </div>

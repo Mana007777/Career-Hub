@@ -29,7 +29,7 @@
                         <h1 class="text-2xl font-black text-white tracking-tighter leading-none italic">
                             Career <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500 bg-[length:200%_auto] animate-gradient">Hub</span>
                         </h1>
-                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mt-1">Community Feed</p>
+                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mt-1">{{ __('Community Feed') }}</p>
                     </div>
                 </div>
                 
@@ -40,7 +40,7 @@
                         <svg class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                         </svg>
-                        <span>Filters</span>
+                        <span>{{ __('Filters') }}</span>
                         @if($selectedJobType || $selectedTags || $selectedSpecialties)
                             <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
                         @endif
@@ -65,13 +65,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
                 <!-- Sort Sector -->
                 <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Sort Order</label>
+                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Sort Order') }}</label>
                     <div class="relative group">
                         <select 
                             wire:model.live="sortOrder"
                             class="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl text-zinc-100 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer group-hover:bg-zinc-900/50 uppercase tracking-widest">
-                            <option value="desc">Newest First</option>
-                            <option value="asc">Oldest First</option>
+                            <option value="desc">{{ __('Newest First') }}</option>
+                            <option value="asc">{{ __('Oldest First') }}</option>
                         </select>
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="3"/></svg>
@@ -81,12 +81,12 @@
                 
                 <!-- Category Node -->
                 <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Deployment Type</label>
+                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Job Type') }}</label>
                     <div class="relative group">
                         <select 
                             wire:model.live="selectedJobType"
                             class="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl text-zinc-100 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer group-hover:bg-zinc-900/50 uppercase tracking-widest">
-                            <option value="">All Job Types</option>
+                            <option value="">{{ __('All Job Types') }}</option>
                             @foreach($jobTypes as $jobType)
                                 <option value="{{ $jobType }}">{{ strtoupper($jobType) }}</option>
                             @endforeach
@@ -99,12 +99,12 @@
                 
                 <!-- Tag Matrix -->
                 <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Tags</label>
+                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Tags') }}</label>
                     <div class="relative group">
                         <select 
                             wire:model.live="selectedTags"
                             class="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl text-zinc-100 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer group-hover:bg-zinc-900/50 uppercase tracking-widest">
-                            <option value="">All Tags</option>
+                            <option value="">{{ __('All Tags') }}</option>
                             @foreach($allTags as $tag)
                                 <option value="{{ $tag->id }}">#{{ strtoupper($tag->name) }}</option>
                             @endforeach
@@ -117,12 +117,12 @@
                 
                 <!-- Specialty Array -->
                 <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Specialties</label>
+                    <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Specialties') }}</label>
                     <div class="relative group">
                         <select 
                             wire:model.live="selectedSpecialties"
                             class="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl text-zinc-100 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer group-hover:bg-zinc-900/50 uppercase tracking-widest">
-                            <option value="">All Specialties</option>
+                            <option value="">{{ __('All Specialties') }}</option>
                             @foreach($allSpecialties as $specialty)
                                 <option value="{{ $specialty->id }}">{{ strtoupper($specialty->name) }}</option>
                             @endforeach
@@ -139,12 +139,12 @@
                 <button 
                     wire:click="clearFilters"
                     class="text-[10px] font-black text-zinc-500 hover:text-rose-500 uppercase tracking-[0.2em] transition-colors">
-                    Reset Filters
+                    {{ __('Reset Filters') }}
                 </button>
                 <button 
                     wire:click="toggleFilters"
                     class="px-8 py-3 bg-emerald-500 text-black rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] active:scale-95">
-                    Apply Filters
+                    {{ __('Apply Filters') }}
                 </button>
             </div>
         </div>
@@ -166,7 +166,7 @@
                 <div class="px-10 py-6 bg-zinc-950/40 border-b border-zinc-800/50 flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em]">Create New Post</h3>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.4em]">{{ __('Create New Post') }}</h3>
                     </div>
                     <button wire:click="closeCreateForm" class="text-zinc-600 hover:text-white transition-colors p-2 hover:bg-zinc-800 rounded-xl">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
@@ -177,28 +177,28 @@
                 
                 <form wire:submit.prevent="create" wire:key="create-post-form" class="p-10 space-y-10">
                     <div class="space-y-4">
-                        <label for="title" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Title</label>
+                        <label for="title" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Title') }}</label>
                         <input
                             type="text"
                             wire:model="title"
                             wire:key="title-input"
                             id="title"
                             class="w-full px-8 py-5 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all font-bold text-sm tracking-tight"
-                            placeholder="WHAT IS THE PRIMARY GOAL?">
+                            placeholder="{{ __('What is the primary goal?') }}">
                         @error('title')
                             <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 block ml-1">{{ $message }}</span>
                         @enderror
                     </div>
 
                     <div class="space-y-4">
-                        <label for="content" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Content</label>
+                        <label for="content" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Content') }}</label>
                         <textarea 
                             wire:model="content"
                             wire:key="content-input"
                             id="content"
                             rows="6"
                             class="w-full px-8 py-5 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all resize-none text-sm leading-relaxed font-medium"
-                            placeholder="Write your post..."></textarea>
+                            placeholder="{{ __('Write your post...') }}"></textarea>
                         @error('content') 
                             <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 block ml-1">{{ $message }}</span> 
                         @enderror
@@ -207,20 +207,20 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Job Type -->
                         <div class="space-y-4">
-                            <label for="jobType" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Job Type</label>
+                            <label for="jobType" class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Job Type') }}</label>
                             <div class="relative group">
                                 <select
                                     wire:model="jobType"
                                     wire:key="job-type-input"
                                     id="jobType"
                                     class="w-full px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer text-xs font-bold tracking-widest uppercase">
-                                    <option value="">Select Job Type</option>
-                                    <option value="full-time">Full-time</option>
-                                    <option value="part-time">Part-time</option>
-                                    <option value="contract">Contract</option>
-                                    <option value="freelance">Freelance</option>
-                                    <option value="internship">Internship</option>
-                                    <option value="remote">Remote</option>
+                                    <option value="">{{ __('Select Job Type') }}</option>
+                                    <option value="full-time">{{ __('Full-time') }}</option>
+                                    <option value="part-time">{{ __('Part-time') }}</option>
+                                    <option value="contract">{{ __('Contract') }}</option>
+                                    <option value="freelance">{{ __('Freelance') }}</option>
+                                    <option value="internship">{{ __('Internship') }}</option>
+                                    <option value="remote">{{ __('Remote') }}</option>
                                 </select>
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="3"/></svg>
@@ -230,13 +230,13 @@
 
                         <!-- Media Integration -->
                         <div class="space-y-4">
-                            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Media</label>
+                            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Media') }}</label>
                             <label for="media" class="relative group flex items-center justify-center w-full px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 border-dashed rounded-2xl hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all cursor-pointer">
                                 <div class="flex items-center gap-4 text-zinc-500 group-hover:text-emerald-400 transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
-                                    <span class="text-[10px] font-black uppercase tracking-widest">{{ $media ? strtoupper($media->getClientOriginalName()) : 'Upload media' }}</span>
+                                    <span class="text-[10px] font-black uppercase tracking-widest">{{ $media ? strtoupper($media->getClientOriginalName()) : __('Upload media') }}</span>
                                 </div>
                                 <input type="file" wire:model="media" wire:key="media-input" id="media" accept="image/*,video/*" class="hidden">
                             </label>
@@ -248,23 +248,23 @@
 
                     <!-- Specialty Synthesis -->
                     <div class="space-y-6 pt-8 border-t border-zinc-800/50">
-                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">Add Specialty</label>
+                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Add Specialty') }}</label>
                         <div class="flex flex-col sm:flex-row gap-4">
                             <input 
                                 type="text"
                                 wire:model="specialtyName"
-                                placeholder="Specialty"
+                                placeholder="{{ __('Specialty') }}"
                                 class="flex-1 px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-[10px] font-black uppercase tracking-widest">
                             <input 
                                 type="text"
                                 wire:model="subSpecialtyName"
-                                placeholder="Sub-specialty"
+                                placeholder="{{ __('Sub-specialty') }}"
                                 class="flex-1 px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-[10px] font-black uppercase tracking-widest">
                             <button 
                                 type="button"
                                 wire:click="addSpecialty"
                                 class="px-8 py-4 bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-black rounded-2xl transition-all border border-zinc-800 uppercase tracking-widest shadow-lg active:scale-95">
-                                Add
+                                {{ __('Add') }}
                             </button>
                         </div>
                         
@@ -288,7 +288,7 @@
                             type="button"
                             wire:click="closeCreateForm"
                             class="text-[10px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.3em]">
-                            Cancel
+                            {{ __('Cancel') }}
                         </button>
                         <button 
                             type="submit"
@@ -296,11 +296,11 @@
                             wire:target="create"
                             class="relative group px-12 py-5 bg-emerald-500 text-black text-[10px] font-black rounded-2xl transition-all shadow-[0_0_40px_rgba(16,185,129,0.2)] hover:bg-emerald-400 hover:shadow-[0_0_50px_rgba(16,185,129,0.4)] active:scale-95 disabled:opacity-50 uppercase tracking-[0.3em] overflow-hidden">
                             <span wire:loading.remove wire:target="create" class="relative z-10 flex items-center gap-3">
-                                Publish Post
+                                {{ __('Publish Post') }}
                             </span>
                             <span wire:loading wire:target="create" class="relative z-10 flex items-center gap-3">
                                 <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                Publishing...
+                                {{ __('Publishing...') }}
                             </span>
                             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
                         </button>
