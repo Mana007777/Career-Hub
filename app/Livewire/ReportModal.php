@@ -82,9 +82,9 @@ class ReportModal extends Component
             'selectedReason' => ['required', 'string'],
             'customReason' => ['required_if:selectedReason,other', 'string', 'max:500'],
         ], [
-            'selectedReason.required' => 'Please select a reason for reporting.',
-            'customReason.required_if' => 'Please provide a reason for reporting.',
-            'customReason.max' => 'The reason must not exceed 500 characters.',
+            'selectedReason.required' => __('Please select a reason for reporting.'),
+            'customReason.required_if' => __('Please provide a reason for reporting.'),
+            'customReason.max' => __('The reason must not exceed 500 characters.'),
         ]);
 
         try {
@@ -98,7 +98,7 @@ class ReportModal extends Component
                 $reason
             );
 
-            session()->flash('success', 'Report submitted successfully. We will review it shortly.');
+            session()->flash('success', __('Report submitted successfully. We will review it shortly.'));
             $redirectUrl = request()->header('Referer') ?: url()->previous();
             // Never redirect to Livewire internal routes (GET would fail)
             if (str_contains($redirectUrl, '/livewire/update') || str_contains($redirectUrl, '/livewire/message')) {

@@ -24,7 +24,7 @@ class SavedPosts extends Component
             // If a post was unsaved from this list, refresh pagination so it disappears
             $this->resetPage();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update saved post. Please try again.');
+            session()->flash('error', __('Failed to update saved post. Please try again.'));
         }
     }
 
@@ -33,7 +33,7 @@ class SavedPosts extends Component
         $user = Auth::user();
 
         if (! $user) {
-            abort(403, 'You must be logged in to view saved posts.');
+            abort(403, __('You must be logged in to view saved posts.'));
         }
 
         $posts = Post::query()

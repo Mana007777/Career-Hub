@@ -20,7 +20,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Back to Home</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Back to Home') }}</span>
             </button>
         </div>
 
@@ -34,9 +34,9 @@
         >
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Saved <span class="text-emerald-500">Posts</span></h1>
+                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">{{ __('Saved') }} <span class="text-emerald-500">{{ __('Posts') }}</span></h1>
             </div>
-            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">Your saved posts · {{ $posts->total() }} total</p>
+            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">{{ __('Your saved posts · :count total', ['count' => $posts->total()]) }}</p>
         </div>
 
         <!-- Saved Posts Grid -->
@@ -68,7 +68,7 @@
                                 <div class="flex items-center gap-2">
                                     <h3 class="text-[11px] font-black text-zinc-400 group-hover/author:text-white transition-colors truncate uppercase tracking-widest">{{ $post->user->name ?? 'Unknown' }}</h3>
                                     @if($post->user && $post->user->hasBlueTick())
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="Verified">
+                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.35)] animate-pulse" title="{{ __('Verified') }}">
                                             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                                 <path d="M12 2l2.3 5.1L20 9l-4 4.1L17 19l-5-2.9L7 19l1-5.9L4 9l5.7-1.9L12 2z"/>
                                             </svg>
@@ -98,13 +98,13 @@
                                 $isImage = in_array(strtolower(pathinfo($post->media, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
                             @endphp
                             @if($isImage)
-                                <img src="{{ $mediaUrl }}" alt="Post media" class="w-full h-40 object-cover grayscale opacity-50 group-hover/media:grayscale-0 group-hover/media:opacity-100 transition-all duration-1000">
+                                <img src="{{ $mediaUrl }}" alt="{{ __('Post media') }}" class="w-full h-40 object-cover grayscale opacity-50 group-hover/media:grayscale-0 group-hover/media:opacity-100 transition-all duration-1000">
                                 <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent"></div>
                             @else
                                 <div class="bg-zinc-950 py-6 px-8 flex items-center justify-between group-hover:bg-emerald-500/5 transition-colors duration-700">
                                     <div class="flex items-center gap-4">
                                         <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L13.732 14M5 18H13a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></div>
-                                        <span class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Multimedia Payload</span>
+                                        <span class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">{{ __('Media') }}</span>
                                     </div>
                                     <svg class="w-4 h-4 text-emerald-500/30 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 5l7 7-7 7" /></svg>
                                 </div>
@@ -115,7 +115,7 @@
                     <div class="flex items-center justify-between pt-6 border-t border-zinc-800/50 relative z-10">
                         <div class="flex items-center gap-2 text-[9px] font-black text-zinc-600 uppercase tracking-widest">
                             <div class="w-1.5 h-1.5 rounded-full bg-emerald-500/40"></div>
-                            <span>{{ $post->stars->count() }} Reactions</span>
+                            <span>{{ __(':count Reactions', ['count' => $post->stars->count()]) }}</span>
                         </div>
 
                         <button
@@ -123,7 +123,7 @@
                             wire:click.stop="togglePostSave({{ $post->id }})"
                             class="flex items-center gap-3 px-6 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-rose-500 hover:border-rose-500/30 transition-all duration-500 italic">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z" /></svg>
-                            <span>Sever Pin</span>
+                            <span>{{ __('Unsave') }}</span>
                         </button>
                     </div>
                 </article>
@@ -132,8 +132,8 @@
                     <div class="w-24 h-24 bg-zinc-950 border border-zinc-800/50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:scale-110 transition-all duration-1000">
                         <svg class="h-10 w-10 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z" /></svg>
                     </div>
-                    <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">No Saved Posts</h3>
-                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Zero mission logs have been pinned to this node.</p>
+                    <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">{{ __('No Saved Posts') }}</h3>
+                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('You have no saved posts yet.') }}</p>
                 </div>
             @endforelse
         </div>

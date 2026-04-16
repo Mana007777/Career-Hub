@@ -136,7 +136,7 @@
                     <div class="flex-1 min-w-0">
                         <h3 class="text-[11px] font-black text-white truncate uppercase tracking-widest italic">{{ $otherUser->name }}</h3>
                         <p class="text-[8px] font-black uppercase tracking-[0.2em] mt-1 {{ $otherUser->isActive() ? 'text-emerald-500' : 'text-zinc-600' }}">
-                            {{ $otherUser->isActive() ? 'Online' : 'Offline' }}
+                            {{ $otherUser->isActive() ? __('Online') : __('Offline') }}
                         </p>
                     </div>
                 </div>
@@ -156,9 +156,9 @@
                     <div class="w-20 h-20 bg-zinc-950/40 border border-zinc-800 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
                         <svg class="w-10 h-10 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                     </div>
-                    <h4 class="text-sm font-black text-white uppercase tracking-widest italic mb-4">Chat unavailable</h4>
-                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-relaxed mb-8">Follow {{ $otherUser->name }} to start chatting.</p>
-                    <a href="{{ route('user.profile', $otherUser->username ?? 'unknown') }}" class="px-10 py-4 bg-emerald-500 text-black text-[10px] font-black rounded-2xl uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(16,185,129,0.2)] hover:scale-105 transition-all">View Identity</a>
+                    <h4 class="text-sm font-black text-white uppercase tracking-widest italic mb-4">{{ __('Chat unavailable') }}</h4>
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-relaxed mb-8">{{ __('Follow :name to start chatting.', ['name' => $otherUser->name]) }}</p>
+                    <a href="{{ route('user.profile', $otherUser->username ?? 'unknown') }}" class="px-10 py-4 bg-emerald-500 text-black text-[10px] font-black rounded-2xl uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(16,185,129,0.2)] hover:scale-105 transition-all">{{ __('View profile') }}</a>
                 </div>
             @else
                 <div 
@@ -197,10 +197,10 @@
                     <!-- Interaction Requests Hub -->
                     @if($pendingRequest)
                         <div class="p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-3xl animate-pulse">
-                            <p class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">Chat request</p>
+                            <p class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">{{ __('Chat request') }}</p>
                             <div class="flex gap-3">
-                                <button wire:click="acceptRequest" class="flex-1 py-3 bg-emerald-500 text-black text-[9px] font-black rounded-xl uppercase tracking-widest">Accept</button>
-                                <button wire:click="rejectRequest" class="flex-1 py-3 bg-zinc-800 text-white text-[9px] font-black rounded-xl uppercase tracking-widest">Reject</button>
+                                <button wire:click="acceptRequest" class="flex-1 py-3 bg-emerald-500 text-black text-[9px] font-black rounded-xl uppercase tracking-widest">{{ __('Accept') }}</button>
+                                <button wire:click="rejectRequest" class="flex-1 py-3 bg-zinc-800 text-white text-[9px] font-black rounded-xl uppercase tracking-widest">{{ __('Reject') }}</button>
                             </div>
                         </div>
                     @endif
@@ -239,7 +239,7 @@
                                                     @else
                                                         <a href="{{ $fileUrl }}" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl {{ $isMe ? 'bg-black/10 hover:bg-black/20 text-black' : 'bg-zinc-900/70 hover:bg-zinc-900 text-zinc-200' }} text-[10px] font-black uppercase tracking-widest transition-colors">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M7 7h10M7 11h10M7 15h6m5 6H6a2 2 0 01-2-2V5a2 2 0 012-2h8l6 6v10a2 2 0 01-2 2z"></path></svg>
-                                                            Open file
+                                                            {{ __('Open file') }}
                                                         </a>
                                                     @endif
                                                 @endif
@@ -264,7 +264,7 @@
                     @empty
                         <div class="flex flex-col items-center justify-center py-20 text-center">
                             <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping mb-6"></div>
-                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">No messages yet...</p>
+                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('No messages yet...') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -273,7 +273,7 @@
                 <div class="px-8 py-8 bg-zinc-950/40 border-t border-zinc-800/30" x-show="!isMinimized">
                     @if($pendingRequest)
                         <div class="text-center py-4 bg-zinc-950/40 border border-dashed border-zinc-800 rounded-2xl">
-                            <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Awaiting access authorization</p>
+                            <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{{ __('Awaiting access authorization') }}</p>
                         </div>
                     @else
                         <form wire:submit.prevent="sendMessage" x-on:submit="forceScrollAfterSend()" class="relative group/input">
@@ -281,7 +281,7 @@
                                 wire:model.live="newMessage"
                                 wire:keydown.enter.prevent="sendMessage"
                                 rows="1"
-                                placeholder="Type a message..."
+                                placeholder="{{ __('Type a message...') }}"
                                 data-chat-composer
                                 class="w-full px-8 py-5 bg-zinc-950/40 border border-zinc-800 rounded-3xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-xs font-black uppercase resize-none custom-scrollbar"
                                 style="min-height: 64px; max-height: 160px;"

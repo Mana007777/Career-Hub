@@ -68,7 +68,7 @@
         <div class="px-8 py-8 flex items-center justify-between bg-zinc-950/40 border-b border-zinc-800/30">
             <h2 class="text-[10px] font-black text-white uppercase tracking-[0.4em] flex items-center gap-3">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Chats
+                {{ __('Chats') }}
             </h2>
             @if(array_sum($unreadCounts) > 0)
                 <span class="px-3 py-1 rounded-lg bg-emerald-500 text-[10px] font-black text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]">
@@ -90,7 +90,7 @@
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                     <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                 </svg>
-                                Chat Requests
+                                {{ __('Chat Requests') }}
                             </h3>
                             <div class="space-y-6">
                                 @foreach($requests as $request)
@@ -103,8 +103,8 @@
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-[10px] font-black text-white uppercase tracking-widest truncate">{{ $fromUser->name }}</p>
                                                 <div class="flex gap-2 mt-3">
-                                                    <button wire:click="acceptRequest({{ $request->id }})" class="flex-1 py-2 bg-emerald-500 text-[9px] font-black rounded-xl text-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">Accept</button>
-                                                    <button wire:click="rejectRequest({{ $request->id }})" class="flex-1 py-2 bg-zinc-800/50 text-[9px] font-black rounded-xl text-zinc-500 uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all border border-zinc-700/30">Decline</button>
+                                                    <button wire:click="acceptRequest({{ $request->id }})" class="flex-1 py-2 bg-emerald-500 text-[9px] font-black rounded-xl text-black uppercase tracking-[0.2em] hover:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">{{ __('Accept') }}</button>
+                                                    <button wire:click="rejectRequest({{ $request->id }})" class="flex-1 py-2 bg-zinc-800/50 text-[9px] font-black rounded-xl text-zinc-500 uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all border border-zinc-700/30">{{ __('Decline') }}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -116,7 +116,7 @@
                 @endif
 
                 <div class="px-8 pb-3">
-                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">Chats</p>
+                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">{{ __('Chats') }}</p>
                 </div>
                 @if(count($chats) > 0)
                     <div class="space-y-1">
@@ -156,7 +156,7 @@
                                     </div>
                                     <div class="flex items-center justify-between gap-3">
                                         <p class="text-[10px] font-bold text-zinc-500 truncate italic tracking-tight group-hover:text-zinc-400">
-                                            {{ $lastMessage ? ($lastMessage->sender_id === auth()->id() ? 'You: ' : '') . $lastMessage->message : 'No messages yet' }}
+                                            {{ $lastMessage ? ($lastMessage->sender_id === auth()->id() ? __('You: ') : '') . $lastMessage->message : __('No messages yet') }}
                                         </p>
                                         @if($unreadCount > 0)
                                             <span class="px-2 py-0.5 rounded-lg bg-emerald-500 text-[8px] font-black text-black">
@@ -170,12 +170,12 @@
                     </div>
                 @else
                     <div class="px-8 pb-6">
-                        <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.2em]">No active chats yet.</p>
+                        <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.2em]">{{ __('No active chats yet.') }}</p>
                     </div>
                 @endif
 
                 <div class="px-8 pt-6 pb-3">
-                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">Friends</p>
+                    <p class="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">{{ __('Friends') }}</p>
                 </div>
                 @if(count($friends) > 0)
                     <div class="space-y-1 mb-4">
@@ -199,7 +199,7 @@
                                         {{ $friend->name }}
                                     </p>
                                     <p class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mt-1">
-                                        Friend - no chat yet
+                                        {{ __('Friend - no chat yet') }}
                                     </p>
                                 </div>
                             </button>
@@ -207,7 +207,7 @@
                     </div>
                 @else
                     <div class="px-8 pb-6">
-                        <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.2em]">No friends without chats.</p>
+                        <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.2em]">{{ __('No friends without chats.') }}</p>
                     </div>
                 @endif
             </div>

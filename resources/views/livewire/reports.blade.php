@@ -17,7 +17,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Back to Home</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Back to Home') }}</span>
             </a>
         </div>
 
@@ -31,16 +31,16 @@
         >
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
-                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Discrepancy <span class="text-rose-500">Scan</span></h1>
+                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">{{ __('Reports') }}</h1>
             </div>
-            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">System-wide surveillance and report management portal</p>
+            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">{{ __('Review and manage user reports') }}</p>
         </div>
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
             <div class="mb-10 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] backdrop-blur-3xl flex items-center gap-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7" /></svg>
-                <span>Action Committed Successfully</span>
+                <span>{{ __('Action completed successfully') }}</span>
             </div>
         @endif
 
@@ -64,39 +64,39 @@
                                     {{ $report->status }}
                                 </span>
                                 <span class="px-6 py-2 bg-zinc-950 border border-zinc-800 text-zinc-500 rounded-xl text-[8px] font-black uppercase tracking-[0.3em] italic">
-                                    Target: {{ $report->target_type }}
+                                    {{ __('Target') }}: {{ __($report->target_type) }}
                                 </span>
                             </div>
 
                             <div class="space-y-6">
                                 <div class="flex items-center gap-4 text-sm font-black italic">
-                                    <span class="text-rose-500/50 uppercase tracking-widest text-[9px]">Reported by:</span>
+                                    <span class="text-rose-500/50 uppercase tracking-widest text-[9px]">{{ __('Reported by:') }}</span>
                                     <a href="{{ route('user.profile', $report->reporter->username ?? 'unknown') }}" class="text-white hover:text-rose-400 transition-colors uppercase tracking-tight">
                                         {{ $report->reporter->name }} <span class="text-zinc-600 block sm:inline text-[10px] sm:ml-2">@ {{ $report->reporter->username }}</span>
                                     </a>
                                 </div>
                                 <div class="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8 shadow-inner">
-                                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] mb-4 italic">Observation Logic:</p>
+                                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] mb-4 italic">{{ __('Reason') }}</p>
                                     <p class="text-lg font-black text-white italic tracking-tight uppercase">{{ $report->reason }}</p>
-                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-6">Logged {{ $report->created_at->diffForHumans() }}</p>
+                                    <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-6">{{ __('Logged') }} {{ $report->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
 
                             <!-- Payload Preview -->
                             <div class="mt-8 p-10 bg-zinc-900/60 rounded-[2.5rem] border border-zinc-800/80 group/payload hover:border-zinc-700 transition-all">
-                                <h5 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 italic">Transmission Payload Buffer</h5>
+                                <h5 class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-8 italic">{{ __('Reported Content') }}</h5>
                                 
                                 @if($report->target_type === 'post' && $report->target)
                                     <div class="space-y-4">
                                         <div class="flex items-center gap-4 mb-4">
                                             <div class="w-10 h-10 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center"><svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" /></svg></div>
-                                            <p class="text-[11px] font-black text-zinc-400 uppercase tracking-widest italic">Identity: @ {{ $report->target->user->username }}</p>
+                                            <p class="text-[11px] font-black text-zinc-400 uppercase tracking-widest italic">{{ __('User') }}: @ {{ $report->target->user->username }}</p>
                                         </div>
                                         @if($report->target->title)
                                             <h3 class="text-xl font-black text-white uppercase italic tracking-tighter">{{ $report->target->title }}</h3>
                                         @endif
                                         <p class="text-sm text-zinc-500 font-bold italic line-clamp-3 leading-relaxed selection:bg-rose-500/20">"{{ $report->target->content }}"</p>
-                                        <a href="{{ route('posts.show', $report->target->slug) }}" target="_blank" class="inline-flex items-center gap-2 mt-4 text-[9px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-400 transition-colors italic">Deep Inspect Log →</a>
+                                        <a href="{{ route('posts.show', $report->target->slug) }}" target="_blank" class="inline-flex items-center gap-2 mt-4 text-[9px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-400 transition-colors italic">{{ __('View post') }} →</a>
                                     </div>
                                 @elseif($report->target_type === 'user' && $report->target)
                                     <div class="flex items-center gap-8">
@@ -109,11 +109,11 @@
                                     </div>
                                 @elseif($report->target_type === 'comment' && $report->target)
                                     <div class="space-y-4">
-                                        <p class="text-[11px] font-black text-zinc-400 uppercase tracking-widest italic font-bold italic">Source: @ {{ $report->target->user->username }}</p>
+                                        <p class="text-[11px] font-black text-zinc-400 uppercase tracking-widest italic font-bold italic">{{ __('User') }}: @ {{ $report->target->user->username }}</p>
                                         <p class="text-sm text-zinc-500 italic line-clamp-3 italic font-bold">"{{ $report->target->content }}"</p>
                                     </div>
                                 @else
-                                    <p class="text-[10px] font-black text-rose-500/40 uppercase tracking-[0.4em] italic font-bold">Target unit has been purged or is inaccessible.</p>
+                                    <p class="text-[10px] font-black text-rose-500/40 uppercase tracking-[0.4em] italic font-bold">{{ __('Target content is unavailable.') }}</p>
                                 @endif
                             </div>
                         </div>
@@ -123,12 +123,12 @@
                                 <button 
                                     wire:click="openActionModal({{ $report->id }}, 'delete')"
                                     class="w-full lg:px-12 py-5 bg-rose-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-rose-500/10 hover:bg-rose-400 transition-all italic italic font-bold">
-                                    Execute Purge
+                                    {{ __('Delete Content') }}
                                 </button>
                                 <button 
                                     wire:click="openActionModal({{ $report->id }}, 'dismiss')"
                                     class="w-full lg:px-12 py-5 bg-zinc-950 border border-zinc-800 text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-zinc-800 hover:text-white transition-all italic">
-                                    Dismiss Flag
+                                    {{ __('Dismiss Report') }}
                                 </button>
                             </div>
                         @endif
@@ -139,8 +139,8 @@
                     <div class="w-32 h-32 bg-zinc-950 border border-zinc-800 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:scale-110 transition-all duration-1000">
                         <svg class="w-16 h-16 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
-                    <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter">Zero Discrepancies</h3>
-                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">All systemic signals are within nominal parameters.</p>
+                    <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter">{{ __('No reports found') }}</h3>
+                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">{{ __('There are no reports to review right now.') }}</p>
                 </div>
             @endforelse
         </div>
@@ -159,23 +159,23 @@
                  <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/30 to-transparent"></div>
                  <div class="p-10 border-b border-zinc-800/50 bg-zinc-950/40">
                     <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">
-                        {{ $actionType === 'delete' ? 'Confirm delete ' . $selectedReport->target_type : 'Confirm dismiss report' }}
+                        {{ $actionType === 'delete' ? __('Confirm delete :type', ['type' => __($selectedReport->target_type)]) : __('Confirm dismiss report') }}
                     </h3>
                  </div>
                  <div class="p-10">
                     <p class="text-zinc-500 text-sm font-bold italic leading-relaxed mb-10 uppercase tracking-tight">
                         @if($actionType === 'delete')
-                            Are you certain you wish to terminate this {{ $selectedReport->target_type }} unit? This command is irreversible and will purge all related data strings from the matrix.
+                            {{ __('Are you sure you want to delete this :type? This action cannot be undone.', ['type' => __($selectedReport->target_type)]) }}
                         @else
-                            Mark this transmission as acknowledged and dismiss systemic flags? The signal will be archived as resolved.
+                            {{ __('Mark this report as reviewed and dismiss it?') }}
                         @endif
                     </p>
                     <div class="flex items-center gap-6">
-                        <button wire:click="closeActionModal" class="flex-1 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic italic font-bold italic font-bold">Abort Cmd</button>
+                        <button wire:click="closeActionModal" class="flex-1 py-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic italic font-bold italic font-bold">{{ __('Cancel') }}</button>
                         <button 
                             wire:click="executeAction"
                             class="flex-1 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] font-bold italic shadow-xl {{ $actionType === 'delete' ? 'bg-rose-500 text-black shadow-rose-500/10 hover:bg-rose-400' : 'bg-zinc-950 border border-zinc-800 text-white hover:bg-zinc-800' }}">
-                            Authorize Commit
+                            {{ __('Confirm') }}
                         </button>
                     </div>
                  </div>

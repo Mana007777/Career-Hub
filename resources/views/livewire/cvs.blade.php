@@ -20,7 +20,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">Back to Home</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Back to Home') }}</span>
             </button>
         </div>
 
@@ -34,9 +34,9 @@
         >
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">Received <span class="text-emerald-500 selection:bg-emerald-500/30">CVs</span></h1>
+                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">{{ __('Received') }} <span class="text-emerald-500 selection:bg-emerald-500/30">{{ __('CVs') }}</span></h1>
             </div>
-            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">All CV submissions from users</p>
+            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">{{ __('All CV submissions from users') }}</p>
         </div>
 
         <!-- CVs List -->
@@ -68,7 +68,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-black text-white uppercase tracking-tight italic">{{ $cv->user->name ?? 'Unknown User' }}</h3>
+                                    <h3 class="text-lg font-black text-white uppercase tracking-tight italic">{{ $cv->user->name ?? __('Unknown User') }}</h3>
                                     <p class="text-[9px] font-black text-emerald-500/50 uppercase tracking-[0.4em] mt-1">{{ $cv->created_at->format('Y.m.d // H:i') }}</p>
                                 </div>
                             </div>
@@ -76,12 +76,12 @@
                             <!-- Context Block -->
                             <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-[2rem] p-8 mb-8 group/card transition-all duration-700 hover:border-emerald-500/20 shadow-inner">
                                 <div class="flex items-center gap-4 mb-4">
-                                    <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">Target Objective</span>
+                                    <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('Target Post') }}</span>
                                     <div class="flex-1 h-px bg-zinc-800/50"></div>
                                 </div>
                                 <div class="flex items-start justify-between gap-4">
                                     <a href="{{ route('posts.show', $cv->post->slug) }}" class="text-xl font-black text-white hover:text-emerald-400 transition-colors uppercase italic tracking-tighter">
-                                        {{ $cv->post->title ?: 'Log Analysis' }}
+                                        {{ $cv->post->title ?: __('Post') }}
                                     </a>
                                     @if($cv->post->job_type)
                                         <span class="px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-500 text-[8px] font-black uppercase tracking-widest whitespace-nowrap">
@@ -113,10 +113,10 @@
                                 wire:click="downloadCv({{ $cv->id }})"
                                 wire:loading.attr="disabled"
                                 class="w-full md:w-auto px-10 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl transition-all duration-500 shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:bg-emerald-400 group/btn flex items-center justify-center gap-4 disabled:opacity-30">
-                                <span wire:loading.remove wire:target="downloadCv">Download CV</span>
+                                <span wire:loading.remove wire:target="downloadCv">{{ __('Download CV') }}</span>
                                 <span wire:loading wire:target="downloadCv" class="flex items-center gap-3">
                                     <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    Decrypting...
+                                    {{ __('Downloading...') }}
                                 </span>
                                 <svg class="w-5 h-5 group-hover/btn:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             </button>
@@ -128,8 +128,8 @@
                     <div class="w-24 h-24 bg-zinc-950 border border-zinc-900/50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
                         <svg class="w-12 h-12 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
-                    <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter italic">Database Null</h3>
-                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">No external personnel broadcasts have been indexed.</p>
+                    <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter italic">{{ __('No CVs Found') }}</h3>
+                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('No CV submissions have been received yet.') }}</p>
                 </div>
             @endforelse
         </div>

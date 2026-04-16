@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Comment;
 use App\Actions\Post\DeletePost;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -22,8 +24,8 @@ class Reports extends Component
     public function mount(): void
     {
         // Only admins can access this page
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized');
+        if (!Auth::check() || !Auth::user()?->isAdmin()) {
+            abort(403, __('Unauthorized'));
         }
     }
 
@@ -69,7 +71,7 @@ class Reports extends Component
                 $target = $this->selectedReport->target;
                 
                 if (!$target) {
-                    session()->flash('error', 'Target not found. It may have been already deleted.');
+                    session()->flash('error', __('Target not found. It may have been already deleted.'));
                     $this->selectedReport->update(['status' => 'dismissed']);
                     $this->closeActionModal();
                     $this->resetPage();
@@ -84,8 +86,8 @@ class Reports extends Component
                     $target->delete();
                 } elseif ($target instanceof User) {
                     $this->authorize('delete', $target);
-                    if (auth()->id() === $target->id) {
-                        session()->flash('error', 'You cannot delete your own admin account.');
+                    if (Auth::id() === $target->id) {
+                        session()->flash('error', __('You cannot delete your own admin account.'));
                         $this->closeActionModal();
                         return;
                     }
@@ -94,21 +96,21 @@ class Reports extends Component
 
                 // Mark report as resolved
                 $this->selectedReport->update(['status' => 'resolved']);
-                session()->flash('success', ucfirst($this->selectedReport->target_type) . ' deleted successfully.');
+                session()->flash('success', __(':type deleted successfully.', ['type' => ucfirst($this->selectedReport->target_type)]));
             } elseif ($this->actionType === 'dismiss') {
                 // Mark report as dismissed
                 $this->selectedReport->update(['status' => 'dismissed']);
-                session()->flash('success', 'Report dismissed.');
+                session()->flash('success', __('Report dismissed.'));
             }
 
             $this->closeActionModal();
             $this->resetPage();
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            session()->flash('error', 'You are not authorized to perform this action.');
+            session()->flash('error', __('You are not authorized to perform this action.'));
             $this->closeActionModal();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to execute action: ' . $e->getMessage());
-            \Log::error('Report action failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            session()->flash('error', __('Failed to execute action: :error', ['error' => $e->getMessage()]));
+            Log::error('Report action failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         }
     }
 

@@ -24,7 +24,7 @@
                 
                 <div class="px-10 py-8 border-b border-zinc-800/50 bg-zinc-950/40">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Discrepancy Report Protocol</h3>
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">{{ __('Report Content') }}</h3>
                         <button 
                             type="button"
                             wire:click="close"
@@ -40,8 +40,8 @@
                             <svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                         </div>
                         <div>
-                            <p class="text-[10px] font-black text-white uppercase tracking-widest italic">Target Node: {{ strtoupper($targetType) }}</p>
-                            <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1">Specify transgression for analysis</p>
+                            <p class="text-[10px] font-black text-white uppercase tracking-widest italic">{{ __('Target Type') }}: {{ strtoupper(__($targetType)) }}</p>
+                            <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1">{{ __('Select a reason for this report.') }}</p>
                         </div>
                     </div>
 
@@ -57,7 +57,7 @@
                                             class="peer appearance-none w-5 h-5 rounded-full border-2 border-zinc-800 checked:border-rose-500 transition-all cursor-pointer">
                                         <div class="absolute w-2.5 h-2.5 rounded-full bg-rose-500 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                                     </div>
-                                    <span class="ml-4 text-[10px] font-black text-zinc-400 group-hover:text-white uppercase tracking-widest transition-colors">{{ $label }}</span>
+                                    <span class="ml-4 text-[10px] font-black text-zinc-400 group-hover:text-white uppercase tracking-widest transition-colors">{{ __($label) }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -68,13 +68,13 @@
 
                         @if($selectedReason === 'other')
                             <div class="space-y-4 pt-4 border-t border-zinc-800/50">
-                                <label for="customReason" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">Detailed Intel</label>
+                                <label for="customReason" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">{{ __('Details') }}</label>
                                 <textarea 
                                     wire:model="customReason"
                                     id="customReason"
                                     rows="4"
                                     class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-[2rem] text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-rose-500/20 transition-all text-[11px] font-medium resize-none shadow-inner"
-                                    placeholder="BROADCAST DISCREPANCY DETAILS..."></textarea>
+                                    placeholder="{{ __('Write report details...') }}"></textarea>
                                 @error('customReason')
                                     <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4">{{ $message }}</p>
                                 @enderror
@@ -85,13 +85,13 @@
                             <button 
                                 type="submit"
                                 class="w-full py-5 bg-rose-600 text-white text-[10px] font-black rounded-2xl uppercase tracking-[0.4em] shadow-xl shadow-rose-900/30 hover:bg-rose-500 hover:scale-[1.02] active:scale-[0.98] transition-all italic">
-                                Submit for Purge Analysis
+                                {{ __('Submit Report') }}
                             </button>
                             <button 
                                 type="button"
                                 wire:click="close"
                                 class="w-full py-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors">
-                                Abort Protocol
+                                {{ __('Cancel') }}
                             </button>
                         </div>
                     </form>

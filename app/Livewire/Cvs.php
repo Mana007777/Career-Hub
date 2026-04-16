@@ -18,7 +18,7 @@ class Cvs extends Component
         $user = Auth::user();
         
         if (!$user) {
-            abort(403, 'Unauthorized');
+            abort(403, __('Unauthorized'));
         }
 
         $cvs = $postCvRepository->getCvsForUserPosts($user->id, 10);
@@ -33,24 +33,24 @@ class Cvs extends Component
         $user = Auth::user();
         
         if (!$user) {
-            abort(403, 'Unauthorized');
+            abort(403, __('Unauthorized'));
         }
 
         $postCv = $postCvRepository->findById($postCvId);
         
         if (!$postCv) {
-            abort(404, 'CV not found');
+            abort(404, __('CV not found'));
         }
 
         // Verify the CV belongs to a post owned by the current user
         if ($postCv->post->user_id !== $user->id) {
-            abort(403, 'Unauthorized');
+            abort(403, __('Unauthorized'));
         }
 
         $filePath = storage_path('app/public/' . $postCv->cv_file);
         
         if (!file_exists($filePath)) {
-            abort(404, 'CV file not found');
+            abort(404, __('CV file not found'));
         }
 
         return response()->download($filePath, $postCv->original_filename);
