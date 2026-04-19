@@ -14,14 +14,12 @@ class UserRepository
      * Simple query - kept in repository.
      * Cached for 10 minutes as user data changes infrequently.
      *
-     * @param  string  $username
-     * @return User
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function findByUsernameWithCounts(string $username, bool $includeSuspended = false): User
     {
-        $cacheKey = "user:{$username}:with_counts" . ($includeSuspended ? ':with_suspended' : '');
-        
+        $cacheKey = "user:{$username}:with_counts".($includeSuspended ? ':with_suspended' : '');
+
         return Cache::remember(
             $cacheKey,
             now()->addMinutes(10),
@@ -29,17 +27,12 @@ class UserRepository
                 $query = User::with(['profile', 'suspension'])
                     ->withCount(['followers', 'following', 'posts'])
                     ->where('username', $username);
-                
+
                 // Only filter out suspended users if not including them (for admins)
-                if (!$includeSuspended) {
-                    $query->whereDoesntHave('suspension', function($q) {
-                        $q->where(function($query) {
-                            $query->whereNull('expires_at')
-                                ->orWhere('expires_at', '>', now());
-                        });
-                    });
+                if (! $includeSuspended) {
+                    $query->withoutActiveSuspension();
                 }
-                
+
                 return $query->firstOrFail();
             }
         );
@@ -49,9 +42,6 @@ class UserRepository
      * Get followers for a user with profile, excluding blocked users.
      * Simple query - kept in repository.
      * Cached for 5 minutes as followers list changes infrequently.
-     *
-     * @param  User  $user
-     * @return Collection
      */
     public function getFollowersWithProfile(User $user): Collection
     {
@@ -64,20 +54,20 @@ class UserRepository
                     ->where('blocker_id', $user->id)
                     ->pluck('blocked_id')
                     ->toArray();
-                
+
                 $blockedByIds = DB::table('blocks')
                     ->where('blocked_id', $user->id)
                     ->pluck('blocker_id')
                     ->toArray();
-                
+
                 $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
-                
+
                 $query = $user->followers()->with('profile');
-                
-                if (!empty($excludedIds)) {
+
+                if (! empty($excludedIds)) {
                     $query->whereNotIn('follower_id', $excludedIds);
                 }
-                
+
                 return $query->get();
             }
         );
@@ -87,9 +77,6 @@ class UserRepository
      * Get following users with profile, excluding blocked users.
      * Simple query - kept in repository.
      * Cached for 5 minutes as following list changes infrequently.
-     *
-     * @param  User  $user
-     * @return Collection
      */
     public function getFollowingWithProfile(User $user): Collection
     {
@@ -102,20 +89,20 @@ class UserRepository
                     ->where('blocker_id', $user->id)
                     ->pluck('blocked_id')
                     ->toArray();
-                
+
                 $blockedByIds = DB::table('blocks')
                     ->where('blocked_id', $user->id)
                     ->pluck('blocker_id')
                     ->toArray();
-                
+
                 $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
-                
+
                 $query = $user->following()->with('profile');
-                
-                if (!empty($excludedIds)) {
+
+                if (! empty($excludedIds)) {
                     $query->whereNotIn('following_id', $excludedIds);
                 }
-                
+
                 return $query->get();
             }
         );
@@ -125,8 +112,6 @@ class UserRepository
      * Find a user by ID.
      * Simple query - kept in repository.
      *
-     * @param  int  $id
-     * @return User
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function findById(int $id): User
@@ -139,7 +124,6 @@ class UserRepository
      * Simple query - kept in repository.
      * Cached for 5 minutes as following list changes infrequently.
      *
-     * @param  User  $user
      * @return array<int>
      */
     public function getFollowingIds(User $user): array
@@ -157,10 +141,6 @@ class UserRepository
      * Check if user follows another user.
      * Simple query - kept in repository.
      * Cached for 2 minutes as follow status can change frequently.
-     *
-     * @param  User  $currentUser
-     * @param  User  $otherUser
-     * @return bool
      */
     public function isFollowing(User $currentUser, User $otherUser): bool
     {
@@ -177,10 +157,6 @@ class UserRepository
      * Check if user is followed back.
      * Simple query - kept in repository.
      * Cached for 2 minutes as follow status can change frequently.
-     *
-     * @param  User  $currentUser
-     * @param  User  $otherUser
-     * @return bool
      */
     public function isFollowedBack(User $currentUser, User $otherUser): bool
     {
@@ -196,9 +172,6 @@ class UserRepository
     /**
      * Clear cache for a user.
      * Call this when user data, followers, or following relationships change.
-     *
-     * @param  User  $user
-     * @return void
      */
     public function clearUserCache(User $user, ?string $alsoForgetUsername = null): void
     {
@@ -212,17 +185,13 @@ class UserRepository
         Cache::forget("user:{$user->id}:following:with_profile");
         Cache::forget("user:{$user->id}:following:with_profile:filtered");
         Cache::forget("user:{$user->id}:following_ids");
-        
+
         // Clear follow status caches (pattern-based clearing would require Redis SCAN)
         // For now, we'll rely on TTL expiration
     }
 
     /**
      * Clear follow relationship cache between two users.
-     *
-     * @param  int  $userId1
-     * @param  int  $userId2
-     * @return void
      */
     public function clearFollowCache(int $userId1, int $userId2): void
     {
@@ -235,26 +204,18 @@ class UserRepository
     /**
      * Search users by username or name.
      *
-     * @param  string  $query
-     * @param  int  $perPage
      * @param  int|null  $currentUserId  Current user ID to filter blocked users
      * @param  array  $filters  Optional: role, sort (newest|name|username|followers)
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function searchUsers(string $query, int $perPage = 10, ?int $currentUserId = null, array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        $searchTerm = '%' . $query . '%';
+        $searchTerm = '%'.$query.'%';
 
         $userQuery = User::where(function ($q) use ($searchTerm) {
             $q->where('username', 'like', $searchTerm)
                 ->orWhere('name', 'like', $searchTerm);
         })
-            ->whereDoesntHave('suspension', function ($q) {
-                $q->where(function ($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-            });
+            ->withoutActiveSuspension();
 
         $this->applyUserFilters($userQuery, $currentUserId, $filters);
 
@@ -265,23 +226,16 @@ class UserRepository
     /**
      * List users with URL filter support (for Explore page).
      *
-     * @param  int  $perPage
      * @param  int|null  $currentUserId  Current user ID to filter blocked users
      * @param  array  $filters  role, sort, query (search)
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function listUsers(int $perPage = 12, ?int $currentUserId = null, array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $userQuery = User::query()
-            ->whereDoesntHave('suspension', function ($q) {
-                $q->where(function ($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-            });
+            ->withoutActiveSuspension();
 
-        if (!empty($filters['query'])) {
-            $term = '%' . trim($filters['query']) . '%';
+        if (! empty($filters['query'])) {
+            $term = '%'.trim($filters['query']).'%';
             $userQuery->where(function ($q) use ($term) {
                 $q->where('username', 'like', $term)
                     ->orWhere('name', 'like', $term);
@@ -299,7 +253,7 @@ class UserRepository
      */
     protected function applyUserFilters($userQuery, ?int $currentUserId, array $filters): void
     {
-        if (!empty($filters['role']) && in_array($filters['role'], ['seeker', 'employer', 'company', 'admin'], true)) {
+        if (! empty($filters['role']) && in_array($filters['role'], ['seeker', 'employer', 'company', 'admin'], true)) {
             $userQuery->where('role', $filters['role']);
         }
 
@@ -315,7 +269,7 @@ class UserRepository
             $blockedIds = DB::table('blocks')->where('blocker_id', $currentUserId)->pluck('blocked_id')->toArray();
             $blockedByIds = DB::table('blocks')->where('blocked_id', $currentUserId)->pluck('blocker_id')->toArray();
             $excludedIds = array_unique(array_merge($blockedIds, $blockedByIds));
-            if (!empty($excludedIds)) {
+            if (! empty($excludedIds)) {
                 $userQuery->whereNotIn('id', $excludedIds);
             }
         }

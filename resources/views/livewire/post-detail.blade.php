@@ -63,7 +63,7 @@
                                         </svg>
                                     </span>
                                 @endif
-                                @if($post->suspension)
+                                @if($post->isUnderActiveSuspension())
                                     <span class="px-4 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 italic">{{ __('Suspended') }}</span>
                                 @endif
                             </div>
@@ -78,7 +78,7 @@
                         
                         @if(auth()->check() && auth()->user()->isAdmin() && auth()->id() !== $post->user_id)
                             <div class="flex items-center gap-2">
-                                @if($post->suspension)
+                                @if($post->isUnderActiveSuspension())
                                     <button wire:click="unsuspendPost" class="w-12 h-12 rounded-2xl bg-zinc-950 border border-emerald-500/30 text-emerald-500 flex items-center justify-center hover:bg-emerald-500 hover:text-black transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg></button>
                                 @else
                                     <button wire:click="openSuspendModal" class="w-12 h-12 rounded-2xl bg-zinc-950 border border-amber-500/30 text-amber-500 flex items-center justify-center hover:bg-amber-500 hover:text-black transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg></button>

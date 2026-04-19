@@ -2,124 +2,42 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Post;
 use App\Models\PostSuspension;
-use App\Models\User;
-use App\Models\UserNotification;
 use App\Models\UserSuspension;
+use App\Queries\PostQueries;
 use Illuminate\Console\Command;
 
 class ClearExpiredSuspensions extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'notify:expired-suspensions';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Notify admins when user or post suspensions reach their end time';
+    protected $description = 'Remove post and user suspensions whose optional end time has passed';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function handle(PostQueries $postQueries): int
     {
         $now = now();
 
-        $this->info('Sending notifications for expired user suspensions...');
-
-        $expiredUserSuspensions = UserSuspension::whereNotNull('expires_at')
+        $expiredPostIds = PostSuspension::query()
+            ->whereNotNull('expires_at')
             ->where('expires_at', '<=', $now)
-            ->get();
+            ->pluck('post_id');
 
-        $adminRecipients = User::query()
-            ->where('is_admin', true)
-            ->get();
+        $deletedPosts = PostSuspension::query()
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', $now)
+            ->delete();
 
-        $userNotifCount = 0;
-
-        foreach ($expiredUserSuspensions as $suspension) {
-            $suspendedUser = $suspension->user;
-
-            foreach ($adminRecipients as $admin) {
-                    $alreadyNotified = UserNotification::where('user_id', $admin->id)
-                    ->where('type', 'suspension_user_expired')
-                    ->where('source_user_id', $suspendedUser?->id)
-                    ->whereNull('post_id')
-                    ->where('created_at', '>=', $now->copy()->subDay())
-                    ->exists();
-
-                if ($alreadyNotified) {
-                    continue;
-                }
-
-                UserNotification::create([
-                    'user_id' => $admin->id,
-                    'source_user_id' => $suspendedUser?->id,
-                    'type' => 'suspension_user_expired',
-                    'post_id' => null,
-                    'message' => sprintf(
-                        'The suspension for user "%s" (ID %d) reached its end time. Review and unsuspend if appropriate.',
-                        $suspendedUser?->name ?? 'Unknown',
-                        $suspendedUser?->id ?? 0
-                    ),
-                    'is_read' => false,
-                ]);
-
-                $userNotifCount++;
-            }
+        foreach ($expiredPostIds as $postId) {
+            $postQueries->clearPostCache((int) $postId);
         }
 
-        $this->info("Created {$userNotifCount} notifications for expired user suspensions.");
-
-        $this->info('Sending notifications for expired post suspensions...');
-
-        $expiredPostSuspensions = PostSuspension::whereNotNull('expires_at')
+        $deletedUsers = UserSuspension::query()
+            ->whereNotNull('expires_at')
             ->where('expires_at', '<=', $now)
-            ->get();
+            ->delete();
 
-        $postNotifCount = 0;
-
-        foreach ($expiredPostSuspensions as $suspension) {
-            $post = $suspension->post;
-
-            foreach ($adminRecipients as $admin) {
-                $alreadyNotified = UserNotification::where('user_id', $admin->id)
-                    ->where('type', 'suspension_post_expired')
-                    ->where('post_id', $post?->id)
-                    ->where('created_at', '>=', $now->copy()->subDay())
-                    ->exists();
-
-                if ($alreadyNotified) {
-                    continue;
-                }
-
-                UserNotification::create([
-                    'user_id' => $admin->id,
-                    'source_user_id' => $post?->user_id,
-                    'type' => 'suspension_post_expired',
-                    'post_id' => $post?->id,
-                    'message' => sprintf(
-                        'The suspension for a post by "%s" (Post ID %d) reached its end time. Review and unsuspend if appropriate.',
-                        $post?->user?->name ?? 'Unknown',
-                        $post?->id ?? 0
-                    ),
-                    'is_read' => false,
-                ]);
-
-                $postNotifCount++;
-            }
-        }
-
-        $this->info("Created {$postNotifCount} notifications for expired post suspensions.");
+        $this->info("Removed {$deletedPosts} expired post suspension(s) and {$deletedUsers} expired user suspension(s).");
 
         return self::SUCCESS;
     }
 }
-

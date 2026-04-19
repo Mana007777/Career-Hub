@@ -380,7 +380,7 @@
                                             </svg>
                                         </span>
                                     @endif
-                                    @if($post->suspension)
+                                    @if($post->isUnderActiveSuspension())
                                         <span class="px-2.5 py-1 text-[8px] font-black uppercase tracking-widest rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 animate-pulse">
                                             Account Locked
                                         </span>

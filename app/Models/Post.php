@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
         'title',
@@ -76,9 +78,37 @@ class Post extends Model
     }
 
     /**
+     * Exclude posts that are actively suspended (no expiry, or expiry still in the future).
+     */
+    public function scopeWithoutActiveSuspension(Builder $query): void
+    {
+        $query->whereDoesntHave('suspension', function (Builder $q): void {
+            $q->where(function (Builder $q): void {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
+        });
+    }
+
+    /**
+     * Whether the post is hidden by a non-expired suspension (read-only; does not mutate).
+     */
+    public function isUnderActiveSuspension(): bool
+    {
+        $s = $this->suspension;
+        if ($s === null) {
+            return false;
+        }
+
+        if ($s->expires_at && $s->expires_at->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Get the slug for the post.
-     *
-     * @return string
      */
     public function getSlugAttribute(): string
     {
@@ -89,13 +119,13 @@ class Post extends Model
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $snippet)));
         $slug = preg_replace('/-+/', '-', $slug);
         $slug = trim($slug, '-');
-        
+
         // If slug is empty, use a default
         if (empty($slug)) {
             $slug = 'post';
         }
-        
-        return $slug . '-' . $this->id;
+
+        return $slug.'-'.$this->id;
     }
 
     /**
@@ -103,7 +133,7 @@ class Post extends Model
      */
     public function isSuspended(): bool
     {
-        if (!$this->suspension) {
+        if (! $this->suspension) {
             return false;
         }
 
@@ -111,6 +141,7 @@ class Post extends Model
         if ($this->suspension->expires_at && $this->suspension->expires_at->isPast()) {
             // Auto-delete expired suspension
             $this->suspension->delete();
+
             return false;
         }
 

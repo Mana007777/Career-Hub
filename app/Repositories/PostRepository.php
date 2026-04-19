@@ -20,10 +20,8 @@ class PostRepository
      * Optimized for Octane: lightweight eager load, withCount for comments/stars,
      * cached excluded user IDs, no full comment/stars collection load.
      *
-     * @param  int  $perPage
      * @param  int|null  $userId  Current user ID to filter blocked users
      * @param  array  $filters  Filter parameters (sortOrder, tags, specialties, jobType)
-     * @return LengthAwarePaginator
      */
     public function getAll(int $perPage = 10, ?int $userId = null, array $filters = []): LengthAwarePaginator
     {
@@ -34,8 +32,8 @@ class PostRepository
                 'tags',
             ])
             ->withCount(['stars', 'comments'])
-            ->whereDoesntHave('suspension')
-            ->whereHas('user', fn ($q) => $q->whereDoesntHave('suspension'));
+            ->withoutActiveSuspension()
+            ->whereHas('user', fn ($q) => $q->withoutActiveSuspension());
 
         if ($userId) {
             $excludedIds = $this->queries->getExcludedUserIds($userId);
@@ -45,27 +43,27 @@ class PostRepository
             // Eager load only current user's star for "did I star this" (at most 1 row per post)
             $query->with(['stars' => fn ($q) => $q->where('user_id', $userId)]);
         }
-        
+
         // Apply filters
         // Filter by tags
-        if (!empty($filters['tags']) && is_array($filters['tags'])) {
-            $query->whereHas('tags', function($q) use ($filters) {
+        if (! empty($filters['tags']) && is_array($filters['tags'])) {
+            $query->whereHas('tags', function ($q) use ($filters) {
                 $q->whereIn('tags.id', $filters['tags']);
             });
         }
-        
+
         // Filter by specialties
-        if (!empty($filters['specialties']) && is_array($filters['specialties'])) {
-            $query->whereHas('specialties', function($q) use ($filters) {
+        if (! empty($filters['specialties']) && is_array($filters['specialties'])) {
+            $query->whereHas('specialties', function ($q) use ($filters) {
                 $q->whereIn('specialties.id', $filters['specialties']);
             });
         }
-        
+
         // Filter by job type
-        if (!empty($filters['jobType'])) {
+        if (! empty($filters['jobType'])) {
             $query->where('job_type', $filters['jobType']);
         }
-        
+
         // Apply sort order
         $sortOrder = $filters['sortOrder'] ?? 'desc';
         if ($sortOrder === 'asc') {
@@ -73,31 +71,27 @@ class PostRepository
         } else {
             $query->latest();
         }
-        
+
         return $query->paginate($perPage);
     }
 
     /**
      * Get posts for a specific user.
      * Simple query - kept in repository.
-     *
-     * @param  int  $userId
-     * @param  int  $perPage
-     * @return LengthAwarePaginator
      */
     public function getByUserId(int $userId, int $perPage = 10): LengthAwarePaginator
     {
         return Post::where('user_id', $userId)
-            ->whereDoesntHave('suspension')
+            ->withoutActiveSuspension()
             ->with([
                 'user',
                 'stars',
                 'comments',
-                'specialties' => function($query) {
+                'specialties' => function ($query) {
                     $query->with('subSpecialties');
                 },
                 'tags',
-                'suspension'
+                'suspension',
             ])
             ->latest()
             ->paginate($perPage);
@@ -107,7 +101,6 @@ class PostRepository
      * Create a new post.
      *
      * @param  array<string, mixed>  $data
-     * @return Post
      */
     public function create(array $data): Post
     {
@@ -117,9 +110,7 @@ class PostRepository
     /**
      * Update an existing post.
      *
-     * @param  Post  $post
      * @param  array<string, mixed>  $data
-     * @return bool
      */
     public function update(Post $post, array $data): bool
     {
@@ -128,9 +119,6 @@ class PostRepository
 
     /**
      * Delete a post.
-     *
-     * @param  Post  $post
-     * @return bool
      */
     public function delete(Post $post): bool
     {
@@ -140,9 +128,6 @@ class PostRepository
     /**
      * Get post with relationships for editing.
      * Simple query - kept in repository.
-     *
-     * @param  int  $id
-     * @return Post|null
      */
     public function findForEdit(int $id): ?Post
     {
@@ -153,8 +138,6 @@ class PostRepository
      * Find a post by ID.
      * Simple query - kept in repository.
      *
-     * @param  int  $id
-     * @return Post
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function findById(int $id): Post
@@ -165,9 +148,6 @@ class PostRepository
     /**
      * Get empty paginated result (for search when no query).
      * Simple query - kept in repository.
-     *
-     * @param  int  $perPage
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getEmptyPaginated(int $perPage = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {

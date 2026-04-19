@@ -117,8 +117,8 @@ class PostResource extends Resource
                 Tables\Columns\IconColumn::make('suspension')
                     ->label('Suspended')
                     ->boolean()
-                    ->getStateUsing(fn ($record) => $record->suspension !== null)
-                    ->color(fn ($record) => $record->suspension ? 'danger' : 'success')
+                    ->getStateUsing(fn (Post $record) => $record->isUnderActiveSuspension())
+                    ->color(fn (Post $record) => $record->isUnderActiveSuspension() ? 'danger' : 'success')
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         $dir = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
 
@@ -231,7 +231,7 @@ class PostResource extends Resource
                         ->label('Unsuspend')
                         ->icon('heroicon-o-lock-open')
                         ->color('success')
-                        ->visible(fn (Post $record) => $record->suspension !== null)
+                        ->visible(fn (Post $record) => $record->isUnderActiveSuspension())
                         ->requiresConfirmation()
                         ->modalHeading('Unsuspend Post')
                         ->modalDescription('Remove the suspension from this post. It will be visible to users again.')

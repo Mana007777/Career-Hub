@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
+use FirstIraqiBank\FIBPaymentSDK\Model\FibPayment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
-use FirstIraqiBank\FIBPaymentSDK\Model\FibPayment;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
@@ -20,6 +21,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -187,7 +189,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(Certification::class);
     }
 
-
     public function reportsMade()
     {
         return $this->hasMany(Report::class, 'reporter_id');
@@ -246,6 +247,36 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function suspension()
     {
         return $this->hasOne(UserSuspension::class);
+    }
+
+    /**
+     * Exclude users who are actively suspended (no expiry, or expiry still in the future).
+     */
+    public function scopeWithoutActiveSuspension(Builder $query): void
+    {
+        $query->whereDoesntHave('suspension', function (Builder $q): void {
+            $q->where(function (Builder $q): void {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
+        });
+    }
+
+    /**
+     * Whether the account is blocked by a non-expired suspension (read-only; does not mutate).
+     */
+    public function isUnderActiveSuspension(): bool
+    {
+        $s = $this->suspension;
+        if ($s === null) {
+            return false;
+        }
+
+        if ($s->expires_at && $s->expires_at->isPast()) {
+            return false;
+        }
+
+        return true;
     }
 
     public function reputation()
@@ -329,7 +360,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'user_id',
             'company_id'
         )->withPivot(['status', 'invited_by', 'accepted_at', 'rejected_at'])
-         ->wherePivot('status', 'accepted');
+            ->wherePivot('status', 'accepted');
     }
 
     /**
@@ -343,7 +374,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'user_id',
             'company_id'
         )->withPivot(['status', 'invited_by', 'accepted_at', 'rejected_at'])
-         ->wherePivot('status', 'pending');
+            ->wherePivot('status', 'pending');
     }
 
     /**
@@ -357,7 +388,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'company_id',
             'user_id'
         )->withPivot(['status', 'invited_by', 'accepted_at', 'rejected_at'])
-         ->wherePivot('status', 'accepted');
+            ->wherePivot('status', 'accepted');
     }
 
     /**
@@ -367,7 +398,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function isActive(): bool
     {
         $activeThreshold = now()->subMinutes(5)->timestamp;
-        
+
         return DB::table('sessions')
             ->where('user_id', $this->id)
             ->where('last_activity', '>=', $activeThreshold)
@@ -387,7 +418,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
      */
     public function isSuspended(): bool
     {
-        if (!$this->suspension) {
+        if (! $this->suspension) {
             return false;
         }
 

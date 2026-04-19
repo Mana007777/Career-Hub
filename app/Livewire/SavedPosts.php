@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Actions\Post\SavePost;
 use App\Models\Post;
-use App\Models\SavedItem;
 use App\Repositories\PostRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +52,7 @@ class SavedPosts extends Component
                 'tags',
                 'suspension',
             ])
-            ->whereDoesntHave('suspension')
+            ->withoutActiveSuspension()
             ->orderByDesc('saved_items.created_at')
             ->paginate(9);
 
@@ -62,5 +61,3 @@ class SavedPosts extends Component
         ]);
     }
 }
-
-

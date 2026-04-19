@@ -6,16 +6,18 @@ use App\Models\Comment;
 use App\Models\JobApplication;
 use App\Models\Message;
 use App\Models\Post;
+use App\Models\PostSuspension;
 use App\Models\User;
-use App\Models\UserSuspension;
 use App\Models\UserNotification;
+use App\Models\UserSuspension;
 use App\Observers\CommentObserver;
 use App\Observers\JobApplicationObserver;
 use App\Observers\MessageObserver;
 use App\Observers\PostObserver;
+use App\Observers\PostSuspensionObserver;
+use App\Observers\UserNotificationObserver;
 use App\Observers\UserObserver;
 use App\Observers\UserSuspensionObserver;
-use App\Observers\UserNotificationObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         UserSuspension::observe(UserSuspensionObserver::class);
         Post::observe(PostObserver::class);
+        PostSuspension::observe(PostSuspensionObserver::class);
         Comment::observe(CommentObserver::class);
         JobApplication::observe(JobApplicationObserver::class);
         Message::observe(MessageObserver::class);
@@ -79,10 +82,11 @@ class AppServiceProvider extends ServiceProvider
         );
 
         // Suppress broadcasting errors in development when broadcaster is not available
-        if (!app()->isProduction() && config('broadcasting.default') !== 'log' && config('broadcasting.default') !== 'null') {
+        if (! app()->isProduction() && config('broadcasting.default') !== 'log' && config('broadcasting.default') !== 'null') {
             \Illuminate\Support\Facades\Event::listen(\Illuminate\Broadcasting\BroadcastException::class, function ($exception) {
                 // Log the error but don't throw it in development
-                \Log::warning('Broadcasting error (suppressed in development): ' . $exception->getMessage());
+                \Log::warning('Broadcasting error (suppressed in development): '.$exception->getMessage());
+
                 return false;
             });
         }
