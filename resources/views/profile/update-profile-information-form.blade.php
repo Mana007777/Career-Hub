@@ -8,10 +8,8 @@
     </x-slot>
 
     <x-slot name="form">
-        <!-- Profile Photo -->
         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-            <div x-data="{photoName: null, photoPreview: null}" class="col-span-6 sm:col-span-4">
-                <!-- Profile Photo File Input (JPG, PNG, GIF, WebP – max 2MB) -->
+            <div x-data="{photoName: null, photoPreview: null}" class="w-full">
                 <input type="file" id="photo" class="hidden"
                             accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                             wire:model.live="photo"
@@ -27,24 +25,22 @@
 
                 <x-label for="photo" value="{{ __('Photo') }}" />
 
-                <!-- Current Profile Photo -->
                 <div class="mt-2" x-show="! photoPreview">
-                    <img src="{{ $this->user->profile_photo_url }}" alt="{{ $this->user->name }}" class="rounded-full size-20 object-cover">
+                    <img src="{{ $this->user->profile_photo_url }}" alt="{{ $this->user->name }}" class="size-20 rounded-full border-2 border-zinc-200 object-cover dark:border-zinc-700">
                 </div>
 
-                <!-- New Profile Photo Preview -->
                 <div class="mt-2" x-show="photoPreview" style="display: none;">
-                    <span class="block rounded-full size-20 bg-cover bg-no-repeat bg-center"
+                    <span class="block size-20 rounded-full border-2 border-zinc-200 bg-cover bg-center bg-no-repeat dark:border-zinc-700"
                           x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
                     </span>
                 </div>
 
-                <x-secondary-button class="mt-2 me-2" type="button" x-on:click.prevent="$refs.photo.click()">
+                <x-secondary-button class="mt-3 me-2" type="button" x-on:click.prevent="$refs.photo.click()">
                     {{ __('Select A New Photo') }}
                 </x-secondary-button>
 
                 @if ($this->user->profile_photo_path)
-                    <x-secondary-button type="button" class="mt-2" wire:click="deleteProfilePhoto">
+                    <x-secondary-button type="button" class="mt-3" wire:click="deleteProfilePhoto">
                         {{ __('Remove Photo') }}
                     </x-secondary-button>
                 @endif
@@ -53,63 +49,62 @@
             </div>
         @endif
 
-        <!-- Name -->
-        <div class="col-span-6 sm:col-span-4">
+        <div class="w-full">
             <x-label for="name" value="{{ __('Name') }}" />
-            <x-input id="name" type="text" class="mt-1 block w-full" wire:model="state.name" required autocomplete="name" />
+            <x-input id="name" type="text" class="mt-1" wire:model="state.name" required autocomplete="name" />
             <x-input-error for="name" class="mt-2" />
         </div>
 
-        <!-- Email -->
-        <div class="col-span-6 sm:col-span-4">
+        <div class="w-full">
             <x-label for="email" value="{{ __('Email') }}" />
-            <x-input id="email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="email" />
+            <x-input id="email" type="email" class="mt-1" wire:model="state.email" required autocomplete="email" />
             <x-input-error for="email" class="mt-2" />
 
             @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) && ! $this->user->hasVerifiedEmail())
-                <p class="text-sm mt-2">
+                <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                     {{ __('Your email address is unverified.') }}
 
-                    <button type="button" class="underline text-sm dark:text-gray-600 text-gray-700 hover:text-blue-600 dark:hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" wire:click.prevent="sendEmailVerification">
+                    <button type="button" class="font-semibold text-emerald-600 underline decoration-emerald-500/30 underline-offset-2 transition hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300" wire:click.prevent="sendEmailVerification">
                         {{ __('Click here to re-send the verification email.') }}
                     </button>
                 </p>
 
                 @if ($this->verificationLinkSent)
-                    <p class="mt-2 font-medium text-sm text-green-600">
+                    <p class="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
                         {{ __('A new verification link has been sent to your email address.') }}
                     </p>
                 @endif
             @endif
         </div>
 
-        <!-- Username -->
-        <div class="col-span-6 sm:col-span-4">
+        <div class="w-full">
             <x-label for="username" value="{{ __('Username') }}" />
-            <x-input id="username" type="text" class="mt-1 block w-full" wire:model="state.username" autocomplete="username" />
-            <p class="mt-1 text-sm dark:text-gray-500 text-gray-600">{{ __('Your unique username. Only letters, numbers, and underscores allowed.') }}</p>
+            <x-input id="username" type="text" class="mt-1" wire:model="state.username" autocomplete="username" />
+            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-500">{{ __('Your unique username. Only letters, numbers, and underscores allowed.') }}</p>
             <x-input-error for="username" class="mt-2" />
         </div>
 
-        <!-- Bio -->
-        <div class="col-span-6 sm:col-span-4">
+        <div class="w-full">
             <x-label for="bio" value="{{ __('Bio') }}" />
-            <textarea id="bio" class="mt-1 block w-full dark:border-gray-300 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm dark:text-gray-900 text-gray-900 dark:bg-gray-100 bg-gray-50" 
-                      wire:model="state.bio" rows="3" placeholder="{{ __('Tell us about yourself...') }}"></textarea>
+            <textarea
+                id="bio"
+                rows="4"
+                wire:model="state.bio"
+                placeholder="{{ __('Tell us about yourself...') }}"
+                class="mt-1 block w-full resize-y rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 shadow-sm placeholder:text-zinc-400 transition-colors focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-600 dark:focus:border-emerald-500/40 dark:focus:ring-emerald-500/25"
+            ></textarea>
             <x-input-error for="bio" class="mt-2" />
         </div>
 
-        <!-- Location -->
-        <div class="col-span-6 sm:col-span-4">
+        <div class="w-full">
             <x-label for="location" value="{{ __('Location') }}" />
-            <x-input id="location" type="text" class="mt-1 block w-full" wire:model="state.location" placeholder="{{ __('City, Country') }}" />
+            <x-input id="location" type="text" class="mt-1" wire:model="state.location" placeholder="{{ __('City, Country') }}" />
             <x-input-error for="location" class="mt-2" />
         </div>
 
-        <!-- Website -->
-        <div class="col-span-6 sm:col-span-4">
+        <div class="w-full">
             <x-label for="website" value="{{ __('Website') }}" />
-            <x-input id="website" type="url" class="mt-1 block w-full" wire:model="state.website" placeholder="https://example.com" />
+            <x-input id="website" type="url" class="mt-1" wire:model="state.website" placeholder="https://example.com" />
             <x-input-error for="website" class="mt-2" />
         </div>
     </x-slot>
