@@ -395,7 +395,7 @@
                                 <button 
                                     wire:click.stop="toggleFollow({{ $post->user_id }})"
                                     class="ml-auto px-5 py-2 text-[8px] font-black uppercase tracking-[0.2em] rounded-xl transition-all {{ $isFollowing ? 'bg-zinc-800 text-zinc-400 border border-zinc-700/50 hover:bg-zinc-700/50' : 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]' }}">
-                                    {{ $isFollowing ? 'Tracking' : 'Connect' }}
+                                    {{ $isFollowing ? __('Following') : __('Follow') }}
                                 </button>
                             @endif
                         </div>
