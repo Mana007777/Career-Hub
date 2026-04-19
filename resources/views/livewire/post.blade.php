@@ -282,6 +282,41 @@
                         @endif
                     </div>
 
+                    <!-- Tag Synthesis -->
+                    <div class="space-y-6 pt-8 border-t border-zinc-800/50">
+                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] ml-1">{{ __('Add Tag') }}</label>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <input
+                                type="text"
+                                wire:model="tagName"
+                                placeholder="{{ __('Tag name') }}"
+                                class="flex-1 px-6 py-4 bg-zinc-950/40 border border-zinc-800/50 rounded-2xl text-white placeholder-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-[10px] font-black uppercase tracking-widest">
+                            <button
+                                type="button"
+                                wire:click="addTag"
+                                class="px-8 py-4 bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-black rounded-2xl transition-all border border-zinc-800 uppercase tracking-widest shadow-lg active:scale-95">
+                                {{ __('Add') }}
+                            </button>
+                        </div>
+
+                        @error('tags.*.name')
+                            <span class="text-rose-500 text-[10px] font-black uppercase tracking-widest mt-2 block ml-1">{{ $message }}</span>
+                        @enderror
+
+                        @if(count($tags) > 0)
+                            <div class="flex flex-wrap gap-3">
+                                @foreach($tags as $index => $tag)
+                                    <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-emerald-500/5 border border-emerald-500/20 rounded-xl text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] group">
+                                        #{{ $tag['name'] }}
+                                        <button type="button" wire:click="removeTag({{ $index }})" class="hover:text-rose-500 transition-colors p-1 hover:bg-rose-500/10 rounded-lg">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
                     <!-- Final Action Array -->
                     <div class="flex items-center justify-end gap-6 pt-10 border-t border-zinc-800/50">
                         <button 
