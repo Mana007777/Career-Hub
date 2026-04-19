@@ -119,7 +119,13 @@ class PostResource extends Resource
                     ->boolean()
                     ->getStateUsing(fn ($record) => $record->suspension !== null)
                     ->color(fn ($record) => $record->suspension ? 'danger' : 'success')
-                    ->sortable()
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        $dir = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+                        return $query->orderByRaw(
+                            '(select count(*) from `post_suspensions` where `post_suspensions`.`post_id` = `posts`.`id`) '.$dir
+                        );
+                    })
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
