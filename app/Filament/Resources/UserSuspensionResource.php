@@ -3,21 +3,22 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserSuspensionResource\Pages;
-use App\Filament\Resources\UserSuspensionResource\RelationManagers;
 use App\Models\UserSuspension;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserSuspensionResource extends Resource
 {
     protected static ?string $model = UserSuspension::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-no-symbol';
+
+    protected static ?string $navigationGroup = 'People & safety';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

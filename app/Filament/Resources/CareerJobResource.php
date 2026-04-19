@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CareerJobResource\Pages;
-use App\Filament\Resources\CareerJobResource\RelationManagers;
 use App\Models\CareerJob;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CareerJobResource extends Resource
 {
@@ -19,9 +16,9 @@ class CareerJobResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
-    protected static ?string $navigationGroup = 'Job Management';
+    protected static ?string $navigationGroup = 'Jobs & hiring';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -54,8 +51,7 @@ class CareerJobResource extends Resource
                             ->columnSpan(1),
                         Forms\Components\Select::make('sub_specialty_id')
                             ->label('Sub Specialty')
-                            ->relationship('subSpecialty', 'name', fn ($query, $get) => 
-                                $query->where('specialty_id', $get('specialty_id'))
+                            ->relationship('subSpecialty', 'name', fn ($query, $get) => $query->where('specialty_id', $get('specialty_id'))
                             )
                             ->searchable()
                             ->preload()

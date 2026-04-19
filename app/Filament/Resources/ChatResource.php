@@ -2,19 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\HidesFromFilamentNavigation;
 use App\Filament\Resources\ChatResource\Pages;
-use App\Filament\Resources\ChatResource\RelationManagers;
 use App\Models\Chat;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChatResource extends Resource
 {
+    use HidesFromFilamentNavigation;
+
     protected static ?string $model = Chat::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

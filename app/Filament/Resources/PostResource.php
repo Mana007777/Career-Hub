@@ -13,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PostResource extends Resource
 {
@@ -21,9 +20,9 @@ class PostResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Content Management';
+    protected static ?string $navigationGroup = 'Community';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -109,7 +108,7 @@ class PostResource extends Resource
                 Tables\Columns\IconColumn::make('media')
                     ->label('Has Media')
                     ->boolean()
-                    ->getStateUsing(fn ($record) => !empty($record->media)),
+                    ->getStateUsing(fn ($record) => ! empty($record->media)),
                 // Likes removed – only show comments and suspension info
                 Tables\Columns\TextColumn::make('comments_count')
                     ->counts('comments')
@@ -180,11 +179,11 @@ class PostResource extends Resource
                             // Log admin action
                             AdminLog::create([
                                 'admin_id' => auth()->id(),
-                                'action' => 'Removed post: ' . ($record->title ?: 'Post #' . $record->id),
+                                'action' => 'Removed post: '.($record->title ?: 'Post #'.$record->id),
                                 'target_type' => Post::class,
                                 'target_id' => $record->id,
                             ]);
-                            
+
                             $record->delete();
                         }),
                     Tables\Actions\Action::make('suspend')
@@ -216,7 +215,7 @@ class PostResource extends Resource
                             // Log admin action
                             AdminLog::create([
                                 'admin_id' => auth()->id(),
-                                'action' => 'Suspended post: ' . ($record->title ?: 'Post #' . $record->id) . ' - Reason: ' . $data['reason'],
+                                'action' => 'Suspended post: '.($record->title ?: 'Post #'.$record->id).' - Reason: '.$data['reason'],
                                 'target_type' => Post::class,
                                 'target_id' => $record->id,
                             ]);
@@ -236,7 +235,7 @@ class PostResource extends Resource
                             // Log admin action
                             AdminLog::create([
                                 'admin_id' => auth()->id(),
-                                'action' => 'Unsuspended post: ' . ($record->title ?: 'Post #' . $record->id),
+                                'action' => 'Unsuspended post: '.($record->title ?: 'Post #'.$record->id),
                                 'target_type' => Post::class,
                                 'target_id' => $record->id,
                             ]);

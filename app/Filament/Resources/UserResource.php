@@ -13,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
@@ -22,7 +21,7 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationGroup = 'People & safety';
 
     protected static ?int $navigationSort = 1;
 
@@ -110,7 +109,7 @@ class UserResource extends Resource
                 Tables\Columns\IconColumn::make('email_verified_at')
                     ->label('Verified')
                     ->boolean()
-                    ->getStateUsing(fn ($record) => !is_null($record->email_verified_at))
+                    ->getStateUsing(fn ($record) => ! is_null($record->email_verified_at))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('posts_count')
                     ->counts('posts')
@@ -160,11 +159,11 @@ class UserResource extends Resource
                             // Log admin action
                             AdminLog::create([
                                 'admin_id' => auth()->id(),
-                                'action' => 'Removed user: ' . $record->name,
+                                'action' => 'Removed user: '.$record->name,
                                 'target_type' => User::class,
                                 'target_id' => $record->id,
                             ]);
-                            
+
                             $record->delete();
                         }),
                     Tables\Actions\Action::make('suspend')
@@ -196,7 +195,7 @@ class UserResource extends Resource
                             // Log admin action
                             AdminLog::create([
                                 'admin_id' => auth()->id(),
-                                'action' => 'Suspended user: ' . $record->name . ' - Reason: ' . $data['reason'],
+                                'action' => 'Suspended user: '.$record->name.' - Reason: '.$data['reason'],
                                 'target_type' => User::class,
                                 'target_id' => $record->id,
                             ]);
@@ -216,7 +215,7 @@ class UserResource extends Resource
                             // Log admin action
                             AdminLog::create([
                                 'admin_id' => auth()->id(),
-                                'action' => 'Unsuspended user: ' . $record->name,
+                                'action' => 'Unsuspended user: '.$record->name,
                                 'target_type' => User::class,
                                 'target_id' => $record->id,
                             ]);

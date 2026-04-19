@@ -3,21 +3,22 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SpecialtyResource\Pages;
-use App\Filament\Resources\SpecialtyResource\RelationManagers;
 use App\Models\Specialty;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SpecialtyResource extends Resource
 {
     protected static ?string $model = Specialty::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+
+    protected static ?string $navigationGroup = 'Specialties';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
