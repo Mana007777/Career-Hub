@@ -12,7 +12,8 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
-     * Creates a single admin account when missing. Configure via ADMIN_* env vars.
+     * Ensures a single admin account exists for Filament. Configure via ADMIN_* env vars.
+     * Uses updateOrCreate so re-seeding fixes an existing row (e.g. same email registered as a normal user).
      */
     public function run(): void
     {
@@ -24,7 +25,7 @@ class DatabaseSeeder extends Seeder
             $this->command?->warn('ADMIN_PASSWORD is not set; using default "password". Set ADMIN_PASSWORD in .env for production.');
         }
 
-        $user = User::query()->firstOrCreate(
+        $user = User::query()->updateOrCreate(
             ['email' => $email],
             [
                 'name' => env('ADMIN_NAME', 'Administrator'),
