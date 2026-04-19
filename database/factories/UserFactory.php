@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'username' => self::makeFactoryUsername(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'password_set_at' => now(),
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'remember_token' => Str::random(10),
@@ -57,6 +58,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'github_id' => fake()->unique()->numberBetween(100_000, 999_999_999),
+            'password_set_at' => null,
         ]);
     }
 

@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             $this->command?->warn('ADMIN_PASSWORD is not set; using default "password". Set ADMIN_PASSWORD in .env for production.');
         }
 
-        User::query()->firstOrCreate(
+        $user = User::query()->firstOrCreate(
             ['email' => $email],
             [
                 'name' => env('ADMIN_NAME', 'Administrator'),
@@ -41,5 +41,7 @@ class DatabaseSeeder extends Seeder
                 'two_factor_confirmed_at' => null,
             ]
         );
+
+        $user->forceFill(['password_set_at' => now()])->save();
     }
 }

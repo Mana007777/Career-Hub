@@ -164,7 +164,7 @@
                 <div class="mb-10 p-6 rounded-[2rem] border border-amber-500/20 bg-amber-500/5 backdrop-blur-xl">
                     <div class="text-[10px] font-black text-amber-400 uppercase tracking-[0.25em] mb-2">{{ __('You signed in with GitHub') }}</div>
                     <p class="text-sm text-amber-200/90 leading-relaxed">
-                        {{ __('Your account did not get a password you chose. Use the “Update Password” section below: enter only a new password and confirmation. After that, you can use that password anywhere the app asks for your current password.') }}
+                        {{ __('Your account did not get a password you chose yet. In “Update Password” below, enter only a new password and confirmation (no current password). After you save once, the usual current + new + confirm fields will appear for future changes.') }}
                     </p>
                 </div>
             @endif

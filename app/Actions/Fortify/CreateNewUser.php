@@ -39,10 +39,11 @@ class CreateNewUser implements CreatesNewUsers
             'email' => $input['email'],
             'username' => $username,
             'password' => Hash::make($input['password']),
-            'role' => $input['role'], 
+            'role' => $input['role'],
         ]);
 
-        
+        $user->forceFill(['password_set_at' => now()])->save();
+
         NotificationSetting::create([
             'user_id' => $user->id,
         ]);

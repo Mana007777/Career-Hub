@@ -57,5 +57,32 @@ test('github user can set password without current password', function () {
         ->call('updatePassword')
         ->assertHasNoErrors();
 
-    expect(Hash::check('new-password-456', $user->fresh()->password))->toBeTrue();
+    $user->refresh();
+    expect(Hash::check('new-password-456', $user->password))->toBeTrue()
+        ->and($user->password_set_at)->not->toBeNull();
+});
+
+test('github user must provide current password after first password is set', function () {
+    $this->actingAs($user = User::factory()->withGithub()->create());
+
+    Livewire::test(UpdatePasswordForm::class)
+        ->set('state.password', 'first-password-789')
+        ->set('state.password_confirmation', 'first-password-789')
+        ->call('updatePassword')
+        ->assertHasNoErrors();
+
+    Livewire::test(UpdatePasswordForm::class)
+        ->set('state.password', 'second-password-000')
+        ->set('state.password_confirmation', 'second-password-000')
+        ->call('updatePassword')
+        ->assertHasErrors(['current_password']);
+
+    Livewire::test(UpdatePasswordForm::class)
+        ->set('state.current_password', 'first-password-789')
+        ->set('state.password', 'second-password-000')
+        ->set('state.password_confirmation', 'second-password-000')
+        ->call('updatePassword')
+        ->assertHasNoErrors();
+
+    expect(Hash::check('second-password-000', $user->fresh()->password))->toBeTrue();
 });
