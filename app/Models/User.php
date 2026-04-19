@@ -365,9 +365,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isAdmin(): bool
     {
-        $adminEmails = ['test@example.com', 'linus@example.com'];
-        $email = strtolower(trim((string) ($this->email ?? '')));
-        return $this->is_admin === true || in_array($email, $adminEmails, true);
+        return $this->is_admin === true;
     }
 
     /**

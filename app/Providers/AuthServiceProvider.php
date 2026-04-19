@@ -29,7 +29,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Define admin gate - only test@example.com can be admin
         Gate::define('is-admin', function (User $user) {
             return $user->isAdmin();
         });

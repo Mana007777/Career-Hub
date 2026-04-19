@@ -38,12 +38,8 @@ class ClearExpiredSuspensions extends Command
             ->where('expires_at', '<=', $now)
             ->get();
 
-        $adminRecipients = User::where(function ($q) {
-                $q->where('is_admin', true)
-                  ->orWhere('email', 'test@example.com')
-                  ->orWhere('role', 'admin')
-                  ->orWhere('id', 1);
-            })
+        $adminRecipients = User::query()
+            ->where('is_admin', true)
             ->get();
 
         $userNotifCount = 0;
