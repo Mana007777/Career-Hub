@@ -67,7 +67,7 @@
         </style>
     </head>
     <body>
-        <div class="font-sans antialiased bg-zinc-950 text-zinc-100 min-h-screen">
+        <div class="font-sans antialiased min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
             {{ $slot }}
         </div>
 

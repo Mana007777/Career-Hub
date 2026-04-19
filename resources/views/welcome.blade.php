@@ -39,7 +39,7 @@
 
         @livewireStyles
     </head>
-    <body class="antialiased bg-zinc-950 text-zinc-100">
+    <body class="antialiased bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
         <livewire:landing-page />
 
         @livewireScripts

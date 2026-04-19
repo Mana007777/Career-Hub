@@ -1,24 +1,24 @@
 <x-guest-layout title="{{ __('Sign In') }}">
-    <div class="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div class="min-h-screen flex flex-col justify-center bg-zinc-50 py-12 sm:px-6 lg:px-8 relative overflow-hidden dark:bg-zinc-950">
         <!-- Background Glows -->
         <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse"></div>
         <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s"></div>
 
         <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
             <div class="flex justify-center mb-8">
-                <div class="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center p-3 shadow-2xl group transition-all duration-700 hover:border-emerald-500/30">
+                <div class="w-16 h-16 rounded-2xl border border-zinc-200 bg-zinc-100 flex items-center justify-center p-3 shadow-2xl group transition-all duration-700 hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-emerald-500/30">
                     <x-authentication-card-logo class="w-full h-full text-emerald-500 group-hover:scale-110 transition-transform" />
                 </div>
             </div>
             
             <div class="text-center mb-10 px-6">
-                <h2 class="text-4xl font-black text-white uppercase tracking-tighter italic">{{ __('Sign In') }}</h2>
-                <p class="mt-3 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic leading-relaxed">{{ __('Welcome back to Career Hub') }}</p>
+                <h2 class="text-4xl font-black uppercase tracking-tighter italic text-zinc-900 dark:text-white">{{ __('Sign In') }}</h2>
+                <p class="mt-3 text-[10px] font-black uppercase tracking-[0.4em] italic leading-relaxed text-zinc-500 dark:text-zinc-600">{{ __('Welcome back to Career Hub') }}</p>
             </div>
         </div>
 
         <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4">
-            <div class="bg-zinc-900/40 border border-zinc-800 rounded-[3rem] p-10 sm:p-12 shadow-[0_50px_100px_rgba(0,0,0,0.5)] backdrop-blur-3xl">
+            <div class="rounded-[3rem] border border-zinc-200 bg-white/90 p-10 shadow-xl shadow-zinc-900/5 backdrop-blur-3xl sm:p-12 dark:border-zinc-800 dark:bg-zinc-900/40 dark:shadow-[0_50px_100px_rgba(0,0,0,0.5)]">
                 <x-validation-errors class="mb-6 px-4 py-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs" />
 
                 @session('status')
@@ -33,26 +33,26 @@
                     @csrf
 
                     <div class="space-y-3">
-                        <label for="email" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic ml-4">{{ __('Email Address') }}</label>
-                        <input id="email" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="{{ __('name@example.com') }}" />
+                        <label for="email" class="block text-[9px] font-black uppercase tracking-[0.4em] italic ml-4 text-zinc-500 dark:text-zinc-600">{{ __('Email Address') }}</label>
+                        <input id="email" class="w-full rounded-2xl border border-zinc-200 bg-white px-8 py-5 font-bold italic text-zinc-900 placeholder-zinc-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white dark:placeholder-zinc-800 dark:focus:ring-emerald-500/20" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="{{ __('name@example.com') }}" />
                     </div>
 
                     <div class="space-y-3">
                         <div class="flex items-center justify-between px-4">
-                             <label for="password" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic">{{ __('Password') }}</label>
+                             <label for="password" class="block text-[9px] font-black uppercase tracking-[0.4em] italic text-zinc-500 dark:text-zinc-600">{{ __('Password') }}</label>
                              @if (Route::has('password.request'))
-                                <a class="text-[8px] font-black text-zinc-700 uppercase tracking-widest hover:text-emerald-500 transition-colors italic" href="{{ route('password.request') }}">
+                                <a class="text-[8px] font-black uppercase tracking-widest italic transition-colors text-zinc-500 hover:text-emerald-600 dark:text-zinc-700 dark:hover:text-emerald-500" href="{{ route('password.request') }}">
                                     {{ __('Forgot Password?') }}
                                 </a>
                             @endif
                         </div>
-                        <input id="password" class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-bold italic" type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+                        <input id="password" class="w-full rounded-2xl border border-zinc-200 bg-white px-8 py-5 font-bold italic text-zinc-900 placeholder-zinc-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white dark:placeholder-zinc-800 dark:focus:ring-emerald-500/20" type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
                     </div>
 
                     <div class="flex items-center justify-between px-4">
                         <label for="remember_me" class="flex items-center group cursor-pointer">
-                            <input id="remember_me" name="remember" type="checkbox" class="w-4 h-4 bg-zinc-950 border-zinc-800 rounded focus:ring-emerald-500 text-emerald-500 cursor-pointer">
-                            <span class="ms-3 text-[9px] font-black text-zinc-600 group-hover:text-zinc-400 uppercase tracking-widest transition-colors italic">{{ __('Remember Me') }}</span>
+                            <input id="remember_me" name="remember" type="checkbox" class="h-4 w-4 cursor-pointer rounded border-zinc-300 bg-white text-emerald-500 focus:ring-emerald-500 dark:border-zinc-800 dark:bg-zinc-950">
+                            <span class="ms-3 text-[9px] font-black uppercase tracking-widest italic transition-colors text-zinc-500 group-hover:text-zinc-700 dark:text-zinc-600 dark:group-hover:text-zinc-400">{{ __('Remember Me') }}</span>
                         </label>
                     </div>
 
@@ -63,17 +63,17 @@
 
                         @if (config('services.github.client_id') && config('services.github.client_secret'))
                             <div class="relative py-4">
-                                <div class="absolute inset-x-0 top-1/2 h-px bg-zinc-800"></div>
-                                <div class="relative flex justify-center"><span class="bg-zinc-900 px-4 text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">{{ __('Other Sign In Options') }}</span></div>
+                                <div class="absolute inset-x-0 top-1/2 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+                                <div class="relative flex justify-center"><span class="bg-white px-4 text-[9px] font-black uppercase tracking-[0.4em] italic text-zinc-500 dark:bg-zinc-900 dark:text-zinc-700">{{ __('Other Sign In Options') }}</span></div>
                             </div>
                             <livewire:auth.github-login />
                         @endif
                     </div>
 
                     <div class="mt-10 text-center">
-                        <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.4em] italic">
+                        <p class="text-[10px] font-black uppercase tracking-[0.4em] italic text-zinc-600 dark:text-zinc-700">
                             {{ __('Don\'t Have an Account?') }}
-                            <a href="{{ route('register') }}" class="text-zinc-400 hover:text-emerald-400 underline decoration-zinc-800 underline-offset-8 transition-all hover:decoration-emerald-500/30">
+                            <a href="{{ route('register') }}" class="underline decoration-zinc-300 underline-offset-8 transition-all hover:text-emerald-600 hover:decoration-emerald-500/40 dark:text-zinc-400 dark:decoration-zinc-800 dark:hover:text-emerald-400 dark:hover:decoration-emerald-500/30">
                                 {{ __('Create Account') }}
                             </a>
                         </p>

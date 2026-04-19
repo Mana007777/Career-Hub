@@ -35,15 +35,15 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-zinc-950 text-zinc-100 selection:bg-emerald-500/30 selection:text-emerald-200" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
-        <div class="min-h-screen bg-zinc-950 relative overflow-hidden">
+    <body class="font-sans antialiased bg-zinc-50 text-zinc-950 selection:bg-emerald-500/25 selection:text-emerald-900 dark:bg-zinc-950 dark:text-zinc-100 dark:selection:bg-emerald-500/30 dark:selection:text-emerald-200" x-data="{ pageLoaded: false }" x-init="setTimeout(() => pageLoaded = true, 50)">
+        <div class="min-h-screen bg-zinc-50 relative overflow-hidden dark:bg-zinc-950">
             <!-- Global Background Aesthetic -->
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.05),transparent_50%)]"></div>
             <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
             <div class="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none"></div>
 
             @if(isset($header))
-                <header class="bg-zinc-950/80 backdrop-blur-2xl border-b border-zinc-800/50 relative z-10 sticky top-0 transition-all duration-500">
+                <header class="bg-white/80 backdrop-blur-2xl border-b border-zinc-200/80 relative z-10 sticky top-0 transition-all duration-500 dark:bg-zinc-950/80 dark:border-zinc-800/50">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                         {{ $header }}
                     </div>
