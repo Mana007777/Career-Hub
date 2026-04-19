@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\PostSuspension;
+use App\Models\User;
 use App\Models\UserSuspension;
 use App\Queries\PostQueries;
+use App\Repositories\UserRepository;
 use Illuminate\Console\Command;
 
 class ClearExpiredSuspensions extends Command
@@ -31,10 +33,25 @@ class ClearExpiredSuspensions extends Command
             $postQueries->clearPostCache((int) $postId);
         }
 
+        $expiredUserIds = UserSuspension::query()
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', $now)
+            ->pluck('user_id');
+
         $deletedUsers = UserSuspension::query()
             ->whereNotNull('expires_at')
             ->where('expires_at', '<=', $now)
             ->delete();
+
+        if ($expiredUserIds->isNotEmpty()) {
+            $userRepository = app(UserRepository::class);
+            User::query()
+                ->whereIn('id', $expiredUserIds->all())
+                ->get(['id', 'username'])
+                ->each(function (User $user) use ($userRepository): void {
+                    $userRepository->clearUserCache($user);
+                });
+        }
 
         $this->info("Removed {$deletedPosts} expired post suspension(s) and {$deletedUsers} expired user suspension(s).");
 

@@ -538,4 +538,79 @@
         </div>
     </div>
 @endif
+
+@if($showAdminActionsModal)
+    <div class="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-zinc-950/98 backdrop-blur-3xl" wire:click="closeAdminActionsModal">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-[3rem] max-w-lg w-full shadow-[0_0_100px_rgba(0,0,0,0.35)] overflow-hidden" wire:click.stop>
+            <div class="px-10 py-8 border-b border-zinc-800/50 bg-zinc-950/40">
+                <h3 class="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">
+                    @if($adminActionType === 'suspend')
+                        {{ __('Suspend User') }}
+                    @elseif($adminActionType === 'unsuspend')
+                        {{ __('Unsuspend User') }}
+                    @endif
+                </h3>
+            </div>
+
+            @if($adminActionType === 'suspend')
+                <form wire:submit.prevent="handleAdminAction" class="px-10 py-10 space-y-8">
+                    <div class="space-y-4">
+                        <label for="suspendReason" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">
+                            {{ __('Reason') }} *
+                        </label>
+                        <textarea
+                            id="suspendReason"
+                            wire:model="suspendReason"
+                            rows="3"
+                            class="w-full px-8 py-5 bg-zinc-950 border border-zinc-800 rounded-3xl text-sm text-white placeholder-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all italic font-bold"
+                            placeholder="{{ __('Provide suspension reason...') }}"
+                        ></textarea>
+                        @error('suspendReason')
+                            <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="space-y-4">
+                        <label for="suspendExpiresAt" class="block text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] italic pl-4">
+                            {{ __('Expiry date (Optional)') }}
+                        </label>
+                        <input
+                            id="suspendExpiresAt"
+                            type="datetime-local"
+                            wire:model="suspendExpiresAt"
+                            min="{{ now()->format('Y-m-d\TH:i') }}"
+                            class="w-full px-8 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-xs text-white uppercase focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                        >
+                        @error('suspendExpiresAt')
+                            <p class="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-4">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex justify-end gap-6 pt-6 border-t border-zinc-800/50">
+                        <button type="button" wire:click="closeAdminActionsModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic">
+                            {{ __('Cancel') }}
+                        </button>
+                        <button type="submit" class="px-10 py-4 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-xl shadow-xl shadow-amber-500/10 hover:bg-amber-400 transition-all italic">
+                            {{ __('Suspend') }}
+                        </button>
+                    </div>
+                </form>
+            @elseif($adminActionType === 'unsuspend')
+                <div class="px-10 py-10 space-y-8">
+                    <p class="text-zinc-400 text-xs font-bold tracking-widest leading-relaxed uppercase italic">
+                        {{ __('Restore this user account now?') }}
+                    </p>
+                    <div class="flex justify-end gap-6 pt-6 border-t border-zinc-800/50">
+                        <button type="button" wire:click="closeAdminActionsModal" class="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-white transition-colors italic">
+                            {{ __('Cancel') }}
+                        </button>
+                        <button type="button" wire:click="handleAdminAction" class="px-10 py-4 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">
+                            {{ __('Unsuspend') }}
+                        </button>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+@endif
 </div>
