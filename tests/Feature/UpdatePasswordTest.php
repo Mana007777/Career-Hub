@@ -1,8 +1,8 @@
 <?php
 
+use App\Livewire\Profile\UpdatePasswordForm;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Jetstream\Http\Livewire\UpdatePasswordForm;
 use Livewire\Livewire;
 
 test('password can be updated', function () {
@@ -46,4 +46,16 @@ test('new passwords must match', function () {
         ->assertHasErrors(['password']);
 
     expect(Hash::check('password', $user->fresh()->password))->toBeTrue();
+});
+
+test('github user can set password without current password', function () {
+    $this->actingAs($user = User::factory()->withGithub()->create());
+
+    Livewire::test(UpdatePasswordForm::class)
+        ->set('state.password', 'new-password-456')
+        ->set('state.password_confirmation', 'new-password-456')
+        ->call('updatePassword')
+        ->assertHasNoErrors();
+
+    expect(Hash::check('new-password-456', $user->fresh()->password))->toBeTrue();
 });

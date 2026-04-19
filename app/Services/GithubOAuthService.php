@@ -110,9 +110,15 @@ class GithubOAuthService
 
     protected function findOrCreateLocalUser(array $githubUser, string $email): User
     {
+        $githubNumericId = isset($githubUser['id']) ? (int) $githubUser['id'] : null;
+
         $user = User::where('email', $email)->first();
 
         if ($user) {
+            if ($githubNumericId) {
+                $user->forceFill(['github_id' => $githubNumericId])->save();
+            }
+
             return $user;
         }
 
@@ -134,6 +140,10 @@ class GithubOAuthService
             'password' => Str::password(32),
             'role' => 'seeker', // sensible default; user can change later
         ]);
+
+        if ($githubNumericId) {
+            $user->forceFill(['github_id' => $githubNumericId])->save();
+        }
 
         // Mark email as verified since it comes from GitHub
         if (method_exists($user, 'markEmailAsVerified')) {

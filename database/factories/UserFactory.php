@@ -29,7 +29,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'username' => fake()->unique()->userName(),
+            'username' => self::makeFactoryUsername(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'two_factor_secret' => null,
@@ -47,6 +47,16 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * User created or linked via GitHub OAuth (no known password).
+     */
+    public function withGithub(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'github_id' => fake()->unique()->numberBetween(100_000, 999_999_999),
         ]);
     }
 
@@ -69,5 +79,16 @@ class UserFactory extends Factory
                 ->when(is_callable($callback), $callback),
             'ownedTeams'
         );
+    }
+
+    /**
+     * Usernames must match app validation /^[a-z0-9_]+$/i (Faker userName() often includes dots).
+     */
+    private static function makeFactoryUsername(): string
+    {
+        $base = strtolower(preg_replace('/[^a-z0-9_]+/', '_', fake()->unique()->userName()) ?? '');
+        $base = trim($base, '_') ?: 'user';
+
+        return $base.'_'.fake()->unique()->numerify('####');
     }
 }

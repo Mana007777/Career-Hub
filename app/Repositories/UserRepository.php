@@ -200,10 +200,13 @@ class UserRepository
      * @param  User  $user
      * @return void
      */
-    public function clearUserCache(User $user): void
+    public function clearUserCache(User $user, ?string $alsoForgetUsername = null): void
     {
-        Cache::forget("user:{$user->username}:with_counts");
-        Cache::forget("user:{$user->username}:with_counts:with_suspended");
+        $usernames = array_unique(array_filter([$user->username, $alsoForgetUsername]));
+        foreach ($usernames as $uname) {
+            Cache::forget("user:{$uname}:with_counts");
+            Cache::forget("user:{$uname}:with_counts:with_suspended");
+        }
         Cache::forget("user:{$user->id}:followers:with_profile");
         Cache::forget("user:{$user->id}:followers:with_profile:filtered");
         Cache::forget("user:{$user->id}:following:with_profile");

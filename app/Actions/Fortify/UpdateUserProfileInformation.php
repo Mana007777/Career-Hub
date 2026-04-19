@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use App\Models\Profile;
+use App\Repositories\UserRepository;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -18,7 +19,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
-        
+        $usernameBefore = $user->username;
+
         if (isset($input['username']) && $input['username'] === '') {
             $input['username'] = null;
         }
@@ -81,6 +83,12 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         } else {
             $user->profile()->create($profileData);
         }
+
+        $user->refresh();
+        app(UserRepository::class)->clearUserCache(
+            $user,
+            $usernameBefore !== $user->username ? $usernameBefore : null
+        );
     }
 
     /**

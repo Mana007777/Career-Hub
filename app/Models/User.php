@@ -73,7 +73,17 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'github_id' => 'integer',
         ];
+    }
+
+    /**
+     * GitHub OAuth accounts use a random password the user never sees.
+     * When set, password update UI skips "current password" and only asks for new + confirm.
+     */
+    public function skipsCurrentPasswordForUpdate(): bool
+    {
+        return $this->github_id !== null;
     }
 
     /**

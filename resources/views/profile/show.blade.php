@@ -160,11 +160,11 @@
                 @endif
             </div>
 
-            @if (session('logged_in_via_github'))
+            @if (session('logged_in_via_github') || auth()->user()->skipsCurrentPasswordForUpdate())
                 <div class="mb-10 p-6 rounded-[2rem] border border-amber-500/20 bg-amber-500/5 backdrop-blur-xl">
                     <div class="text-[10px] font-black text-amber-400 uppercase tracking-[0.25em] mb-2">{{ __('You signed in with GitHub') }}</div>
                     <p class="text-sm text-amber-200/90 leading-relaxed">
-                        {{ __('Because you used GitHub to log in, you might not know your account password yet. To use features that ask for your password (like enabling two-factor authentication, logging out other browser sessions, or deleting your account), first go to the login page, click “Forgot password?”, enter this account’s email address, and complete the reset flow to create a password.') }}
+                        {{ __('Your account did not get a password you chose. Use the “Update Password” section below: enter only a new password and confirmation. After that, you can use that password anywhere the app asks for your current password.') }}
                     </p>
                 </div>
             @endif
