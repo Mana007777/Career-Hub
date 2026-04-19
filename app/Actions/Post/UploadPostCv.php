@@ -24,6 +24,15 @@ class UploadPostCv
     public function upload(Post $post, $cvFile, ?string $message = null): PostCv
     {
         $userId = Auth::id();
+        $user = Auth::user();
+
+        if (!$user) {
+            throw new \RuntimeException('Authentication required to upload CV.');
+        }
+
+        if (($user->role ?? null) === 'company') {
+            throw new \RuntimeException('Company accounts cannot upload CVs.');
+        }
 
         
         $cvPath = $this->storeCv($cvFile);

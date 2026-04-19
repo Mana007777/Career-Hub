@@ -194,7 +194,11 @@
                                 @endif
                              </div>
 
-                             @if(!$hasUploadedCv)
+                             @if(auth()->user()->isCompany())
+                                <div class="px-6 py-5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-400 text-[10px] font-black uppercase tracking-widest italic">
+                                    {{ __('Company accounts cannot upload CVs to posts.') }}
+                                </div>
+                             @elseif(!$hasUploadedCv)
                                 <form wire:submit.prevent="uploadCv" class="space-y-10">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div class="space-y-4">
@@ -217,6 +221,22 @@
                                         <button type="submit" wire:loading.attr="disabled" class="px-12 py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-emerald-500/10 hover:bg-emerald-400 transition-all italic">{{ __('Submit Application') }}</button>
                                     </div>
                                 </form>
+
+                                @if($this->getGmailApplyUrl())
+                                    <div class="mt-8 pt-8 border-t border-zinc-800/50 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                                        <p class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">
+                                            {{ __('Or apply via Gmail') }}
+                                        </p>
+                                        <a
+                                            href="{{ $this->getGmailApplyUrl() }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="inline-flex items-center justify-center px-8 py-4 bg-cyan-500 text-black text-[10px] font-black uppercase tracking-[0.25em] rounded-2xl shadow-xl shadow-cyan-500/10 hover:bg-cyan-400 transition-all italic"
+                                        >
+                                            {{ __('Send CV via Gmail') }}
+                                        </a>
+                                    </div>
+                                @endif
                              @endif
                         </div>
                     </div>

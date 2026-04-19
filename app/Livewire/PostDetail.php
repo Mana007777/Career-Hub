@@ -19,6 +19,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -271,6 +272,11 @@ class PostDetail extends Component
         try {
             if (!$this->post) {
                 session()->flash('error', __('Post not found.'));
+                return;
+            }
+
+            if ((Auth::user()?->role ?? null) === 'company') {
+                session()->flash('error', __('Company accounts cannot upload CVs to posts.'));
                 return;
             }
 
@@ -530,5 +536,34 @@ class PostDetail extends Component
     public function render(): View
     {
         return view('livewire.post-detail');
+    }
+
+    public function getGmailApplyUrl(): ?string
+    {
+        if (!$this->post || !$this->post->user || empty($this->post->user->email)) {
+            return null;
+        }
+
+        $to = $this->post->user->email;
+        $subject = __('Job Application: :title', [
+            'title' => $this->post->title ?: ('Post #' . $this->post->id),
+        ]);
+        $body = __('Hello :company,', [
+            'company' => $this->post->user->name ?: __('Hiring Team'),
+        ]) . "\n\n"
+            . __('I would like to apply for this position: :title', [
+                'title' => $this->post->title ?: ('Post #' . $this->post->id),
+            ]) . "\n"
+            . __('Post link: :url', [
+                'url' => route('posts.show', $this->post->slug),
+            ]) . "\n\n"
+            . __('I have attached my CV to this email.') . "\n\n"
+            . __('Best regards,') . "\n"
+            . (Auth::user()?->name ?? __('Applicant'));
+
+        return 'https://mail.google.com/mail/?view=cm&fs=1'
+            . '&to=' . rawurlencode($to)
+            . '&su=' . rawurlencode(Str::limit($subject, 180, ''))
+            . '&body=' . rawurlencode($body);
     }
 }
