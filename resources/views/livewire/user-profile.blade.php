@@ -134,7 +134,7 @@
                             <div class="flex flex-wrap items-center gap-x-12 gap-y-8">
                                 <div class="flex items-center gap-12">
                                     <div class="flex flex-col gap-2">
-                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em]">{{ __('Posts') }}</span>
+                                        <span class="text-zinc-600 text-[8px] font-black uppercase tracking-[0.3em]">{{ ($profileShowsReposts ?? false) ? __('Reposts') : __('Posts') }}</span>
                                         <p class="text-white text-2xl font-black italic">{{ $postsCount }}</p>
                                     </div>
                                     <button wire:click="openFollowersModal" class="text-left group flex flex-col gap-2">
@@ -338,11 +338,11 @@
             <div class="space-y-12">
                 <h2 class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] flex items-center gap-4 px-4 italic">
                     <span class="w-4 h-px bg-zinc-800"></span>
-                    {{ __('Recent Posts') }}
+                    {{ ($profileShowsReposts ?? false) ? __('Reposted listings') : __('Recent Posts') }}
                 </h2>
                 
                 <div class="space-y-8">
-                    @forelse ($posts as $index => $post)
+                    @forelse (($posts ?? collect()) as $index => $post)
                         
                         <article
                             onclick="window.location.href='{{ route('posts.show', $post->slug) }}'"
@@ -428,8 +428,8 @@
                             <div class="w-24 h-24 bg-zinc-950 border border-zinc-900/50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
                                 <svg class="w-10 h-10 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                             </div>
-                            <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">{{ __('No Posts Yet') }}</h3>
-                            <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('This user has not posted anything yet.') }}</p>
+                            <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">{{ ($profileShowsReposts ?? false) ? __('No reposts yet') : __('No Posts Yet') }}</h3>
+                            <p class="mt-4 text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ ($profileShowsReposts ?? false) ? __('This user has not reposted any company listings yet.') : __('This user has not posted anything yet.') }}</p>
                         </div>
                     @endforelse
                 </div>

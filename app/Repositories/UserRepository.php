@@ -25,7 +25,7 @@ class UserRepository
             now()->addMinutes(10),
             function () use ($username, $includeSuspended) {
                 $query = User::with(['profile', 'suspension'])
-                    ->withCount(['followers', 'following', 'posts'])
+                    ->withCount(['followers', 'following', 'posts', 'shares'])
                     ->where('username', $username);
 
                 // Only filter out suspended users if not including them (for admins)

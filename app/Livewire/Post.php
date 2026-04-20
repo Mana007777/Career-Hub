@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Actions\Post\AuthorizePostAction;
 use App\Actions\Post\CreatePost;
 use App\Actions\Post\DeletePost;
+use App\Actions\Post\TogglePostRepost;
 use App\Actions\Post\UpdatePost;
 use App\Actions\User\FollowUser;
 use App\Models\UserNotification;
@@ -241,6 +242,10 @@ class Post extends Component
 
     public function toggleCreateForm()
     {
+        if (Auth::check() && Auth::user()->isSeeker()) {
+            return;
+        }
+
         $this->showCreateForm = !$this->showCreateForm;
         if (!$this->showCreateForm) {
             $this->resetForm();
@@ -684,6 +689,13 @@ class Post extends Component
 
     public function create(): void
     {
+        if (Auth::check() && Auth::user()->isSeeker()) {
+            session()->flash('error', __('Seeker accounts cannot create posts.'));
+            $this->closeCreateForm();
+
+            return;
+        }
+
         $createPostAction = app(CreatePost::class);
         
         // Ensure properties are initialized
@@ -885,6 +897,33 @@ class Post extends Component
             $this->dispatch('$refresh');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to star post. Please try again.');
+        }
+    }
+
+    public function toggleRepost(int $postId, TogglePostRepost $togglePostRepost): void
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return;
+        }
+
+        $post = PostModel::query()
+            ->withoutActiveSuspension()
+            ->with('user')
+            ->find($postId);
+
+        if (! $post) {
+            session()->flash('error', __('Post not found.'));
+
+            return;
+        }
+
+        try {
+            $added = $togglePostRepost->toggle($user, $post);
+            session()->flash('success', $added ? __('Reposted.') : __('Removed from your reposts.'));
+            $this->dispatch('$refresh');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', $e->getMessage());
         }
     }
 

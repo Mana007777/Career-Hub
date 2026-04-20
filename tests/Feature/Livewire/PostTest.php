@@ -18,13 +18,23 @@ test('post component can be rendered', function () {
 });
 
 test('post component can toggle create form', function () {
-    $user = User::factory()->create();
-    
+    $user = User::factory()->create(['role' => 'company']);
+
     Livewire::actingAs($user)
         ->test(Post::class)
         ->assertSet('showCreateForm', false)
         ->call('toggleCreateForm')
         ->assertSet('showCreateForm', true)
+        ->call('toggleCreateForm')
+        ->assertSet('showCreateForm', false);
+});
+
+test('post component seeker cannot open create form', function () {
+    $user = User::factory()->create(['role' => 'seeker']);
+
+    Livewire::actingAs($user)
+        ->test(Post::class)
+        ->assertSet('showCreateForm', false)
         ->call('toggleCreateForm')
         ->assertSet('showCreateForm', false);
 });

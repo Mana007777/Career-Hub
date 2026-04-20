@@ -59,6 +59,17 @@ Route::middleware([
         return view('dashboard', ['showCvs' => true]);
     })->name('cvs');
 
+    Route::get('/my-reposts', function () {
+        if (! auth()->user()?->isSeeker()) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('dashboard', [
+            'showMyReposts' => true,
+            'myRepostsPageTitle' => __('Your reposts'),
+        ]);
+    })->name('my-reposts');
+
     Route::get('/reports', function () {
         return view('dashboard', ['showReports' => true]);
     })->name('reports')->middleware('can:view-admin-panel');

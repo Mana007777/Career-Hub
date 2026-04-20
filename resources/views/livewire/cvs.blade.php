@@ -1,5 +1,5 @@
 <div
-    class="min-h-screen bg-transparent text-white pb-24"
+    class="min-h-screen bg-transparent pb-24 text-zinc-900 dark:text-zinc-100"
     x-data="{ loaded: false }"
     x-init="setTimeout(() => loaded = true, 50)"
 >
@@ -14,13 +14,13 @@
         >
             <button 
                 onclick="window.history.back()"
-                class="inline-flex items-center gap-4 text-emerald-500/70 hover:text-emerald-400 transition-all duration-500 group">
-                <div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800/50 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500 shadow-lg">
+                class="inline-flex items-center gap-4 text-emerald-600/80 transition-all duration-500 group hover:text-emerald-500 dark:text-emerald-500/70 dark:hover:text-emerald-400">
+                <div class="w-12 h-12 rounded-2xl border border-zinc-200 bg-white flex items-center justify-center shadow-lg transition-all duration-500 group-hover:bg-emerald-500 group-hover:text-black dark:border-zinc-800/50 dark:bg-zinc-900">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic">{{ __('Back to Home') }}</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] italic text-zinc-600 dark:text-inherit">{{ __('Back to Home') }}</span>
             </button>
         </div>
 
@@ -34,16 +34,22 @@
         >
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <h1 class="text-5xl font-black text-white uppercase tracking-tighter italic">{{ __('Received') }} <span class="text-emerald-500 selection:bg-emerald-500/30">{{ __('CVs') }}</span></h1>
+                @if($isSeekerCvView ?? false)
+                    <h1 class="text-4xl font-black uppercase tracking-tighter italic text-zinc-900 sm:text-5xl dark:text-white">{{ __('My') }} <span class="text-emerald-600 selection:bg-emerald-500/20 dark:text-emerald-500 dark:selection:bg-emerald-500/30">{{ __('CV uploads') }}</span></h1>
+                @else
+                    <h1 class="text-4xl font-black uppercase tracking-tighter italic text-zinc-900 sm:text-5xl dark:text-white">{{ __('Received') }} <span class="text-emerald-600 selection:bg-emerald-500/20 dark:text-emerald-500 dark:selection:bg-emerald-500/30">{{ __('CVs') }}</span></h1>
+                @endif
             </div>
-            <p class="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">{{ __('All CV submissions from users') }}</p>
+            <p class="text-[11px] font-black uppercase tracking-[0.5em] italic text-zinc-500 dark:text-zinc-500">
+                {{ ($isSeekerCvView ?? false) ? __('CVs you have submitted to job posts') : __('All CV submissions from users') }}
+            </p>
         </div>
 
         <!-- CVs List -->
         <div class="space-y-10">
             @forelse($cvs as $index => $cv)
-                <div 
-                    class="bg-zinc-950/60 border border-zinc-800/50 rounded-[3rem] p-10 backdrop-blur-3xl shadow-[0_30px_60px_rgba(0,0,0,0.4)]"
+                <div
+                    class="group relative rounded-[3rem] border border-zinc-200/80 bg-white/90 p-10 shadow-[0_30px_60px_rgba(0,0,0,0.08)] backdrop-blur-3xl dark:border-zinc-800/50 dark:bg-zinc-950/60 dark:shadow-[0_30px_60px_rgba(0,0,0,0.4)]"
                     x-data="{ show: false }"
                     x-init="setTimeout(() => show = true, {{ $index * 100 }})"
                     x-show="show"
@@ -56,35 +62,52 @@
                     <div class="flex flex-col md:flex-row items-start justify-between gap-12 relative z-10">
                         <div class="flex-1 w-full">
                             <div class="flex items-center gap-6 mb-10">
-                                <div class="w-16 h-16 rounded-2xl bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center shrink-0 p-0.5 group-hover:border-emerald-500/30 transition-all duration-700">
-                                    <div class="w-full h-full rounded-xl bg-zinc-900 flex items-center justify-center">
-                                        @if($cv->user->profile_photo_path)
-                                            <img src="{{ $cv->user->profile_photo_url }}" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000">
+                                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-2 border-zinc-200 bg-zinc-50 p-0.5 transition-all duration-700 group-hover:border-emerald-500/30 dark:border-zinc-800 dark:bg-zinc-950">
+                                    <div class="flex h-full w-full items-center justify-center rounded-xl bg-white dark:bg-zinc-900">
+                                        @if($isSeekerCvView ?? false)
+                                            @php $publisher = $cv->post->user ?? null; @endphp
+                                            @if($publisher && $publisher->profile_photo_path)
+                                                <img src="{{ $publisher->profile_photo_url }}" alt="" class="h-full w-full object-cover grayscale opacity-50 transition-all duration-1000 group-hover:grayscale-0 group-hover:opacity-100">
+                                            @else
+                                                <span class="text-xl font-black text-emerald-600/40 transition-colors group-hover:text-emerald-600 dark:text-emerald-500/40 dark:group-hover:text-emerald-500">
+                                                    {{ strtoupper(substr($publisher->name ?? 'C', 0, 1)) }}
+                                                </span>
+                                            @endif
                                         @else
-                                            <span class="text-xl font-black text-emerald-500/40 group-hover:text-emerald-500 transition-colors">
-                                                {{ strtoupper(substr($cv->user->name ?? 'U', 0, 1)) }}
-                                            </span>
+                                            @if($cv->user->profile_photo_path)
+                                                <img src="{{ $cv->user->profile_photo_url }}" class="h-full w-full object-cover grayscale opacity-50 transition-all duration-1000 group-hover:grayscale-0 group-hover:opacity-100">
+                                            @else
+                                                <span class="text-xl font-black text-emerald-600/40 transition-colors group-hover:text-emerald-600 dark:text-emerald-500/40 dark:group-hover:text-emerald-500">
+                                                    {{ strtoupper(substr($cv->user->name ?? 'U', 0, 1)) }}
+                                                </span>
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-black text-white uppercase tracking-tight italic">{{ $cv->user->name ?? __('Unknown User') }}</h3>
-                                    <p class="text-[9px] font-black text-emerald-500/50 uppercase tracking-[0.4em] mt-1">{{ $cv->created_at->format('Y.m.d // H:i') }}</p>
+                                    @if($isSeekerCvView ?? false)
+                                        @php $publisher = $cv->post->user ?? null; @endphp
+                                        <p class="text-[9px] font-black uppercase tracking-[0.35em] text-zinc-500 dark:text-zinc-500">{{ __('Company') }}</p>
+                                        <h3 class="text-lg font-black uppercase italic tracking-tight text-zinc-900 dark:text-white">{{ $publisher->name ?? __('Unknown company') }}</h3>
+                                    @else
+                                        <h3 class="text-lg font-black uppercase italic tracking-tight text-zinc-900 dark:text-white">{{ $cv->user->name ?? __('Unknown User') }}</h3>
+                                    @endif
+                                    <p class="mt-1 text-[9px] font-black uppercase tracking-[0.4em] text-emerald-700/70 dark:text-emerald-500/50">{{ $cv->created_at->format('Y.m.d // H:i') }}</p>
                                 </div>
                             </div>
 
                             <!-- Context Block -->
-                            <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-[2rem] p-8 mb-8 group/card transition-all duration-700 hover:border-emerald-500/20 shadow-inner">
-                                <div class="flex items-center gap-4 mb-4">
-                                    <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('Target Post') }}</span>
-                                    <div class="flex-1 h-px bg-zinc-800/50"></div>
+                            <div class="mb-8 rounded-[2rem] border border-zinc-200/80 bg-zinc-50/80 p-8 shadow-inner transition-all duration-700 group/card hover:border-emerald-500/25 dark:border-zinc-800/50 dark:bg-zinc-950/50 dark:hover:border-emerald-500/20">
+                                <div class="mb-4 flex items-center gap-4">
+                                    <span class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-600">{{ ($isSeekerCvView ?? false) ? __('Job listing') : __('Target Post') }}</span>
+                                    <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800/50"></div>
                                 </div>
                                 <div class="flex items-start justify-between gap-4">
-                                    <a href="{{ route('posts.show', $cv->post->slug) }}" class="text-xl font-black text-white hover:text-emerald-400 transition-colors uppercase italic tracking-tighter">
+                                    <a href="{{ route('posts.show', $cv->post->slug) }}" class="text-xl font-black uppercase italic tracking-tighter text-zinc-900 transition-colors hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400">
                                         {{ $cv->post->title ?: __('Post') }}
                                     </a>
                                     @if($cv->post->job_type)
-                                        <span class="px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-500 text-[8px] font-black uppercase tracking-widest whitespace-nowrap">
+                                        <span class="whitespace-nowrap rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-1.5 text-[8px] font-black uppercase tracking-widest text-emerald-700 dark:border-emerald-500/20 dark:text-emerald-500">
                                             {{ strtoupper(str_replace('-', ' ', $cv->post->job_type)) }}
                                         </span>
                                     @endif
@@ -93,17 +116,17 @@
 
                             <!-- CV Details -->
                             @if($cv->message)
-                                <div class="bg-zinc-950/30 border-l-4 border-emerald-500/30 p-8 rounded-2xl mb-8">
-                                    <p class="text-zinc-400 text-sm italic leading-relaxed selection:bg-emerald-500/20 font-medium">"{{ $cv->message }}"</p>
+                                <div class="mb-8 rounded-2xl border-l-4 border-emerald-500/40 bg-zinc-100/80 p-8 dark:border-emerald-500/30 dark:bg-zinc-950/30">
+                                    <p class="text-sm font-medium italic leading-relaxed text-zinc-600 selection:bg-emerald-500/15 dark:text-zinc-400 dark:selection:bg-emerald-500/20">"{{ $cv->message }}"</p>
                                 </div>
                             @endif
 
                             <!-- Resource Metadata -->
-                            <div class="flex items-center gap-4 px-6 py-3 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl w-fit">
+                            <div class="flex w-fit items-center gap-4 rounded-2xl border border-zinc-200/80 bg-zinc-50/90 px-6 py-3 dark:border-zinc-800/50 dark:bg-zinc-900/30">
                                 <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                                     <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 </div>
-                                <span class="text-[9px] font-black text-zinc-500 uppercase tracking-widest truncate max-w-[200px] italic">{{ $cv->original_filename }}</span>
+                                <span class="max-w-[200px] truncate text-[9px] font-black uppercase italic tracking-widest text-zinc-600 dark:text-zinc-500">{{ $cv->original_filename }}</span>
                             </div>
                         </div>
 
@@ -124,12 +147,14 @@
                     </div>
                 </div>
             @empty
-                <div class="py-40 bg-zinc-900/20 border border-dashed border-zinc-800/50 rounded-[3rem] text-center group">
-                    <div class="w-24 h-24 bg-zinc-950 border border-zinc-900/50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-all duration-1000">
-                        <svg class="w-12 h-12 text-zinc-800 group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <div class="group rounded-[3rem] border border-dashed border-zinc-300/90 bg-zinc-50/60 py-40 text-center dark:border-zinc-800/50 dark:bg-zinc-900/20">
+                    <div class="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] border border-zinc-200 bg-white shadow-inner transition-all duration-1000 group-hover:scale-110 dark:border-zinc-900/50 dark:bg-zinc-950">
+                        <svg class="h-12 w-12 text-zinc-400 transition-colors group-hover:text-emerald-600/40 dark:text-zinc-800 dark:group-hover:text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
-                    <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter italic">{{ __('No CVs Found') }}</h3>
-                    <p class="mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">{{ __('No CV submissions have been received yet.') }}</p>
+                    <h3 class="text-2xl font-black uppercase italic tracking-tighter text-zinc-900 dark:text-white">{{ __('No CVs Found') }}</h3>
+                    <p class="mt-4 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-600">
+                        {{ ($isSeekerCvView ?? false) ? __('You have not uploaded a CV to any job post yet.') : __('No CV submissions have been received yet.') }}
+                    </p>
                 </div>
             @endforelse
         </div>

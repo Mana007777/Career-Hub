@@ -21,10 +21,13 @@ class Cvs extends Component
             abort(403, __('Unauthorized'));
         }
 
-        $cvs = $postCvRepository->getCvsForUserPosts($user->id, 10);
+        $cvs = $user->isSeeker()
+            ? $postCvRepository->getCvsUploadedByUser($user->id, 10)
+            : $postCvRepository->getCvsForUserPosts($user->id, 10);
 
         return view('livewire.cvs', [
             'cvs' => $cvs,
+            'isSeekerCvView' => $user->isSeeker(),
         ]);
     }
 
@@ -42,8 +45,12 @@ class Cvs extends Component
             abort(404, __('CV not found'));
         }
 
-        // Verify the CV belongs to a post owned by the current user
-        if ($postCv->post->user_id !== $user->id) {
+        $postCv->loadMissing('post');
+
+        $ownsPost = $postCv->post && $postCv->post->user_id === $user->id;
+        $isOwnUpload = $postCv->user_id === $user->id;
+
+        if (! $ownsPost && ! $isOwnUpload) {
             abort(403, __('Unauthorized'));
         }
 

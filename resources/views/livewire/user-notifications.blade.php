@@ -129,12 +129,12 @@
                                     $iconColor = match($notification->type) {
                                         'welcome' => 'text-cyan-500',
                                         'follow' => 'text-emerald-500',
-                                        'new_post_from_following' => 'text-emerald-400',
+                                        'new_post_from_following', 'post_reposted' => 'text-emerald-400',
                                         'suspension_user_expired', 'suspension_post_expired', 'post_suspended' => 'text-rose-500',
                                         default => 'text-zinc-600'
                                     };
                                     $bgAlpha = match($notification->type) {
-                                        'welcome', 'follow', 'new_post_from_following' => 'bg-emerald-500/10',
+                                        'welcome', 'follow', 'new_post_from_following', 'post_reposted' => 'bg-emerald-500/10',
                                         'suspension_user_expired', 'suspension_post_expired', 'post_suspended' => 'bg-rose-500/10',
                                         default => 'bg-zinc-950'
                                     };
@@ -145,6 +145,7 @@
                                             @case('welcome') <path d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1010 10A10.011 10.011 0 0012 2z" /> @break
                                             @case('follow') <path d="M18 9a3 3 0 11-3-3 3 3 0 013 3zm-2 8a4 4 0 00-8 0v1h8z" /> @break
                                             @case('new_post_from_following') <path d="M5 5h14M5 9h14M5 15h10M5 19h6" /> @break
+                                            @case('post_reposted') <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678-48.678 0 00-7.742 0 4.006 4.006 0 00-3.7 3.7c-.092 1.209-.138 2.43-.138 3.662M19.5 12h-15m15 0a4.5 4.5 0 01-.607 2.25M4.5 12a4.5 4.5 0 00.607 2.25m0 0a4.5 4.5 0 01-.607 2.25m15-4.5a4.5 4.5 0 01-.607 2.25m0 0a4.5 4.5 0 00-.607 2.25" /> @break
                                             @case('post_suspended') <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18" /> @break
                                             @default <path d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1010 10A10.011 10.011 0 0012 2z" />
                                         @endswitch
@@ -169,6 +170,7 @@
                                         'job_application' => __('You have a new job application.'),
                                         'application_status' => __('Your application status has been updated.'),
                                         'cv_uploaded' => $notification->sourceUser ? __(':name uploaded a CV to your post.', ['name' => $notification->sourceUser->name]) : __('A new CV was uploaded to your post.'),
+                                        'post_reposted' => $notification->sourceUser ? __(':name reposted your post.', ['name' => $notification->sourceUser->name]) : __('Someone reposted your post.'),
                                         'job_alert' => __('You have a new job alert.'),
                                         'post_suspended' => __('Your post has been suspended.'),
                                         'suspension_user_expired' => __('A user suspension has expired.'),
@@ -186,6 +188,8 @@
                                         $displayMessage = __(':name declined your organization invitation.', ['name' => $m[1]]);
                                     } elseif (preg_match('/^(.+)\sinvited you to join\.$/u', (string) $notification->message, $m)) {
                                         $displayMessage = __(':name invited you to join their organization.', ['name' => $m[1]]);
+                                    } elseif ($notification->type === 'post_reposted' && preg_match('/^(.+)\sreposted your post\.$/u', (string) $notification->message, $m)) {
+                                        $displayMessage = __(':name reposted your post.', ['name' => $m[1]]);
                                     }
                                 @endphp
                                 <p class="text-[13px] font-black italic {{ !$notification->is_read ? 'text-white' : 'text-zinc-500' }} tracking-tight uppercase leading-relaxed font-medium">"{{ $displayMessage }}"</p>
@@ -197,6 +201,16 @@
                                     @endif
 
                                     @if($notification->type === 'follow' && $notification->sourceUser)
+                                        <a
+                                            href="{{ route('user.profile', $notification->sourceUser->username ?? 'unknown') }}"
+                                            class="text-[9px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors italic border-b border-emerald-500/20 pb-0.5"
+                                            @click="show = false"
+                                        >
+                                            {{ __('View profile') }} →
+                                        </a>
+                                    @endif
+
+                                    @if($notification->type === 'post_reposted' && $notification->sourceUser)
                                         <a
                                             href="{{ route('user.profile', $notification->sourceUser->username ?? 'unknown') }}"
                                             class="text-[9px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors italic border-b border-emerald-500/20 pb-0.5"

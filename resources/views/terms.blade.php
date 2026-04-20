@@ -6,7 +6,7 @@
             </div>
 
             <div class=" w-full sm:max-w-2xl mt-6 p-6 bg-gray-800 shadow-md overflow-hidden sm:rounded-lg prose text-gray-100">
-                {!! $terms !!}
+                {{$terms}}
             </div>
         </div>
     </div>

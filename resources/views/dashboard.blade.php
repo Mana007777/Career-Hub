@@ -1,5 +1,6 @@
 @php
     $dashboardTitle = match (true) {
+        !empty($showMyReposts ?? false) => $myRepostsPageTitle ?? __('Your reposts'),
         !empty($showCvs ?? false) => __('CVs'),
         !empty($showReports ?? false) => __('Reports'),
         isset($profileUsername) => $profilePageTitle ?? ('@'.ltrim((string) $profileUsername, '@')),
@@ -23,7 +24,11 @@
         @livewire('report-modal')
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
-            @if(isset($showCvs) && $showCvs)
+            @if(isset($showMyReposts) && $showMyReposts)
+                <section>
+                    <livewire:my-reposts />
+                </section>
+            @elseif(isset($showCvs) && $showCvs)
                 <section>
                     <livewire:cvs />
                 </section>

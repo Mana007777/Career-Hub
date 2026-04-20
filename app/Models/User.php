@@ -100,6 +100,15 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->role === 'company';
     }
 
+    public function isSeeker(): bool
+    {
+        if ($this->isAdmin()) {
+            return false;
+        }
+
+        return ($this->role ?? 'seeker') === 'seeker';
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);

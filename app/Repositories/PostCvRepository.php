@@ -51,4 +51,17 @@ class PostCvRepository
             ->where('user_id', $userId)
             ->exists();
     }
+
+    /**
+     * CV files this user uploaded in response to job posts (seeker view).
+     *
+     * @return LengthAwarePaginator<int, PostCv>
+     */
+    public function getCvsUploadedByUser(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        return PostCv::with(['post.user', 'user'])
+            ->where('user_id', $userId)
+            ->latest()
+            ->paginate($perPage);
+    }
 }

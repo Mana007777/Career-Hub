@@ -96,8 +96,9 @@ class PostQueries
                 'specialties' => fn ($q) => $q->with('subSpecialties'),
                 'tags',
             ])
-            ->withCount(['stars', 'comments'])
-            ->with(['stars' => fn ($q) => $q->where('user_id', $userId)]);
+            ->withCount(['stars', 'comments', 'shares'])
+            ->with(['stars' => fn ($q) => $q->where('user_id', $userId)])
+            ->withExists(['shares as viewer_has_reposted' => fn ($q) => $q->where('user_id', $userId)]);
 
         // Apply filters
         $this->applyFilters($query, $filters);
@@ -123,11 +124,12 @@ class PostQueries
             'specialties' => fn ($q) => $q->with('subSpecialties'),
             'tags',
         ])
-            ->withCount(['stars', 'comments'])
+            ->withCount(['stars', 'comments', 'shares'])
             ->withoutActiveSuspension()
             ->whereHas('user', fn ($q) => $q->withoutActiveSuspension())
             ->whereHas('stars')
-            ->when($userId, fn ($q) => $q->with(['stars' => fn ($sq) => $sq->where('user_id', $userId)]));
+            ->when($userId, fn ($q) => $q->with(['stars' => fn ($sq) => $sq->where('user_id', $userId)]))
+            ->when($userId, fn ($q) => $q->withExists(['shares as viewer_has_reposted' => fn ($sq) => $sq->where('user_id', $userId)]));
 
         if (! empty($excludedIds)) {
             $query->whereNotIn('user_id', $excludedIds);

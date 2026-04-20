@@ -42,25 +42,47 @@
         <div class="tooltip-arrow" data-popper-arrow></div>
     </div>
 
-    <!-- Node Deployment -->
-    <button 
-        wire:click="$dispatch('openCreatePost')"
-        data-tooltip-target="tooltip-post" 
-        type="button"
-        class="inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500">
-        <div class="relative">
-            <svg class="w-6 h-6 text-zinc-600 group-hover:text-emerald-400 transition-all duration-500 transform group-hover:rotate-90" aria-hidden="true"
+    <!-- Node Deployment: create (company) or repost list (seeker) -->
+    @if(auth()->check() && auth()->user()->isSeeker())
+        <a
+            href="{{ route('my-reposts') }}"
+            data-tooltip-target="tooltip-post"
+            class="relative inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500"
+        >
+            <svg class="w-6 h-6 text-zinc-600 group-hover:text-emerald-400 transition-all duration-500" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7 7V5" />
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678-48.678 0 00-7.742 0 4.006 4.006 0 00-3.7 3.7c-.092 1.209-.138 2.43-.138 3.662M19.5 12h-15m15 0a4.5 4.5 0 01-.607 2.25M4.5 12a4.5 4.5 0 00.607 2.25m0 0a4.5 4.5 0 01-.607 2.25m15-4.5a4.5 4.5 0 01-.607 2.25m0 0a4.5 4.5 0 00-.607 2.25" />
             </svg>
+            <span class="sr-only">{{ __('Your reposts') }}</span>
+            @if(Request::routeIs('my-reposts'))
+                <div class="absolute bottom-1.5 w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+            @endif
+        </a>
+        <div id="tooltip-post" role="tooltip"
+            class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
+            {{ __('Your reposts') }}
+            <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
-        <span class="sr-only">{{ __('Create Post') }}</span>
-    </button>
-    <div id="tooltip-post" role="tooltip"
-        class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-        {{ __('Create Post') }}
-        <div class="tooltip-arrow" data-popper-arrow></div>
-    </div>
+    @else
+        <button
+            wire:click="$dispatch('openCreatePost')"
+            data-tooltip-target="tooltip-post"
+            type="button"
+            class="inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500">
+            <div class="relative">
+                <svg class="w-6 h-6 text-zinc-600 group-hover:text-emerald-400 transition-all duration-500 transform group-hover:rotate-90" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-7 7V5" />
+                </svg>
+            </div>
+            <span class="sr-only">{{ __('Create Post') }}</span>
+        </button>
+        <div id="tooltip-post" role="tooltip"
+            class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
+            {{ __('Create Post') }}
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+    @endif
 
     <!-- Global Scan -->
     <button 
@@ -155,22 +177,25 @@
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
     @else
-        <!-- Intelligence Dossier -->
-        <a 
+        <!-- Intelligence Dossier: received CVs (company) or your uploads (seeker) -->
+        <a
             href="{{ route('cvs') }}"
             data-tooltip-target="tooltip-cvs"
-            class="inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500"
+            class="relative inline-flex flex-col items-center justify-center p-3 hover:bg-emerald-500/5 group rounded-2xl transition-all duration-500"
         >
             <svg class="w-6 h-6 text-zinc-600 group-hover:text-emerald-400 transition-all duration-500 transform group-hover:scale-110" aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2.5">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span class="sr-only">{{ __('Dossier') }}</span>
+            <span class="sr-only">{{ auth()->check() && auth()->user()->isSeeker() ? __('My CV uploads') : __('Dossier') }}</span>
+            @if(Request::routeIs('cvs'))
+                <div class="absolute bottom-1.5 w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+            @endif
         </a>
         <div id="tooltip-cvs" role="tooltip"
             class="absolute z-10 invisible inline-block px-4 py-2 text-[9px] font-black text-white transition-opacity duration-500 bg-zinc-900 rounded-xl shadow-3xl opacity-0 tooltip uppercase tracking-[0.3em] border border-zinc-800/50 backdrop-blur-xl">
-            {{ __('CVs') }}
+            {{ auth()->check() && auth()->user()->isSeeker() ? __('My CV uploads') : __('CVs') }}
             <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
     @endif

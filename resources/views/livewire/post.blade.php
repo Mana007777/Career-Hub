@@ -152,7 +152,7 @@
 
     
         <!-- Encryption Input Module -->
-        @if($showCreateForm)
+        @if($showCreateForm && (! auth()->check() || ! auth()->user()->isSeeker()))
         <div 
             class="mb-16 top-4 z-40 transform transition-all duration-500"
             id="create-post-form"
@@ -528,6 +528,21 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a1 1 0 011 1v15.382a1 1 0 01-1.555.832L12 17.5l-4.445 2.714A1 1 0 016 19.382V4a1 1 0 011-1z"></path>
                                 </svg>
                             </button>
+
+                            @if(auth()->check() && auth()->user()->isSeeker() && $post->user && $post->user->isCompany())
+                                @php $hasReposted = (bool) ($post->viewer_has_reposted ?? false); @endphp
+                                <button
+                                    type="button"
+                                    wire:click.stop="toggleRepost({{ $post->id }})"
+                                    wire:loading.attr="disabled"
+                                    class="p-2.5 rounded-2xl transition-all duration-300 {{ $hasReposted ? 'bg-cyan-500/10 text-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.12)]' : 'text-zinc-600 hover:bg-cyan-500/10 hover:text-cyan-400' }}"
+                                    title="{{ $hasReposted ? __('Remove repost') : __('Repost') }}"
+                                >
+                                    <svg class="h-5 w-5 transition-transform group-hover:scale-125" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" aria-hidden="true">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678-48.678 0 00-7.742 0 4.006 4.006 0 00-3.7 3.7c-.092 1.209-.138 2.43-.138 3.662M19.5 12h-15m15 0a4.5 4.5 0 01-.607 2.25M4.5 12a4.5 4.5 0 00.607 2.25m0 0a4.5 4.5 0 01-.607 2.25m15-4.5a4.5 4.5 0 01-.607 2.25m0 0a4.5 4.5 0 00-.607 2.25" />
+                                    </svg>
+                                </button>
+                            @endif
                             
                             @if ($post->user_id === auth()->id() || (auth()->check() && auth()->user()->isAdmin()))
                                 <div class="relative" x-data="{ open: false }">

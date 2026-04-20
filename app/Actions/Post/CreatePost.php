@@ -12,6 +12,7 @@ use App\Queries\PostQueries;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Use case: create a new post.
@@ -26,6 +27,10 @@ class CreatePost
      */
     public function create(PostData $data): Post
     {
+        if (Auth::user()?->isSeeker()) {
+            throw new AccessDeniedHttpException(__('Seeker accounts cannot create posts. You can repost company listings instead.'));
+        }
+
         $mediaPath = null;
         if ($data->media) {
             $mediaPath = $this->storeMedia($data->media);

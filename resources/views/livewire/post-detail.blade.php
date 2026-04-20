@@ -179,6 +179,17 @@
                         </div>
                         <span>{{ $hasSavedPost ? __('Saved') : __('Save Post') }}</span>
                     </button>
+
+                    @if(auth()->check() && auth()->user()->isSeeker() && $post->user && $post->user->isCompany())
+                        <button type="button" wire:click="toggleRepost" class="flex items-center gap-4 text-xs font-black uppercase tracking-widest {{ $hasRepostedPost ? 'text-emerald-500' : 'text-zinc-600 hover:text-emerald-400' }} transition-all group/stat italic">
+                            <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center group-hover/stat:border-emerald-500/30 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" aria-hidden="true">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678-48.678 0 00-7.742 0 4.006 4.006 0 00-3.7 3.7c-.092 1.209-.138 2.43-.138 3.662M19.5 12h-15m15 0a4.5 4.5 0 01-.607 2.25M4.5 12a4.5 4.5 0 00.607 2.25m0 0a4.5 4.5 0 01-.607 2.25m15-4.5a4.5 4.5 0 01-.607 2.25m0 0a4.5 4.5 0 00-.607 2.25" />
+                                </svg>
+                            </div>
+                            <span>{{ $hasRepostedPost ? __('Reposted') : __('Repost') }}</span>
+                        </button>
+                    @endif
                 </div>
             </article>
 

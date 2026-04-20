@@ -5,12 +5,14 @@ namespace App\Livewire;
 use App\Actions\Comment\AddComment;
 use App\Actions\Comment\AddReply;
 use App\Actions\Comment\ClapComment;
+use App\Actions\Post\TogglePostRepost;
 use App\Actions\Post\UploadPostCv;
 use App\Livewire\Validations\AddCommentValidation;
 use App\Livewire\Validations\AddReplyValidation;
 use App\Models\Comment;
 use App\Models\Post as PostModel;
 use App\Models\SavedItem;
+use App\Models\Share;
 use App\Actions\Post\SavePost;
 use App\Repositories\PostCvRepository;
 use App\Services\PostService;
@@ -41,6 +43,7 @@ class PostDetail extends Component
     public $hasUploadedCv = false;
     public $hasSavedPost = false;
     public $hasStarredPost = false;
+    public $hasRepostedPost = false;
 
     public function mount(string $slug, PostService $postService, PostCvRepository $postCvRepository): void
     {
@@ -102,9 +105,15 @@ class PostDetail extends Component
             $this->hasStarredPost = $this->post->stars()
                 ->where('user_id', Auth::id())
                 ->exists();
+
+            $this->hasRepostedPost = Share::query()
+                ->where('user_id', Auth::id())
+                ->where('post_id', $this->post->id)
+                ->exists();
         } else {
             $this->hasSavedPost = false;
             $this->hasStarredPost = false;
+            $this->hasRepostedPost = false;
         }
     }
 
@@ -143,6 +152,22 @@ class PostDetail extends Component
             $this->hasSavedPost = $saved;
         } catch (\Exception $e) {
             session()->flash('error', __('Failed to save post. Please try again.'));
+        }
+    }
+
+    public function toggleRepost(TogglePostRepost $togglePostRepost): void
+    {
+        $user = Auth::user();
+        if (! $user || ! $this->post) {
+            return;
+        }
+
+        try {
+            $added = $togglePostRepost->toggle($user, $this->post);
+            $this->hasRepostedPost = $added;
+            session()->flash('success', $added ? __('Reposted.') : __('Removed from your reposts.'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', $e->getMessage());
         }
     }
 

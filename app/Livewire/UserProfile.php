@@ -85,7 +85,9 @@ class UserProfile extends Component
         
         $this->followersCount = $this->user->followers_count;
         $this->followingCount = $this->user->following_count;
-        $this->postsCount = $this->user->posts_count;
+        $this->postsCount = $this->user->role === 'seeker'
+            ? (int) ($this->user->shares_count ?? 0)
+            : (int) ($this->user->posts_count ?? 0);
 
         $endorsementRepository = app(\App\Repositories\EndorsementRepository::class);
         $this->endorsementCount = $endorsementRepository->getEndorsementCountForUser($this->user);
@@ -643,7 +645,9 @@ class UserProfile extends Component
         // Don't show posts if user is blocked or has blocked the current user
         $posts = null;
         if (!($this->isBlocked || $this->isBlockedBy)) {
-            $posts = $postRepository->getByUserId($this->user->id, 10);
+            $posts = $this->user->role === 'seeker'
+                ? $postRepository->getPostsRepostedByUserId($this->user->id, 10)
+                : $postRepository->getByUserId($this->user->id, 10);
         }
 
         $endorsementsBySkill = app(EndorsementRepository::class)->getEndorsementsBySkillForUser($this->user)->all();
@@ -651,6 +655,7 @@ class UserProfile extends Component
         return view('livewire.user-profile', [
             'posts' => $posts,
             'endorsementsBySkill' => $endorsementsBySkill,
+            'profileShowsReposts' => $this->user->role === 'seeker',
         ]);
     }
 }

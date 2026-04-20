@@ -31,7 +31,7 @@ class PostRepository
                 'specialties' => fn ($q) => $q->with('subSpecialties'),
                 'tags',
             ])
-            ->withCount(['stars', 'comments'])
+            ->withCount(['stars', 'comments', 'shares'])
             ->withoutActiveSuspension()
             ->whereHas('user', fn ($q) => $q->withoutActiveSuspension());
 
@@ -42,6 +42,7 @@ class PostRepository
             }
             // Eager load only current user's star for "did I star this" (at most 1 row per post)
             $query->with(['stars' => fn ($q) => $q->where('user_id', $userId)]);
+            $query->withExists(['shares as viewer_has_reposted' => fn ($q) => $q->where('user_id', $userId)]);
         }
 
         // Apply filters
@@ -94,6 +95,31 @@ class PostRepository
                 'suspension',
             ])
             ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
+     * Posts the user has reposted (shares), newest repost first.
+     */
+    public function getPostsRepostedByUserId(int $userId, int $perPage = 10): LengthAwarePaginator
+    {
+        return Post::query()
+            ->select('posts.*')
+            ->join('shares', 'posts.id', '=', 'shares.post_id')
+            ->where('shares.user_id', $userId)
+            ->withoutActiveSuspension()
+            ->whereHas('user', fn ($q) => $q->withoutActiveSuspension())
+            ->with([
+                'user',
+                'stars',
+                'comments',
+                'specialties' => function ($query) {
+                    $query->with('subSpecialties');
+                },
+                'tags',
+                'suspension',
+            ])
+            ->orderByDesc('shares.created_at')
             ->paginate($perPage);
     }
 
