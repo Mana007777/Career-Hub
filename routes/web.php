@@ -3,6 +3,7 @@
 use App\Http\Controllers\VerificationPaymentController;
 use App\Http\Controllers\InterestOnboardingController;
 use App\Http\Controllers\Auth\ExternalEmailVerificationController;
+use App\Http\Controllers\Auth\EmailVerificationCodeController;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -31,6 +32,15 @@ Route::middleware([
         'redirect' => route('dashboard'),
     ]);
 })->name('verification.status');
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'throttle:6,1',
+])->group(function () {
+    Route::post('/email/verify-code/send', [EmailVerificationCodeController::class, 'send'])->name('verification.code.send');
+    Route::post('/email/verify-code/confirm', [EmailVerificationCodeController::class, 'verify'])->name('verification.code.confirm');
+});
 
 Route::middleware([
     'auth:sanctum',

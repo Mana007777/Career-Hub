@@ -20,11 +20,44 @@
                     </div>
                 @endif
 
+                @if (session('verification_code_sent'))
+                    <div class="mb-6 p-5 bg-cyan-500/10 border border-cyan-500/25 rounded-2xl text-cyan-700 dark:text-cyan-300 text-sm font-semibold">
+                        {{ session('verification_code_sent') }}
+                    </div>
+                @endif
+
                 <div class="space-y-4">
                     <form method="POST" action="{{ route('verification.send') }}">
                         @csrf
                         <button type="submit" class="w-full py-5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.4em] rounded-2xl hover:bg-emerald-400 transition-all">
                             {{ __('Resend Verification Email') }}
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ route('verification.code.send') }}">
+                        @csrf
+                        <button type="submit" class="w-full py-4 border border-cyan-500/35 text-cyan-700 dark:text-cyan-300 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-cyan-500/10 transition-all">
+                            {{ __('Send 6-Digit Code Instead') }}
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ route('verification.code.confirm') }}" class="space-y-3">
+                        @csrf
+                        <input
+                            type="text"
+                            name="verification_code"
+                            maxlength="6"
+                            pattern="[0-9]{6}"
+                            inputmode="numeric"
+                            placeholder="Enter 6-digit code"
+                            class="w-full text-center rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-4 text-zinc-900 dark:text-zinc-100 text-[12px] font-black tracking-[0.35em] uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                            required
+                        />
+                        @error('verification_code')
+                            <p class="text-rose-500 text-xs font-semibold">{{ $message }}</p>
+                        @enderror
+                        <button type="submit" class="w-full py-4 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:opacity-90 transition-all">
+                            {{ __('Verify Code and Continue') }}
                         </button>
                     </form>
 
