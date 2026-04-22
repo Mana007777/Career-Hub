@@ -159,9 +159,9 @@
                 @endif
             </div>
 
-            @if (session('logged_in_via_github') || auth()->user()->skipsCurrentPasswordForUpdate())
+            @if (session('logged_in_via_github') || session('logged_in_via_google') || auth()->user()->skipsCurrentPasswordForUpdate())
                 <div class="mb-10 rounded-[2rem] border border-amber-500/30 bg-amber-50/90 p-6 backdrop-blur-xl dark:border-amber-500/20 dark:bg-amber-500/10">
-                    <div class="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 dark:text-amber-400">{{ __('You signed in with GitHub') }}</div>
+                    <div class="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 dark:text-amber-400">{{ __('You signed in with a social account') }}</div>
                     <p class="text-sm leading-relaxed text-amber-950/90 dark:text-amber-200/90">
                         {{ __('Your account did not get a password you chose yet. In “Update Password” below, enter only a new password and confirmation (no current password). After you save once, the usual current + new + confirm fields will appear for future changes.') }}
                     </p>

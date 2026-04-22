@@ -110,6 +110,7 @@ Route::middleware([
 
 // GitHub OAuth (manual, without Socialite) using Livewire components
 Route::get('/auth/github/callback', \App\Livewire\Auth\GithubCallback::class)->name('auth.github.callback');
+Route::get('/auth/google/callback', \App\Livewire\Auth\GoogleCallback::class)->name('auth.google.callback');
 
 // Development helper: Quick user switch for testing
 if (app()->environment('local')) {

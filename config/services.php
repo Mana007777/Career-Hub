@@ -41,6 +41,12 @@ return [
         'redirect' => env('GITHUB_REDIRECT_URI', env('APP_URL') . '/auth/github/callback'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL') . '/auth/google/callback'),
+    ],
+
     'career_hub_ai' => [
         'base_url' => env('CAREER_HUB_AI_BASE_URL', 'http://127.0.0.1:8001'),
         'token' => env('CAREER_HUB_AI_TOKEN'),

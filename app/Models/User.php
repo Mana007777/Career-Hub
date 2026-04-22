@@ -80,6 +80,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'ai_interest_tags' => 'array',
             'two_factor_confirmed_at' => 'datetime',
             'github_id' => 'integer',
+            'google_id' => 'string',
             'password_set_at' => 'datetime',
         ];
     }
@@ -91,7 +92,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
      */
     public function skipsCurrentPasswordForUpdate(): bool
     {
-        return $this->github_id !== null && $this->password_set_at === null;
+        return ($this->github_id !== null || $this->google_id !== null) && $this->password_set_at === null;
     }
 
     /**

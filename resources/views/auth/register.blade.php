@@ -80,12 +80,17 @@
                             {{ __('Create Account') }}
                         </button>
 
-                        @if (config('services.github.client_id') && config('services.github.client_secret'))
+                        @if ((config('services.github.client_id') && config('services.github.client_secret')) || (config('services.google.client_id') && config('services.google.client_secret')))
                             <div class="relative py-4">
                                 <div class="absolute inset-x-0 top-1/2 h-px bg-zinc-200 dark:bg-zinc-800"></div>
                                 <div class="relative flex justify-center"><span class="bg-white px-6 text-[9px] font-black uppercase tracking-[0.4em] italic text-zinc-500 dark:bg-zinc-900 dark:text-zinc-700">{{ __('Other Sign Up Options') }}</span></div>
                             </div>
-                            <livewire:auth.github-login />
+                            @if (config('services.github.client_id') && config('services.github.client_secret'))
+                                <livewire:auth.github-login />
+                            @endif
+                            @if (config('services.google.client_id') && config('services.google.client_secret'))
+                                <livewire:auth.google-login />
+                            @endif
                         @endif
                     </div>
 
