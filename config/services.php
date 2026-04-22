@@ -41,4 +41,10 @@ return [
         'redirect' => env('GITHUB_REDIRECT_URI', env('APP_URL') . '/auth/github/callback'),
     ],
 
+    'career_hub_ai' => [
+        'base_url' => env('CAREER_HUB_AI_BASE_URL', 'http://127.0.0.1:8001'),
+        'token' => env('CAREER_HUB_AI_TOKEN'),
+        'timeout' => env('CAREER_HUB_AI_TIMEOUT', 8),
+    ],
+
 ];

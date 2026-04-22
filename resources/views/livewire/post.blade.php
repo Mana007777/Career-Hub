@@ -958,7 +958,7 @@
         class="fixed bottom-0 z-50 max-w-xl w-full left-1/2 -translate-x-1/2 bg-zinc-950/40 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.5)] mb-8 mx-auto px-6 py-4 border border-zinc-800/50"
     >
         <div class="w-full mb-4">
-            <div class="grid max-w-md grid-cols-3 gap-2 p-1.5 mx-auto bg-zinc-900/50 rounded-2xl border border-zinc-800/50 shadow-inner" role="group">
+            <div class="grid max-w-2xl grid-cols-4 gap-2 p-1.5 mx-auto bg-zinc-900/50 rounded-2xl border border-zinc-800/50 shadow-inner" role="group">
                 <button
                     type="button"
                     wire:click="setFeedMode('new')"
@@ -976,6 +976,12 @@
                     wire:click="setFeedMode('following')"
                     class="px-6 py-3 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all {{ $feedMode === 'following' ? 'text-black bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50' }}">
                     {{ __('Network') }}
+                </button>
+                <button
+                    type="button"
+                    wire:click="setFeedMode('recommended')"
+                    class="px-6 py-3 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all {{ $feedMode === 'recommended' ? 'text-black bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50' }}">
+                    {{ __('AI Picks') }}
                 </button>
             </div>
         </div>

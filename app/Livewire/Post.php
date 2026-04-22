@@ -60,7 +60,7 @@ class Post extends Component
     public $postToSuspend = null;
     public $suspendReason = '';
     public $suspendExpiresAt = null;
-    public $feedMode = 'new'; // new, popular, following
+    public $feedMode = 'new'; // new, popular, following, recommended
     public array $savedPostIds = [];
     public $showInlinePostModal = false;
     public ?PostModel $inlinePost = null;
@@ -81,7 +81,7 @@ class Post extends Component
 
     /**
      * Sync filter state with URL for shareable/bookmarkable links.
-     * ?feed=new|popular|following&sort=asc|desc&tags=1,2&specialties=3&job=remote
+     * ?feed=new|popular|following|recommended&sort=asc|desc&tags=1,2&specialties=3&job=remote
      */
     protected $queryString = [
         'feedMode' => ['except' => 'new', 'as' => 'feed'],
@@ -110,7 +110,7 @@ class Post extends Component
         $this->selectedSpecialties = request()->query('specialties', $this->selectedSpecialties);
         $this->selectedJobType = (string) request()->query('job', $this->selectedJobType);
 
-        $this->feedMode = $this->validateEnumParam($this->feedMode ?? 'new', ['new', 'popular', 'following'], 'new');
+        $this->feedMode = $this->validateEnumParam($this->feedMode ?? 'new', ['new', 'popular', 'following', 'recommended'], 'new');
         $this->sortOrder = $this->validateEnumParam($this->sortOrder ?? 'desc', ['asc', 'desc'], 'desc');
         $allowedJobs = ['full-time', 'part-time', 'contract', 'freelance', 'internship', 'remote'];
         if (!empty($this->selectedJobType) && !in_array($this->selectedJobType, $allowedJobs, true)) {
@@ -183,7 +183,7 @@ class Post extends Component
 
     public function setFeedMode(string $mode): void
     {
-        if (!in_array($mode, ['new', 'popular', 'following'], true)) {
+        if (!in_array($mode, ['new', 'popular', 'following', 'recommended'], true)) {
             return;
         }
 
@@ -987,6 +987,7 @@ class Post extends Component
         $posts = match ($this->feedMode) {
             'popular' => $postService->getPopularPosts($this->perPage, $filterParams),
             'following' => $postService->getFollowingPosts($this->perPage, $filterParams),
+            'recommended' => $postService->getRecommendedPosts($this->perPage, $filterParams),
             default => $postService->getAllPosts($this->perPage, $filterParams),
         };
         

@@ -6,17 +6,20 @@ use App\Models\Post;
 use App\Queries\PostQueries;
 use App\Repositories\PostRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator as Paginator;
 use Illuminate\Support\Facades\Storage;
 
 class PostService
 {
     protected PostRepository $repository;
     protected PostQueries $queries;
+    protected AiRecommendationService $aiRecommendationService;
 
-    public function __construct(PostRepository $repository, PostQueries $queries)
+    public function __construct(PostRepository $repository, PostQueries $queries, AiRecommendationService $aiRecommendationService)
     {
         $this->repository = $repository;
         $this->queries = $queries;
+        $this->aiRecommendationService = $aiRecommendationService;
     }
 
     /**
@@ -75,6 +78,77 @@ class PostService
         }
 
         return $this->queries->getFollowingForUser($userId, $perPage, $filters);
+    }
+
+    /**
+     * Get personalized recommended posts from Career Hub AI.
+     */
+    public function getRecommendedPosts(int $perPage = 10, array $filters = []): LengthAwarePaginator
+    {
+        $userId = auth()->id();
+        if (! $userId) {
+            return $this->getAllPosts($perPage, $filters);
+        }
+
+        $recommendedIds = $this->aiRecommendationService->getRecommendedPostIds($userId);
+        if ($recommendedIds === []) {
+            return $this->getAllPosts($perPage, $filters);
+        }
+
+        $query = Post::query()
+            ->with([
+                'user',
+                'specialties' => fn ($q) => $q->with('subSpecialties'),
+                'tags',
+            ])
+            ->withCount(['stars', 'comments', 'shares'])
+            ->withoutActiveSuspension()
+            ->whereHas('user', fn ($q) => $q->withoutActiveSuspension())
+            ->whereIn('id', $recommendedIds);
+
+        $excludedIds = $this->queries->getExcludedUserIds($userId);
+        if ($excludedIds !== []) {
+            $query->whereNotIn('user_id', $excludedIds);
+        }
+
+        $query->with(['stars' => fn ($q) => $q->where('user_id', $userId)]);
+        $query->withExists(['shares as viewer_has_reposted' => fn ($q) => $q->where('user_id', $userId)]);
+
+        if (! empty($filters['tags']) && is_array($filters['tags'])) {
+            $query->whereHas('tags', function ($q) use ($filters) {
+                $q->whereIn('tags.id', $filters['tags']);
+            });
+        }
+
+        if (! empty($filters['specialties']) && is_array($filters['specialties'])) {
+            $query->whereHas('specialties', function ($q) use ($filters) {
+                $q->whereIn('specialties.id', $filters['specialties']);
+            });
+        }
+
+        if (! empty($filters['jobType'])) {
+            $query->where('job_type', $filters['jobType']);
+        }
+
+        $posts = $query->get()->sortBy(function (Post $post) use ($recommendedIds) {
+            $position = array_search($post->id, $recommendedIds, true);
+
+            return $position === false ? PHP_INT_MAX : $position;
+        })->values();
+
+        $currentPage = Paginator::resolveCurrentPage();
+        $items = $posts->forPage($currentPage, $perPage)->values();
+
+        return new Paginator(
+            $items,
+            $posts->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        );
     }
 
     /**
