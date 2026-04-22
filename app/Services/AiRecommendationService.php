@@ -89,7 +89,7 @@ class AiRecommendationService
     public function trackSearchInterest(User $user, string $query): void
     {
         $normalizedQuery = Str::of($query)->lower()->squish()->toString();
-        if ($normalizedQuery === '' || mb_strlen($normalizedQuery) < 2) {
+        if ($normalizedQuery === '') {
             return;
         }
 
