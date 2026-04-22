@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\NotificationSetting;
 use App\Models\Post;
 use App\Models\UserNotification;
+use App\Services\AiRecommendationService;
 
 class PostObserver
 {
@@ -13,6 +14,8 @@ class PostObserver
      */
     public function created(Post $post): void
     {
+        app(AiRecommendationService::class)->syncPost($post);
+
         // Notify followers about new post
         $author = $post->user;
         if ($author) {
@@ -47,6 +50,8 @@ class PostObserver
      */
     public function updated(Post $post): void
     {
+        app(AiRecommendationService::class)->syncPost($post);
+
         // Event for Livewire components
         // Components can refresh when posts are updated
     }
@@ -56,6 +61,8 @@ class PostObserver
      */
     public function deleted(Post $post): void
     {
+        app(AiRecommendationService::class)->deletePost($post->id);
+
         // Event for Livewire components
         // Components can remove deleted posts from UI
     }

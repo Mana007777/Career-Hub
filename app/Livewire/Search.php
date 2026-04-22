@@ -4,8 +4,10 @@ namespace App\Livewire;
 
 use App\Livewire\Listeners\OpenSearchListener;
 use App\Repositories\PostRepository;
+use App\Services\AiRecommendationService;
 use App\Services\PostService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -84,6 +86,11 @@ class Search extends Component
     public function updatedQuery(): void
     {
         $this->resetPage();
+
+        $user = Auth::user();
+        if ($user && trim((string) $this->query) !== '') {
+            app(AiRecommendationService::class)->trackSearchInterest($user, (string) $this->query);
+        }
     }
 
     public function resetSearch(): void

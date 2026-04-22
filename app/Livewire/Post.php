@@ -19,6 +19,7 @@ use App\Repositories\UserRepository;
 use App\Actions\Post\SavePost;
 use App\Models\SavedItem;
 use App\Services\PostService;
+use App\Services\AiRecommendationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
@@ -894,6 +895,9 @@ class Post extends Component
         try {
             $post = $postRepository->findById($postId);
             $starPostAction->toggle($post);
+            if (Auth::check()) {
+                app(AiRecommendationService::class)->trackInteraction(Auth::user(), $post->id, 'like');
+            }
             $this->dispatch('$refresh');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to star post. Please try again.');
@@ -920,6 +924,9 @@ class Post extends Component
 
         try {
             $added = $togglePostRepost->toggle($user, $post);
+            if ($added) {
+                app(AiRecommendationService::class)->trackInteraction($user, $post->id, 'repost');
+            }
             session()->flash('success', $added ? __('Reposted.') : __('Removed from your reposts.'));
             $this->dispatch('$refresh');
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
@@ -964,6 +971,9 @@ class Post extends Component
 
             $this->inlinePost = $post;
             $this->showInlinePostModal = true;
+            if (Auth::check()) {
+                app(AiRecommendationService::class)->trackInteraction(Auth::user(), $post->id, 'view');
+            }
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to open post. Please try again.');
         }
@@ -1021,6 +1031,9 @@ class Post extends Component
         try {
             $post = $postRepository->findById($postId);
             $savePostAction->toggle($post);
+            if (Auth::check()) {
+                app(AiRecommendationService::class)->trackInteraction(Auth::user(), $post->id, 'save');
+            }
 
             if (Auth::check()) {
                 \Illuminate\Support\Facades\Cache::forget('user:' . Auth::id() . ':saved_post_ids');

@@ -15,6 +15,7 @@ use App\Models\SavedItem;
 use App\Models\Share;
 use App\Actions\Post\SavePost;
 use App\Repositories\PostCvRepository;
+use App\Services\AiRecommendationService;
 use App\Services\PostService;
 use App\Models\UserNotification;
 use Illuminate\Contracts\View\View;
@@ -49,6 +50,10 @@ class PostDetail extends Component
     {
         $this->slug = $slug;
         $this->loadPost($postService, $postCvRepository);
+
+        if (Auth::check() && $this->post) {
+            app(AiRecommendationService::class)->trackInteraction(Auth::user(), $this->post->id, 'view');
+        }
     }
 
     public function hydrate(PostCvRepository $postCvRepository): void
@@ -131,6 +136,7 @@ class PostDetail extends Component
             }
 
             $starPostAction->toggle($this->post);
+            app(AiRecommendationService::class)->trackInteraction(Auth::user(), $this->post->id, 'like');
             $this->post->refresh()->loadMissing(['stars.user', 'starredBy']);
             $this->hasStarredPost = $this->post->stars()
                 ->where('user_id', Auth::id())
@@ -150,6 +156,9 @@ class PostDetail extends Component
 
             $saved = $savePostAction->toggle($this->post);
             $this->hasSavedPost = $saved;
+            if ($saved) {
+                app(AiRecommendationService::class)->trackInteraction(Auth::user(), $this->post->id, 'save');
+            }
         } catch (\Exception $e) {
             session()->flash('error', __('Failed to save post. Please try again.'));
         }
@@ -165,6 +174,9 @@ class PostDetail extends Component
         try {
             $added = $togglePostRepost->toggle($user, $this->post);
             $this->hasRepostedPost = $added;
+            if ($added) {
+                app(AiRecommendationService::class)->trackInteraction($user, $this->post->id, 'repost');
+            }
             session()->flash('success', $added ? __('Reposted.') : __('Removed from your reposts.'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             session()->flash('error', $e->getMessage());
@@ -188,6 +200,9 @@ class PostDetail extends Component
             $this->validate(AddCommentValidation::rules(), AddCommentValidation::messages());
 
             $addCommentAction->create($this->post, $this->content);
+            if (Auth::check()) {
+                app(AiRecommendationService::class)->trackInteraction(Auth::user(), $this->post->id, 'comment');
+            }
 
             $this->content = '';
             $this->post->refresh()->loadMissing([

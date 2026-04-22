@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\VerificationPaymentController;
+use App\Http\Controllers\InterestOnboardingController;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -19,7 +20,11 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    \App\Http\Middleware\EnsureInterestOnboardingCompleted::class,
 ])->group(function () {
+    Route::get('/interests', [InterestOnboardingController::class, 'show'])->name('interests.show');
+    Route::post('/interests', [InterestOnboardingController::class, 'store'])->name('interests.store');
+
     Route::get('/posts', function () {
         return view('dashboard');
     })->name('dashboard');

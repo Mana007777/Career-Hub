@@ -6,6 +6,7 @@ use App\Http\Requests\RegisterUserRequest;
 use App\Jobs\SendUserNotification;
 use App\Models\NotificationSetting;
 use App\Models\User;
+use App\Services\AiRecommendationService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -55,6 +56,8 @@ class CreateNewUser implements CreatesNewUsers
             'type' => 'welcome',
             'message' => 'Welcome to CareerOp! Your account has been successfully registered.',
         ]);
+
+        app(AiRecommendationService::class)->registerUser($user, []);
 
         return $user;
     }
