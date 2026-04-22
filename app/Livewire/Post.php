@@ -62,6 +62,7 @@ class Post extends Component
     public $suspendReason = '';
     public $suspendExpiresAt = null;
     public $feedMode = 'new'; // new, popular, following, recommended
+    public bool $isRecommendationNetworkDisconnected = false;
     public array $savedPostIds = [];
     public $showInlinePostModal = false;
     public ?PostModel $inlinePost = null;
@@ -987,6 +988,8 @@ class Post extends Component
 
     public function render(PostService $postService): View
     {
+        $this->isRecommendationNetworkDisconnected = false;
+
         $filterParams = [
             'sortOrder' => $this->sortOrder ?? 'desc',
             'tags' => $this->parseIdList($this->selectedTags ?? ''),
@@ -1000,6 +1003,10 @@ class Post extends Component
             'recommended' => $postService->getRecommendedPosts($this->perPage, $filterParams),
             default => $postService->getAllPosts($this->perPage, $filterParams),
         };
+
+        if ($this->feedMode === 'recommended') {
+            $this->isRecommendationNetworkDisconnected = $postService->isRecommendationNetworkDisconnected();
+        }
         
         $userId = Auth::id();
         $this->savedPostIds = $userId
@@ -1023,6 +1030,7 @@ class Post extends Component
             'allSpecialties' => $allSpecialties,
             'jobTypes' => $jobTypes,
             'savedPostIds' => $this->savedPostIds,
+            'isRecommendationNetworkDisconnected' => $this->isRecommendationNetworkDisconnected,
         ]);
     }
 

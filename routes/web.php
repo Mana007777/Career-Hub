@@ -7,12 +7,33 @@ use App\Http\Controllers\Auth\EmailVerificationCodeController;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::get('/about-us', function () {
+    return view('about-us');
+})->name('about-us');
+
+Route::get('/landing/dev-image/{developer}', function (string $developer) {
+    $allowed = [
+        'koraz' => '/home/marllax/.cursor/projects/home-marllax-Desktop-Career-Hub/assets/koraz-09a5e193-ba41-4231-bc53-3e35b411d6c2.png',
+        'abdullah' => '/home/marllax/.cursor/projects/home-marllax-Desktop-Career-Hub/assets/image-2368b338-ec48-4c9c-acea-66686a39f97c.png',
+    ];
+
+    $path = $allowed[$developer] ?? null;
+    if (! is_string($path) || ! File::exists($path)) {
+        abort(404);
+    }
+
+    return response()->file($path, [
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->name('landing.dev-image');
 
 // Show suspended account notice (for users whose accounts are suspended)
 Route::get('/account/suspended', function () {

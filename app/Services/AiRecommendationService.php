@@ -12,14 +12,20 @@ use Illuminate\Support\Str;
 
 class AiRecommendationService
 {
-    public function getRecommendedPostIds(int $laravelUserId): array
+    /**
+     * @return array{ids: array<int>, disconnected: bool}
+     */
+    public function getRecommendedPostIdsWithStatus(int $laravelUserId): array
     {
         $baseUrl = rtrim((string) config('services.career_hub_ai.base_url', ''), '/');
         $serviceToken = (string) config('services.career_hub_ai.token', '');
         $timeout = (int) config('services.career_hub_ai.timeout', 8);
 
         if ($baseUrl === '' || $serviceToken === '') {
-            return [];
+            return [
+                'ids' => [],
+                'disconnected' => false,
+            ];
         }
 
         try {
@@ -36,28 +42,48 @@ class AiRecommendationService
                     'user_id' => $laravelUserId,
                 ]);
 
-                return [];
+                return [
+                    'ids' => [],
+                    // treat upstream server errors as disconnected state for Recommended feed
+                    'disconnected' => $response->status() >= 500,
+                ];
             }
 
             $recommendations = $response->json('recommendations', []);
             if (! is_array($recommendations)) {
-                return [];
+                return [
+                    'ids' => [],
+                    'disconnected' => false,
+                ];
             }
 
-            return collect($recommendations)
+            $ids = collect($recommendations)
                 ->pluck('laravel_post_id')
                 ->map(fn ($id) => (int) $id)
                 ->filter(fn (int $id) => $id > 0)
                 ->values()
                 ->all();
+
+            return [
+                'ids' => $ids,
+                'disconnected' => false,
+            ];
         } catch (\Throwable $e) {
             Log::warning('Career Hub AI recommendation request exception', [
                 'user_id' => $laravelUserId,
                 'error' => $e->getMessage(),
             ]);
 
-            return [];
+            return [
+                'ids' => [],
+                'disconnected' => true,
+            ];
         }
+    }
+
+    public function getRecommendedPostIds(int $laravelUserId): array
+    {
+        return $this->getRecommendedPostIdsWithStatus($laravelUserId)['ids'];
     }
 
     public function registerUser(User $user, array $interestTags = []): bool

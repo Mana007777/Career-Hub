@@ -36,8 +36,8 @@
             <!-- Actions -->
             <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mt-16">
                 <!-- Primary Action -->
-                <button
-                    wire:click="getStarted"
+                <a
+                    href="@auth{{ route('dashboard') }}@else{{ \Illuminate\Support\Facades\Route::has('register') ? route('register') : (\Illuminate\Support\Facades\Route::has('login') ? route('login') : route('home')) }}@endauth"
                     class="group relative inline-flex items-center justify-center min-w-[240px] px-12 py-6 rounded-[1.5rem] bg-emerald-500 text-black overflow-hidden hover:bg-emerald-400 hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] active:scale-95 transition-all duration-300">
                     <span class="relative z-10 flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em]">
                         {{ __('Get Started') }}
@@ -46,16 +46,16 @@
                         </svg>
                     </span>
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
-                </button>
+                </a>
 
                 <!-- Secondary Action -->
-                <button
-                    wire:click="aboutUs"
+                <a
+                    href="{{ route('about-us') }}"
                     class="group relative inline-flex items-center justify-center min-w-[240px] px-12 py-6 rounded-[1.5rem] border border-zinc-200 bg-zinc-100/70 backdrop-blur-2xl text-zinc-600 overflow-hidden transition-all duration-300 hover:border-zinc-300 hover:text-zinc-900 active:scale-95 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-white">
                     <span class="relative z-10 text-xs font-black uppercase tracking-[0.2em]">
                         {{ __('About Us') }}
                     </span>
-                </button>
+                </a>
             </div>
 
             <!-- AUTH OVERRIDE -->

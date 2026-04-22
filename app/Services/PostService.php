@@ -14,6 +14,7 @@ class PostService
     protected PostRepository $repository;
     protected PostQueries $queries;
     protected AiRecommendationService $aiRecommendationService;
+    protected bool $recommendationNetworkDisconnected = false;
 
     public function __construct(PostRepository $repository, PostQueries $queries, AiRecommendationService $aiRecommendationService)
     {
@@ -85,12 +86,30 @@ class PostService
      */
     public function getRecommendedPosts(int $perPage = 10, array $filters = []): LengthAwarePaginator
     {
+        $this->recommendationNetworkDisconnected = false;
+
         $userId = auth()->id();
         if (! $userId) {
             return $this->getAllPosts($perPage, $filters);
         }
 
-        $recommendedIds = $this->aiRecommendationService->getRecommendedPostIds($userId);
+        $recommendation = $this->aiRecommendationService->getRecommendedPostIdsWithStatus($userId);
+        $recommendedIds = $recommendation['ids'] ?? [];
+        $this->recommendationNetworkDisconnected = (bool) ($recommendation['disconnected'] ?? false);
+
+        if ($this->recommendationNetworkDisconnected) {
+            return new Paginator(
+                collect(),
+                0,
+                $perPage,
+                Paginator::resolveCurrentPage(),
+                [
+                    'path' => Paginator::resolveCurrentPath(),
+                    'pageName' => 'page',
+                ]
+            );
+        }
+
         if ($recommendedIds === []) {
             return $this->getAllPosts($perPage, $filters);
         }
@@ -149,6 +168,11 @@ class PostService
                 'pageName' => 'page',
             ]
         );
+    }
+
+    public function isRecommendationNetworkDisconnected(): bool
+    {
+        return $this->recommendationNetworkDisconnected;
     }
 
     /**

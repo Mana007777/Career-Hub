@@ -25,7 +25,7 @@ class LandingPage extends Component
 
     public function aboutUs(): void
     {
-        session()->flash('message', 'About Us page coming soon!');
+        $this->redirect(route('about-us'), navigate: true);
     }
 
     public function render(): View
