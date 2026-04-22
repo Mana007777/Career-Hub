@@ -17,11 +17,18 @@ class RegisterUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/i'],
             'username' => ['nullable', 'string', 'max:255', 'unique:users', 'regex:/^[a-z0-9_]+$/i'],
             'role' => ['required', 'string', 'in:seeker,company'],
             'password' => ['required', 'string', Password::default(), 'confirmed'],
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.regex' => 'Please use a valid Gmail address (example@gmail.com).',
         ];
     }
 }

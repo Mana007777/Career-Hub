@@ -50,7 +50,7 @@ fuser -k $VITE_PORT/tcp 2>/dev/null || true
 
 # ── Services ─────────────────────────────────
 declare -A SERVICES=(
-  ["octane"]="php artisan octane:start --watch --port=$OCTANE_PORT"
+  ["octane"]="php artisan octane:start --watch --host=0.0.0.0 --port=$OCTANE_PORT"
   ["horizon"]="php artisan horizon"
   ["schedule"]="php artisan schedule:work"
   ["vite"]="npm run dev"

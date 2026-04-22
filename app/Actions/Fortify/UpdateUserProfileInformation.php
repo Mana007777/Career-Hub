@@ -34,6 +34,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                     'email',
                     'max:255',
                     \Illuminate\Validation\Rule::unique('users')->ignore($user->id),
+                    'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/i',
                 ],
                 'username' => [
                     'nullable',
@@ -46,6 +47,9 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'location' => ['nullable', 'string', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
                 'photo' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
+            ],
+            [
+                'email.regex' => 'Please use a valid Gmail address (example@gmail.com).',
             ],
         )->validateWithBag('updateProfileInformation');
 

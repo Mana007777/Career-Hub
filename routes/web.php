@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\VerificationPaymentController;
 use App\Http\Controllers\InterestOnboardingController;
+use App\Http\Controllers\Auth\ExternalEmailVerificationController;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -15,6 +17,20 @@ Route::get('/', function () {
 Route::get('/account/suspended', function () {
     return view('auth.suspended');
 })->name('account.suspended');
+
+Route::get('/email/verify/external/{id}/{hash}', ExternalEmailVerificationController::class)
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify.external');
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+])->get('/email/verification-status', function (Request $request) {
+    return response()->json([
+        'verified' => (bool) $request->user()?->hasVerifiedEmail(),
+        'redirect' => route('dashboard'),
+    ]);
+})->name('verification.status');
 
 Route::middleware([
     'auth:sanctum',

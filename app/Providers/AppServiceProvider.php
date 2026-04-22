@@ -19,8 +19,11 @@ use App\Observers\UserNotificationObserver;
 use App\Observers\UserObserver;
 use App\Observers\UserSuspensionObserver;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -90,5 +93,24 @@ class AppServiceProvider extends ServiceProvider
                 return false;
             });
         }
+
+        // Allow verification links clicked on a different device/browser (e.g. mobile Gmail app)
+        // by using a signed route that does not require an existing authenticated session.
+        VerifyEmail::toMailUsing(function ($notifiable) {
+            $verificationUrl = URL::temporarySignedRoute(
+                'verification.verify.external',
+                now()->addMinutes(config('auth.verification.expire', 60)),
+                [
+                    'id' => $notifiable->getKey(),
+                    'hash' => sha1($notifiable->getEmailForVerification()),
+                ]
+            );
+
+            return (new MailMessage)
+                ->subject('Verify Email Address')
+                ->line('Click the button below to verify your email address.')
+                ->action('Verify Email Address', $verificationUrl)
+                ->line('If you did not create an account, no further action is required.');
+        });
     }
 }
