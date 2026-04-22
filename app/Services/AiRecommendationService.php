@@ -86,6 +86,13 @@ class AiRecommendationService
         ]);
     }
 
+    public function trackInteractionsBulk(array $interactions): bool
+    {
+        return $this->send('post', '/api/v1/interactions/bulk-track/', [
+            'interactions' => array_values($interactions),
+        ]);
+    }
+
     public function trackSearchInterest(User $user, string $query): void
     {
         $normalizedQuery = Str::of($query)->lower()->squish()->toString();
