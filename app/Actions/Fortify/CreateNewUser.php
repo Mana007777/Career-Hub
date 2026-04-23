@@ -8,9 +8,9 @@ use App\Models\NotificationSetting;
 use App\Models\User;
 use App\Services\AiRecommendationService;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
-use Laravel\Jetstream\Jetstream;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -23,24 +23,30 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        $request = app(RegisterUserRequest::class);
+        $normalizedInput = $input;
+        $normalizedInput['email'] = strtolower(trim((string) ($input['email'] ?? '')));
 
         Validator::make(
-            $input,
-            $request->rules()
+            $normalizedInput,
+            (new RegisterUserRequest)->rules(),
+            [
+                'email.unique' => Lang::has('validation.unique')
+                    ? __('validation.unique', ['attribute' => 'email'])
+                    : 'This email is already registered.',
+            ]
         )->validate();
 
         
-        $username = !empty($input['username']) 
-            ? strtolower($input['username'])
-            : $this->generateUniqueUsername($input['email'], $input['name']);
+        $username = !empty($normalizedInput['username'])
+            ? strtolower($normalizedInput['username'])
+            : $this->generateUniqueUsername($normalizedInput['email'], $normalizedInput['name']);
 
         $user = User::create([
-            'name' => $input['name'],
-            'email' => $input['email'],
+            'name' => $normalizedInput['name'],
+            'email' => $normalizedInput['email'],
             'username' => $username,
-            'password' => Hash::make($input['password']),
-            'role' => $input['role'],
+            'password' => Hash::make($normalizedInput['password']),
+            'role' => $normalizedInput['role'],
         ]);
 
         $user->forceFill(['password_set_at' => now()])->save();

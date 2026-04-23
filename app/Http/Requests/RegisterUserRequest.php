@@ -17,7 +17,7 @@ class RegisterUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/i'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'username' => ['nullable', 'string', 'max:255', 'unique:users', 'regex:/^[a-z0-9_]+$/i'],
             'role' => ['required', 'string', 'in:seeker,company'],
             'password' => ['required', 'string', Password::default(), 'confirmed'],
@@ -27,9 +27,7 @@ class RegisterUserRequest extends FormRequest
 
     public function messages(): array
     {
-        return [
-            'email.regex' => 'Please use a valid Gmail address (example@gmail.com).',
-        ];
+        return [];
     }
 }
 
