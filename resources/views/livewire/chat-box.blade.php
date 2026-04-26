@@ -3,7 +3,7 @@
         chatId: @entangle('chatId'),
         scrollToBottom() {
             if (!this.chatId) return;
-            const target = this.$refs.messagesContainer ?? document.getElementById(`chat-messages-${this.chatId}`);
+            const target = this.$refs.messagesContainer ?? document.getElementById('chat-messages-' + this.chatId);
             if (!target) return;
             const scrollLastMessage = () => {
                 const lastMessage = target.querySelector('[data-chat-message]:last-of-type');

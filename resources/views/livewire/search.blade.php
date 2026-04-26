@@ -97,7 +97,7 @@
                                                 </div>
                                                 <div class="flex-1 min-w-0">
                                                     <h4 class="text-[11px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest italic truncate font-bold">
-                                                        {!! str_ireplace(e($query), '<mark class="bg-emerald-500/20 text-emerald-300">'.e($query).'</mark>', e($user->name)) !!}
+                                                        {{ $user->name }}
                                                     </h4>
                                                     <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1 opacity-80">
                                                        {{ '@' . $user->username }}
@@ -136,7 +136,7 @@
                                                     </div>
                                                 </div>
                                                 <h3 class="text-[13px] font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-tight italic mb-3">
-                                                    {!! str_ireplace(e($query), '<mark class="bg-emerald-500/20 text-emerald-300">'.e($query).'</mark>', e($post->title ?? __('Post'))) !!}
+                                                    {{ $post->title ?? __('Post') }}
                                                 </h3>
                                                 <p class="text-[11px] font-medium text-zinc-500 line-clamp-2 leading-relaxed italic selection:bg-emerald-500/20">
                                                     {{ Str::limit($post->content, 180) }}

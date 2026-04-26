@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
         $password = env('ADMIN_PASSWORD');
 
         if (! is_string($password) || $password === '') {
-            $password = 'password';
-            $this->command?->warn('ADMIN_PASSWORD is not set; using default "password". Set ADMIN_PASSWORD in .env for production.');
+            $password = Str::password(24);
+            $this->command?->warn('ADMIN_PASSWORD is not set; generated a random admin password for this seed run. Set ADMIN_PASSWORD in .env for deterministic credentials.');
         }
 
         $user = User::query()->updateOrCreate(

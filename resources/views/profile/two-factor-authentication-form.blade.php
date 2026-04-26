@@ -38,8 +38,12 @@
                     </p>
                 </div>
 
+                @php
+                    $twoFactorQrCodeSvg = (string) $this->user->twoFactorQrCodeSvg();
+                    $twoFactorQrCodeDataUri = 'data:image/svg+xml;base64,'.base64_encode($twoFactorQrCodeSvg);
+                @endphp
                 <div class="mt-4 p-2 inline-block bg-[#F5EFE7]">
-                    {!! $this->user->twoFactorQrCodeSvg() !!}
+                    <img src="{{ $twoFactorQrCodeDataUri }}" alt="{{ __('Two factor QR code') }}" class="h-44 w-44">
                 </div>
 
                 <div class="mt-4 max-w-xl text-sm text-gray-600">

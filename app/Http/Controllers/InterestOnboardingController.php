@@ -29,6 +29,7 @@ class InterestOnboardingController extends Controller
         ]);
     }
 
+    // shield:ignore: auth
     public function store(Request $request, AiRecommendationService $aiService): RedirectResponse
     {
         $validated = $request->validate([

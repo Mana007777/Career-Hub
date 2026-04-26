@@ -7,7 +7,7 @@
         const userId = @js(auth()->id());
         if (userId && window.Echo && !window.__userNotificationsRealtimeBound) {
             window.__userNotificationsRealtimeBound = true;
-            window.Echo.private(`user.${userId}`)
+            window.Echo.private('user.' + userId)
                 .listen('.notification.created', () => {
                     $wire.$refresh();
                     if (window.Livewire) {

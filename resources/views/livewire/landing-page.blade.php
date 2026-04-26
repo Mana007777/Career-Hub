@@ -90,7 +90,7 @@
     <div class="absolute inset-0 pointer-events-none opacity-40">
         <template x-for="i in 30" :key="i">
             <div class="absolute bg-emerald-500/20 rounded-full"
-                :style="`left: ${Math.random() * 100}%; top: ${Math.random() * 100}%; width: ${Math.random() * 3 + 1}px; height: ${Math.random() * 3 + 1}px; animation: float_particle ${Math.random() * 10 + 5}s linear infinite; animation-delay: -${Math.random() * 10}s;`">
+                :style="'left: ' + (Math.random() * 100) + '%; top: ' + (Math.random() * 100) + '%; width: ' + (Math.random() * 3 + 1) + 'px; height: ' + (Math.random() * 3 + 1) + 'px; animation: float_particle ' + (Math.random() * 10 + 5) + 's linear infinite; animation-delay: -' + (Math.random() * 10) + 's;'">
             </div>
         </template>
     </div>

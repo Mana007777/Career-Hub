@@ -84,7 +84,7 @@ class CreateNewUser implements CreatesNewUsers
         }
         
         if (strlen($baseUsername) < 3) {
-            $baseUsername = 'user' . substr(md5($email), 0, 6);
+            $baseUsername = 'user' . substr(hash('sha256', $email), 0, 6);
         }
         
         $username = $baseUsername;

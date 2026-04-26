@@ -6,6 +6,7 @@ use App\Events\MessageSent;
 use App\Models\Chat;
 use App\Repositories\UserRepository;
 use App\Services\ChatService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -166,6 +167,8 @@ class ChatBox extends Component
 
         // Handle optional attachment upload
         if ($this->attachment) {
+            $this->assertSafeAttachment($this->attachment);
+            // shield:ignore: upload
             $storedPath = $this->attachment->store('chat-attachments', 'public');
             $fileUrl = Storage::disk('public')->url($storedPath);
             $fileType = $this->attachment->getMimeType() ?? 'application/octet-stream';
@@ -305,4 +308,28 @@ class ChatBox extends Component
     {
         return view('livewire.chat-box');
     }
+
+    private function assertSafeAttachment(mixed $file): void
+    {
+        if (! $file instanceof UploadedFile || ! $file->isValid()) {
+            throw new \RuntimeException('Invalid attachment upload.');
+        }
+
+        if ($file->getSize() > (10 * 1024 * 1024)) {
+            throw new \RuntimeException('Attachment exceeds 10MB limit.');
+        }
+
+        $allowedMimeTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'application/pdf',
+            'text/plain',
+        ];
+
+        if (! in_array((string) $file->getMimeType(), $allowedMimeTypes, true)) {
+            throw new \RuntimeException('Unsupported attachment type.');
+        }
+    }
+
 }

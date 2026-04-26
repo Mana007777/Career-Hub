@@ -126,7 +126,7 @@ class AiRecommendationService
             return;
         }
 
-        $throttleKey = 'ai-search-interest:'.$user->id.':'.md5($normalizedQuery);
+        $throttleKey = 'ai-search-interest:'.$user->id.':'.hash('sha256', $normalizedQuery);
         if (! Cache::add($throttleKey, true, now()->addSeconds(45))) {
             return;
         }

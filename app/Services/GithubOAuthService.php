@@ -160,12 +160,14 @@ class GithubOAuthService
     {
         $avatarUrl = $githubUser['avatar_url'] ?? null;
 
-        if (! $avatarUrl) {
+        if (! is_string($avatarUrl) || ! $this->isTrustedGithubAvatarUrl($avatarUrl)) {
             return;
         }
 
         try {
-            $response = Http::get($avatarUrl);
+            $response = Http::timeout(8)
+                ->withoutRedirecting()
+                ->get($avatarUrl);
 
             if (! $response->successful()) {
                 return;
@@ -189,6 +191,23 @@ class GithubOAuthService
             // Fail silently; avatar isn't critical
             report($e);
         }
+    }
+
+    private function isTrustedGithubAvatarUrl(string $url): bool
+    {
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+
+        if ($scheme !== 'https' || $host === '') {
+            return false;
+        }
+
+        return in_array($host, ['avatars.githubusercontent.com', 'github.com', 'www.github.com'], true)
+            || str_ends_with($host, '.githubusercontent.com');
     }
 
     public function login(User $user, bool $remember = true)

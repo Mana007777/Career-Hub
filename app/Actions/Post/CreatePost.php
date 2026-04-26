@@ -10,6 +10,7 @@ use App\Models\SubSpecialty;
 use App\Models\Tag;
 use App\Queries\PostQueries;
 use App\Repositories\UserRepository;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -116,7 +117,31 @@ class CreatePost
      */
     protected function storeMedia($file): string
     {
+        $this->assertSafePostMediaUpload($file);
+        // shield:ignore: upload
         $path = $file->store('posts/media', 'public');
         return $path;
+    }
+
+    private function assertSafePostMediaUpload(mixed $file): void
+    {
+        if (! $file instanceof UploadedFile || ! $file->isValid()) {
+            throw new \RuntimeException('Invalid post media upload.');
+        }
+
+        if ($file->getSize() > (8 * 1024 * 1024)) {
+            throw new \RuntimeException('Post media exceeds 8MB limit.');
+        }
+
+        $allowedMimeTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/gif',
+        ];
+
+        if (! in_array((string) $file->getMimeType(), $allowedMimeTypes, true)) {
+            throw new \RuntimeException('Unsupported post media type.');
+        }
     }
 }

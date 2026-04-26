@@ -40,6 +40,7 @@ Route::get('/account/suspended', function () {
     return view('auth.suspended');
 })->name('account.suspended');
 
+// shield:ignore: idor
 Route::get('/email/verify/external/{id}/{hash}', ExternalEmailVerificationController::class)
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify.external');

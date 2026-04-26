@@ -1,0 +1,112 @@
+{
+    "version": "1.0.0",
+    "path": "/home/marllax/Desktop/Career-Hub",
+    "summary": {
+        "count": 11,
+        "by_severity": {
+            "HIGH": 1,
+            "INFO": 10
+        }
+    },
+    "issues": [
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/.env",
+            "line": 28,
+            "severity": "HIGH",
+            "title": "Weak or empty `DB_PASSWORD`",
+            "description": "Database password is empty or a well-known default.",
+            "recommendation": "Set a strong unique password; rotate if this value was ever committed.",
+            "scanner": "env"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/app/Http/Kernel.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "No `app/Http/Kernel.php` (Laravel 11+ style)",
+            "description": "Middleware is usually registered in `bootstrap/app.php` via `Application::configure()->withMiddleware(...)`.",
+            "recommendation": "Use the bootstrap scan below; `php artisan route:list` shows effective middleware per route.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/bootstrap/app.php",
+            "line": 25,
+            "severity": "INFO",
+            "title": "`->web(...)` adjustments in bootstrap",
+            "description": "append: [ \\App\\Http\\Middleware\\SecureHeaders::class, \\App\\Http\\Middleware\\EnsureSessionIsolation::class, \\App\\Http\\Middleware\\CheckUserSuspension::class, \\App\\Http\\Middleware\\SetUserLocale::class, ]); $middleware->api(append: [ \\App\\Http\\Middleware\\SecureHeaders::class, ]); }) ->withExceptions(function (Exceptions $exceptions): void { // Return clear JSON responses for our domain exceptions on API/JSON requests. // For normal web/Livewire requests we fall back to Laravel's default handling. $...",
+            "recommendation": "You can prepend, append, or remove middleware from the `web` group in Laravel 11+.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/bootstrap/app.php",
+            "line": 25,
+            "severity": "INFO",
+            "title": "`->api(...)` adjustments in bootstrap",
+            "description": "append: [ \\App\\Http\\Middleware\\SecureHeaders::class, ]); }) ->withExceptions(function (Exceptions $exceptions): void { // Return clear JSON responses for our domain exceptions on API/JSON requests. // For normal web/Livewire requests we fall back to Laravel's default handling. $exceptions->render(function (AuthenticationRequiredException $e, $request) { if ($request->expectsJson()) { return response()->json([ 'message' => $e->getMessage(), ], 401); } return null; }); $exceptions->render(funct...",
+            "recommendation": "Common pattern: `api(prepend: [ ... Stateful Sanctum ... ])`.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/app/Http/Middleware/CheckUserSuspension.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "Custom HTTP middleware: `CheckUserSuspension`",
+            "description": "Class: `App\\Http\\Middleware\\CheckUserSuspension`. Review `handle($request, $next)` for auth, redirects, and header policies.",
+            "recommendation": "Ensure this middleware is registered (alias, route, or group) and does not log secrets.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/app/Http/Middleware/EnsureAdminAccess.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "Custom HTTP middleware: `EnsureAdminAccess`",
+            "description": "Class: `App\\Http\\Middleware\\EnsureAdminAccess`. Review `handle($request, $next)` for auth, redirects, and header policies.",
+            "recommendation": "Ensure this middleware is registered (alias, route, or group) and does not log secrets.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/app/Http/Middleware/EnsureInterestOnboardingCompleted.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "Custom HTTP middleware: `EnsureInterestOnboardingCompleted`",
+            "description": "Class: `App\\Http\\Middleware\\EnsureInterestOnboardingCompleted`. Review `handle($request, $next)` for auth, redirects, and header policies.",
+            "recommendation": "Ensure this middleware is registered (alias, route, or group) and does not log secrets.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/app/Http/Middleware/EnsureSessionIsolation.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "Custom HTTP middleware: `EnsureSessionIsolation`",
+            "description": "Class: `App\\Http\\Middleware\\EnsureSessionIsolation`. Review `handle($request, $next)` for auth, redirects, and header policies.",
+            "recommendation": "Ensure this middleware is registered (alias, route, or group) and does not log secrets.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/app/Http/Middleware/SecureHeaders.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "Custom HTTP middleware: `SecureHeaders`",
+            "description": "Class: `App\\Http\\Middleware\\SecureHeaders`. Review `handle($request, $next)` for auth, redirects, and header policies.",
+            "recommendation": "Ensure this middleware is registered (alias, route, or group) and does not log secrets.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/app/Http/Middleware/SetUserLocale.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "Custom HTTP middleware: `SetUserLocale`",
+            "description": "Class: `App\\Http\\Middleware\\SetUserLocale`. Review `handle($request, $next)` for auth, redirects, and header policies.",
+            "recommendation": "Ensure this middleware is registered (alias, route, or group) and does not log secrets.",
+            "scanner": "middleware"
+        },
+        {
+            "file": "/home/marllax/Desktop/Career-Hub/routes/api.php",
+            "line": 1,
+            "severity": "INFO",
+            "title": "Route-level middleware name usage (from `routes/*.php`)",
+            "description": "group:auth:sanctum: 3\u00d7, auth:sanctum: 1\u00d7, signed: 1\u00d7, throttle:6: 1\u00d7, 1: 1\u00d7, can:view-admin-panel: 1\u00d7",
+            "recommendation": "Cross-check with `php artisan route:list` and with Kernel/bootstrap aliases. Unknown strings may be typos.",
+            "scanner": "middleware"
+        }
+    ]
+}

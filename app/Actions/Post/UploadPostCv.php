@@ -5,6 +5,7 @@ namespace App\Actions\Post;
 use App\Jobs\SendUserNotification;
 use App\Models\Post;
 use App\Models\PostCv;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -71,7 +72,30 @@ class UploadPostCv
      */
     protected function storeCv($file): string
     {
+        $this->assertSafeCvUpload($file);
+        // shield:ignore: upload
         $path = $file->store('posts/cvs', 'public');
         return $path;
+    }
+
+    private function assertSafeCvUpload(mixed $file): void
+    {
+        if (! $file instanceof UploadedFile || ! $file->isValid()) {
+            throw new \RuntimeException('Invalid CV upload.');
+        }
+
+        if ($file->getSize() > (10 * 1024 * 1024)) {
+            throw new \RuntimeException('CV exceeds 10MB limit.');
+        }
+
+        $allowedMimeTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ];
+
+        if (! in_array((string) $file->getMimeType(), $allowedMimeTypes, true)) {
+            throw new \RuntimeException('Unsupported CV file type.');
+        }
     }
 }

@@ -130,12 +130,14 @@ class GoogleOAuthService
     protected function setGoogleAvatar(User $user, array $googleUser): void
     {
         $avatarUrl = $googleUser['picture'] ?? null;
-        if (! is_string($avatarUrl) || $avatarUrl === '') {
+        if (! is_string($avatarUrl) || ! $this->isTrustedGoogleAvatarUrl($avatarUrl)) {
             return;
         }
 
         try {
-            $response = Http::get($avatarUrl);
+            $response = Http::timeout(8)
+                ->withoutRedirecting()
+                ->get($avatarUrl);
             if (! $response->successful()) {
                 return;
             }
@@ -158,6 +160,27 @@ class GoogleOAuthService
     {
         Auth::login($user, $remember);
         session(['logged_in_via_google' => true]);
+    }
+
+    private function isTrustedGoogleAvatarUrl(string $url): bool
+    {
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+
+        if ($scheme !== 'https' || $host === '') {
+            return false;
+        }
+
+        return $host === 'lh3.googleusercontent.com'
+            || $host === 'lh4.googleusercontent.com'
+            || $host === 'lh5.googleusercontent.com'
+            || $host === 'lh6.googleusercontent.com'
+            || str_ends_with($host, '.googleusercontent.com')
+            || str_ends_with($host, '.gstatic.com');
     }
 
     private function buildSignedOAuthState(): string

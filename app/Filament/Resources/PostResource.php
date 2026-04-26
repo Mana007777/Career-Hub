@@ -120,10 +120,11 @@ class PostResource extends Resource
                     ->getStateUsing(fn (Post $record) => $record->isUnderActiveSuspension())
                     ->color(fn (Post $record) => $record->isUnderActiveSuspension() ? 'danger' : 'success')
                     ->sortable(query: function (Builder $query, string $direction): Builder {
-                        $dir = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
-
-                        return $query->orderByRaw(
-                            '(select count(*) from `post_suspensions` where `post_suspensions`.`post_id` = `posts`.`id`) '.$dir
+                        return $query->orderBy(
+                            PostSuspension::query()
+                                ->selectRaw('count(*)')
+                                ->whereColumn('post_suspensions.post_id', 'posts.id'),
+                            strtoupper($direction) === 'DESC' ? 'desc' : 'asc'
                         );
                     })
                     ->toggleable(),

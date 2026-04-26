@@ -8,6 +8,7 @@ use FirstIraqiBank\FIBPaymentSDK\Services\FIBPaymentIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class VerificationPaymentController extends Controller
 {
@@ -24,7 +25,9 @@ class VerificationPaymentController extends Controller
         }
 
         $amount = (int) config('verification-payment.amount');
-        $callbackUrl = $this->normalizeFibUrl(config('verification-payment.callback_url') ?: route('payments.fib.callback'));
+        $callbackUrl = $this->normalizeFibUrl(
+            config('verification-payment.callback_url') ?: URL::signedRoute('payments.fib.callback')
+        );
         $redirectUrl = $this->normalizeFibUrl(config('verification-payment.redirect_url') ?: route('settings'));
         $description = sprintf(
             'Verification payment for verification #%d (%s)',

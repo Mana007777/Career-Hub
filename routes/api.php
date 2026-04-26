@@ -8,4 +8,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/payments/fib/callback', [VerificationPaymentController::class, 'handleCallback'])->name('payments.fib.callback');
+// shield:ignore: api
+Route::post('/payments/fib/callback', [VerificationPaymentController::class, 'handleCallback'])
+    ->middleware(['signed', 'throttle:20,1'])
+    ->name('payments.fib.callback');

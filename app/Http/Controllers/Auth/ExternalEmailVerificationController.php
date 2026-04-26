@@ -13,7 +13,7 @@ class ExternalEmailVerificationController
     {
         $user = User::findOrFail($id);
 
-        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        if (! hash_equals((string) $hash, hash('sha256', $user->getEmailForVerification()))) {
             abort(403, 'Invalid verification hash.');
         }
 

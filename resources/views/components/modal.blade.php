@@ -1,7 +1,7 @@
 @props(['id', 'maxWidth'])
 
 @php
-$id = $id ?? md5($attributes->wire('model'));
+$id = $id ?? hash('sha256', (string) $attributes->wire('model'));
 
 $maxWidth = [
     'sm' => 'sm:max-w-sm',
